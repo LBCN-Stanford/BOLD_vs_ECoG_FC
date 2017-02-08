@@ -251,7 +251,7 @@ end
 
 
 % Load fMRI electrode time series (ordered according to iElvis)
-cd(['/media/jplinux/ExtraDrive1/data/freesurfer/subjects/' Patient '/elec_recon/electrode_spheres']);
+cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
 if BOLD_pipeline==1 && sphere==1 && BOLD_smooth==1
 %     if Coords==1;
