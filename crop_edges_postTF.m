@@ -10,6 +10,8 @@ if tdt==0
     edfname=[edfname '_' runname];
 end
 
+globalECoGDir=getECoGSubDir;
+
 %tdt=1; % tdt=1, edf=0
 %edfname=['E16-517_' runname];
 if tdt==0
@@ -21,10 +23,10 @@ cropping=20000;
 
 % Load HFB data
 if tdt==1
-cd(['/media/jplinux/ExtraDrive1/data/ECoG/Rest/' Patient '/' runname]);
+cd([globalECoGDir '/Rest/' Patient '/' runname]);
 load([freq_band 'tf_aMfffdspm8_iEEG' runname '.mat']);
 else
-cd(['/media/jplinux/ExtraDrive1/data/ECoG/Rest/' Patient '/' runname]);
+cd([globalECoGDir '/Rest/' Patient '/' runname]);
 load([freq_band 'tf_aMfffECoG_' edfname '.mat']);
 end
 
