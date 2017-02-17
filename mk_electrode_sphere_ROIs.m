@@ -8,7 +8,7 @@
 Patient=input('Patient: ','s');
 
 depth=input('depth (1) or grid (0)? ','s');
-; % 1 for depth, 0 for surface (use .PIAL coords)
+;% 1 for depth, 0 for surface (use .PIAL coords)
 % runs=['run1'; 'run2'; 'run3'];
 % [total_runs y]=size(runs);
 % Runs=cellstr(runs);
