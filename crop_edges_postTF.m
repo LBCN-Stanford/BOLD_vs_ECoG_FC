@@ -19,7 +19,7 @@ rm_last=1; else rm_last=0; % remove last iEEG chan (e.g. if it is reference)
 end
 
 % Set number of ms to crop at edges
-cropping=20000;
+cropping=10000;
 
 % Load HFB data
 if tdt==1

@@ -1,0 +1,72 @@
+%function script_ALL_rest_processing(Patient,runname)
+% run set_badchans.m first
+
+%==========================================================================
+% Written by Aaron Kucyi, LBCN, Stanford University
+%==========================================================================
+
+
+%% Set patient name and run number
+Patient=input('Patient: ','s'); sub=Patient;
+runname=input('Run (e.g. 2): ','s'); run=runname; 
+getECoGSubDir; global globalECoGDir;
+cd([globalECoGDir '/Rest/' sub]);
+
+%% Load bad channel list (or set none if no list)
+if exist('bad_chans.mat','file')>0
+load('bad_chans.mat');
+else 
+    bad_chans=[];
+end
+
+cd([globalECoGDir '/Rest/' sub '/Run' run]);
+%% Default parameters
+
+%% Convert EDF to SPM .mat
+display(['Choose raw EDF data']);
+fname=spm_select;
+[D,DC]=LBCN_convert_NKnew(fname);
+fname_spm = fullfile(D.path,D.fname);
+
+%% Filter iEEG data and detect bad channels
+LBCN_filter_badchans(fname_spm,[],bad_chans,1,[]);
+fname_spm_fff=['fff' D.fname];
+
+%% Plot power spectrum for manual removal of outlier channels
+LBCN_plot_power_spectrum(fname_spm_fff,[10:1000]);
+
+%% Common average re-referencing
+LBCN_montage(fname_spm_fff);
+fname_spm_fffM=['Mfff' D.fname];
+
+%% TF decomposition and frequency band averaging
+batch_ArtefactRejection_TF_AvgFreqAll(fname_spm_fffM);
+fname_spm_tf=['tf_aMfff' D.fname];
+
+%% Chop 10 sec from edges (beginning and end)
+crop_edges_postTF_func(Patient,runname,fname_spm_tf);
+fname_HFB=['pHFBtf_aMfff' D.fname];
+fname_Alpha=['pAlphatf_aMfff' D.fname];
+fname_Delta=['pDeltatf_aMfff' D.fname];
+fname_Theta=['pThetatf_aMfff' D.fname];
+fname_Beta1=['pBeta1tf_aMfff' D.fname];
+fname_Beta2=['pBeta2tf_aMfff' D.fname];
+fname_Gamma=['pGammatf_aMfff' D.fname];
+
+%% Temporal filtering: 0.1-1Hz, <0.1Hz
+batch_bandpass_medium(fname_HFB);
+batch_bandpass_medium(fname_Alpha);
+batch_bandpass_medium(fname_Delta);
+batch_bandpass_medium(fname_Theta);
+batch_bandpass_medium(fname_Beta1);
+batch_bandpass_medium(fname_Beta2);
+batch_bandpass_medium(fname_Gamma);
+
+batch_lowpass_slow(fname_HFB);
+batch_lowpass_slow(fname_Alpha);
+batch_lowpass_slow(fname_Delta);
+batch_lowpass_slow(fname_Theta);
+batch_lowpass_slow(fname_Beta1);
+batch_lowpass_slow(fname_Beta2);
+batch_lowpass_slow(fname_Gamma);
+
