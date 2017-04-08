@@ -1,4 +1,4 @@
-function exclude_spectral_bursts_func(Patient,runname,pHFB_fname,pGamma_fname,pAlpha_fname,pDelta_fname,pTheta_fname,pBeta1_fname,pBeta2_fname)
+function exclude_spectral_bursts_func(Patient,runname)
 
 getECoGSubDir;
 global globalECoGDir;

@@ -62,7 +62,7 @@ fname_Gamma=['pGammalogtf_aMfff' D.fname];
 
 %% Remove spectral bursts (as in Honey et al 2012, Neuron)
 % currently only for HFB
-exclude_spectral_bursts_func(Patient,runname,pHFB_fname,pGamma_fname,pAlpha_fname,pDelta_fname,pTheta_fname,pBeta1_fname,pBeta2_fname)
+exclude_spectral_bursts_func(Patient,runname)
 
 %% Temporal filtering: 0.1-1Hz, <0.1Hz
 batch_bandpass_medium(fname_HFB);
