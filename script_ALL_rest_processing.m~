@@ -48,8 +48,7 @@ log_batch(fname_spm_tf,'log',[],[]);
 fname_spm_logtf=['logtf_aMfff' D.fname];
 
 %% Frequency band averaging
-batch_AverageFreq(fname_spm_logtf);
-
+batch_Aver
 %% Chop 2 sec from edges (beginning and end)
 crop_edges_postTF_func(Patient,runname,fname_spm_logtf);
 fname_HFB=['pHFBlogtf_aMfff' D.fname];
@@ -61,8 +60,6 @@ fname_Beta2=['pBeta2logtf_aMfff' D.fname];
 fname_Gamma=['pGammalogtf_aMfff' D.fname];
 
 %% Remove spectral bursts (as in Honey et al 2012, Neuron)
-% currently only for HFB
-exclude_spectral_bursts_func(Patient,runname,pHFB_fname,pGamma_fname,pAlpha_fname,pDelta_fname,pTheta_fname,pBeta1_fname,pBeta2_fname)
 
 %% Temporal filtering: 0.1-1Hz, <0.1Hz
 batch_bandpass_medium(fname_HFB);
