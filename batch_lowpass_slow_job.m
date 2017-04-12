@@ -9,6 +9,6 @@ matlabbatch{1}.spm.meeg.preproc.filter.type = 'butterworth';
 matlabbatch{1}.spm.meeg.preproc.filter.band = 'low';
 matlabbatch{1}.spm.meeg.preproc.filter.freq = 0.1;
 matlabbatch{1}.spm.meeg.preproc.filter.dir = 'twopass';
-matlabbatch{1}.spm.meeg.preproc.filter.order = 5;
+matlabbatch{1}.spm.meeg.preproc.filter.order = 4;
 matlabbatch{1}.spm.meeg.preproc.filter.prefix = 'slow';
 disp('Done low-pass filtering (<0.1 Hz) averaged HFB time series');

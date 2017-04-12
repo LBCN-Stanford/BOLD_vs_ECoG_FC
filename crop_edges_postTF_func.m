@@ -2,7 +2,7 @@ function crop_edges_postTF(Patient,runname,fname_spm_logtf)
 
 getECoGSubDir;
 global globalECoGDir;
-cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+%cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
 %% Set number of ms to crop at edges
 cropping=2000;

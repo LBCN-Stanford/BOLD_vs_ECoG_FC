@@ -391,7 +391,6 @@ for i=1:length(bad_indices)
     vox_iEEG_space(bad_indices(i),:)=NaN;
 end
 
-
 % Remove any ROIs that have overlapping coordinates
 for i=1:length(vox_iEEG_space)
     y1=vox_iEEG_space(i,2);
@@ -454,6 +453,8 @@ alpha_mat=alpha_allcorr; alpha_mat(find(alpha_mat==1))=NaN;
 beta1_mat=beta1_allcorr; beta1_mat(find(beta1_mat==1))=NaN;
 BOLD_mat=BOLD_allcorr; BOLD_allcorr(find(BOLD_mat==1))=NaN;
 
+pause;
+
 % remove diagonal and lower triangle
 BOLD_column_ones=BOLD_column;
 %medium_column(find(medium_column==0))=NaN; 
@@ -464,7 +465,6 @@ alpha_column(BOLD_column_ones==1)=NaN; alpha_column(isnan(alpha_column))=[];
 beta1_column(BOLD_column_ones==1)=NaN; beta1_column(isnan(beta1_column))=[];
 %BOLD_column(find(BOLD_column==0))=NaN; 
 BOLD_column(find(BOLD_column_ones==1))=NaN; BOLD_column(isnan(BOLD_column))=[];
-
 
 % Calculate distances
 distances=zeros(size(vox_iEEG_space,1));

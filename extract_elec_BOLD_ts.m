@@ -12,12 +12,14 @@ runs=input('run (e.g. run1): ','s');
 [total_runs y]=size(runs);
 Runs=cellstr(runs);
 
+globalECoGDir=getECoGSubDir;
+fsDir=getFsurfSubDir();
+
 cd([fsDir '/' Patient '/elec_recon']);
    load('brainmask_coords.mat');
     coords=brainmask_coords;
     
-globalECoGDir=getECoGSubDir;
-fsDir=getFsurfSubDir();
+
     
     
 %for elec=1:length(coords);

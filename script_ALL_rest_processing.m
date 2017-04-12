@@ -43,26 +43,26 @@ fname_spm_fffM=['Mfff' D.fname];
 batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
 fname_spm_tf=['tf_aMfff' D.fname];
 
-%% Log transform
-log_batch(fname_spm_tf,'log',[],[]);
-fname_spm_logtf=['logtf_aMfff' D.fname];
+%% divide by mean and take log
+baseline_log_TF(fname_spm_tf,[],[],[]);
+fname_spm_logtf=['btf_aMfff' D.fname];
 
 %% Frequency band averaging
 batch_AverageFreq(fname_spm_logtf);
 
 %% Chop 2 sec from edges (beginning and end)
 crop_edges_postTF_func(Patient,runname,fname_spm_logtf);
-fname_HFB=['pHFBlogtf_aMfff' D.fname];
-fname_Alpha=['pAlphalogtf_aMfff' D.fname];
-fname_Delta=['pDeltalogtf_aMfff' D.fname];
-fname_Theta=['pThetalogtf_aMfff' D.fname];
-fname_Beta1=['pBeta1logtf_aMfff' D.fname];
-fname_Beta2=['pBeta2logtf_aMfff' D.fname];
-fname_Gamma=['pGammalogtf_aMfff' D.fname];
+fname_HFB=['pHFBbtf_aMfff' D.fname];
+fname_Alpha=['pAlphabtf_aMfff' D.fname];
+fname_Delta=['pDeltabtf_aMfff' D.fname];
+fname_Theta=['pThetabtf_aMfff' D.fname];
+fname_Beta1=['pBeta1btf_aMfff' D.fname];
+fname_Beta2=['pBeta2btf_aMfff' D.fname];
+fname_Gamma=['pGammabtf_aMfff' D.fname];
 
 %% Remove spectral bursts (as in Honey et al 2012, Neuron)
 % currently only for HFB
-exclude_spectral_bursts_func(Patient,runname)
+%exclude_spectral_bursts_func(Patient,runname)
 
 %% Temporal filtering: 0.1-1Hz, <0.1Hz
 batch_bandpass_medium(fname_HFB);
