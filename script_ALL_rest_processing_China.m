@@ -1,5 +1,6 @@
 %function script_ALL_rest_processing(Patient,runname)
-% run set_badchans.m first
+% CONVERT FROM EDF FIRST, THEN MANUALLY CHECK ELECTRODE NAMES
+% run set_badchans_rest.m first
 
 %==========================================================================
 % Written by Aaron Kucyi, LBCN, Stanford University
@@ -22,14 +23,15 @@ end
 cd([globalECoGDir '/Rest/' sub '/Run' run]);
 %% Default parameters
 
-%% Convert EDF to SPM .mat
-display(['Choose raw EDF data']);
-fname=spm_select;
-[D,DC]=LBCN_convert_NKnew(fname);
-fname_spm = fullfile(D.path,D.fname);
+%% Load SPM .mat
+display(['Choose EDF-converted .mat data']);
+fname_spm=spm_select;
+D=spm_eeg_load([fname_spm]);
+%[D,DC]=LBCN_convert_NKnew(fname);
+%fname_spm = fullfile(D.path,D.fname);
 
 %% Filter iEEG data and detect bad channels
-LBCN_filter_badchans(fname_spm,[],bad_chans,1,[]);
+LBCN_filter_badchans_China(fname_spm,[],bad_chans,1,[]);
 fname_spm_fff=['fff' D.fname];
 
 %% Plot power spectrum for manual removal of outlier channels
@@ -44,21 +46,21 @@ batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
 fname_spm_tf=['tf_aMfff' D.fname];
 
 %% LogR transform (normalize)
-LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
-fname_spm_btf=['btf_aMfff' D.fname];
+% LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
+% fname_spm_btf=['btf_aMfff' D.fname];
 
 %% Frequency band averaging
-batch_AverageFreq(fname_spm_btf);
+batch_AverageFreq(fname_spm_tf);
 
 %% Chop 2 sec from edges (beginning and end)
-crop_edges_postTF_func(Patient,runname,fname_spm_btf);
-fname_HFB=['pHFBbtf_aMfff' D.fname];
-fname_Alpha=['pAlphabtf_aMfff' D.fname];
-fname_Delta=['pDeltabtf_aMfff' D.fname];
-fname_Theta=['pThetabtf_aMfff' D.fname];
-fname_Beta1=['pBeta1btf_aMfff' D.fname];
-fname_Beta2=['pBeta2btf_aMfff' D.fname];
-fname_Gamma=['pGammabtf_aMfff' D.fname];
+crop_edges_postTF_func(Patient,runname,fname_spm_tf);
+fname_HFB=['pHFBtf_aMfff' D.fname];
+fname_Alpha=['pAlphatf_aMfff' D.fname];
+fname_Delta=['pDeltatf_aMfff' D.fname];
+fname_Theta=['pThetatf_aMfff' D.fname];
+fname_Beta1=['pBeta1tf_aMfff' D.fname];
+fname_Beta2=['pBeta2tf_aMfff' D.fname];
+fname_Gamma=['pGammatf_aMfff' D.fname];
 
 %% Remove spectral bursts (as in Honey et al 2012, Neuron)
 % currently only for HFB

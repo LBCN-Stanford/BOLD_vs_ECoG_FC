@@ -16,10 +16,10 @@ globalECoGDir=getECoGSubDir;
 fsDir=getFsurfSubDir();
 
 cd([fsDir '/' Patient '/elec_recon']);
-   load('brainmask_coords.mat');
-    coords=brainmask_coords;
+%    load('brainmask_coords.mat');
+%     coords=brainmask_coords;
     
-
+coords=dlmread([Patient '.PIALVOX'],' ',2,0);
     
     
 %for elec=1:length(coords);
@@ -70,12 +70,12 @@ for elec=1:length(coords);
     elec_num=num2str(elec);
 
 cmd=['fslmeants -i GSR_' run_num '_FSL -m electrode_spheres/elec' ...
-    elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_FSL.txt'];
+    elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_PIALVOX.txt'];
 [b,c]=system(cmd);
 
-cmd=['fslmeants -i GSR_' run_num '_nosmooth -m electrode_spheres/elec' ...
-    elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_nosmooth.txt'];
-[b,c]=system(cmd);
+% cmd=['fslmeants -i GSR_' run_num '_nosmooth -m electrode_spheres/elec' ...
+%     elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_PIALVOX_nosmooth.txt'];
+% [b,c]=system(cmd);
 
 display(['Done extracting time series for electrode' elec_num run_num]);
 end

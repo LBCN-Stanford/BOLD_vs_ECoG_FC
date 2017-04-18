@@ -70,6 +70,7 @@ for chan=3:length(chan_names)
     fs_chanlabels{chan,1}=[f(2) a c];
     end
 end
+
 % elseif depth==1
 %  for chan=3:length(chan_names)
 %     chan_name=chan_names(chan); chan_name=char(chan_name);
@@ -359,7 +360,6 @@ for i=1:length(iElvis_to_iEEG_chanlabel)
 end
 end
 
-%pause
 
 
 %% Find channels with HFB z-score spikes for exclusion
@@ -452,8 +452,6 @@ medium_mat=medium_allcorr; medium_mat(find(medium_mat==1))=NaN;
 alpha_mat=alpha_allcorr; alpha_mat(find(alpha_mat==1))=NaN;
 beta1_mat=beta1_allcorr; beta1_mat(find(beta1_mat==1))=NaN;
 BOLD_mat=BOLD_allcorr; BOLD_allcorr(find(BOLD_mat==1))=NaN;
-
-pause;
 
 % remove diagonal and lower triangle
 BOLD_column_ones=BOLD_column;
