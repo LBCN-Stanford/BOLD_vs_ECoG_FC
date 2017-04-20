@@ -37,6 +37,7 @@ Coords=1; % 1 = .PIAL, 2=brainmask_coords.mat
 autocorr_thr=1; % remove electrode pairs with this threshold in HFB (0.1-1Hz) corr
 sphere=1; % 1 for 6-mm sphere BOLD ROIs, 0 for single-voxel BOLD ROIs
 tf_type=1; % 1 = morlet; 2 = hilbert
+PIALVOX=1; % use PIALVOX coordinates
 
 
 fsDir=getFsurfSubDir();
@@ -211,24 +212,33 @@ Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1tf_a' Mfile]);
 % Load fMRI electrode time series (ordered according to iElvis)
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
-if BOLD_pipeline==1 && sphere==1 && BOLD_smooth==1
+if BOLD_pipeline==1 && sphere==1 && BOLD_smooth==1 && PIALVOX==0
 %     if Coords==1;
 for i=1:length(chanlabels)
     elec_num=num2str(i);
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_FSL.txt']);
 end
 
-elseif BOLD_pipeline==1 && sphere==1 && BOLD_smooth==0
+elseif BOLD_pipeline==1 && sphere==1 && BOLD_smooth==0 && PIALVOX==0
     for i=1:length(chanlabels)
     elec_num=num2str(i);
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_nosmooth.txt']);
 end
 
-elseif BOLD_pipeline==1 && sphere==0
+elseif BOLD_pipeline==1 && sphere==0 && PIALVOX==0
    for i=1:length(chanlabels)
     elec_num=num2str(i);
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_FSL_1vox.txt']);
-end
+   end
+
+elseif BOLD_pipeline==1 && PIALVOX==1
+    display(['using PIALVOX coordinates'])
+       for i=1:length(chanlabels)
+    elec_num=num2str(i);
+    BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_PIALVOX.txt']);
+   end
+
+    
 % elseif Coords==2;
 %     for i=1:length(chanlabels)
 %     elec_num=num2str(i);

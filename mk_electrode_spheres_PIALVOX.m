@@ -25,7 +25,7 @@ cmd=['fslmaths GSR_run1_FSL -bin func_brainmask'];
 for electrode=1:length(coords)
 
 % get coordinates
-x=num2str(coords(electrode,1)); y=num2str(coords(electrode,2)); z=255-num2str(coords(electrode,3));
+x=num2str(coords(electrode,1)); y=num2str(coords(electrode,2)); z=num2str(255-(coords(electrode,3)));
 
 %if depth==1;
 x1=num2str(x); y1=num2str(y); z1=num2str(z);   
@@ -65,7 +65,7 @@ nElectrode=int2str(electrode(:));
 % Make 6-mm radius spherical ROI around coordinates
 cmd = ['fslmaths GSR_run1_1vol.nii.gz -roi ' x2 ' 1 ' y2 ' 1 ' z2 ' 1 0 1 electrode_spheres/elec' nElectrode '_PIALVOX'];
 [b,c]=system(cmd);
-cmd = ['fslmaths electrode_spheres/elec' nElectrode '_FSL -kernel sphere 6 -fmean -bin electrode_spheres/elec' nElectrode 'PIALVOX_sphere'];
+cmd = ['fslmaths electrode_spheres/elec' nElectrode '_PIALVOX -kernel sphere 6 -fmean -bin electrode_spheres/elec' nElectrode 'PIALVOX_sphere'];
   [b,c]=system(cmd);  
 
   display(['Done electrode' nElectrode])

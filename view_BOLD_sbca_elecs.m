@@ -29,6 +29,7 @@ cfg=[];
 cfg.view='lomni';
 cfg.olayUnits='z';
 cfg.pullOut=3;
+cfg.title=[elec_name]
 %cfg.elecColorScale =[0 1];
 cfg.onlyShow={elec_name};
 %cfg.elecColors= color_matrix(:,1:3);   
