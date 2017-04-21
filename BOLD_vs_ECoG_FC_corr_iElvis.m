@@ -351,13 +351,13 @@ for i=1:length(iElvis_to_iEEG_chanlabel)
     BOLD_ts_iEEG_space(:,new_ind)=elec_BOLD_ts;
 end
 
-vox_iEEG_space=[];
-%% Transform elec coordinates to iEEG order 
-for i=1:length(iElvis_to_iEEG_chanlabel)
-    new_ind=iElvis_to_iEEG_chanlabel(i);
-    elec_coord=vox(i,:);
-    vox_iEEG_space(new_ind,:)=elec_coord;
-end
+% vox_iEEG_space=[];
+% %% Transform elec coordinates to iEEG order 
+% for i=1:length(iElvis_to_iEEG_chanlabel)
+%     new_ind=iElvis_to_iEEG_chanlabel(i);
+%     elec_coord=vox(i,:);
+%     vox_iEEG_space(new_ind,:)=elec_coord;
+% end
 
 % Transform network labels to iEEG order
 if depth==0
@@ -398,26 +398,26 @@ for i=1:length(bad_indices)
     network_iEEG_space(bad_indices(i))=NaN;
     Yeo_network_iEEG_space(bad_indices(i))=NaN;
     end
-    vox_iEEG_space(bad_indices(i),:)=NaN;
+    %vox_iEEG_space(bad_indices(i),:)=NaN;
 end
 
 % Remove any ROIs that have overlapping coordinates
-for i=1:length(vox_iEEG_space)
-    y1=vox_iEEG_space(i,2);
-difference=y1-vox_iEEG_space(:,2);
- if length(find(difference==0))>1
-    HFB_slow_ts(:,i)=NaN;
-    HFB_medium_ts(:,i)=NaN;
-    Alpha_medium_ts(:,i)=NaN;
-    Beta1_medium_ts(:,i)=NaN;
-    BOLD_ts_iEEG_space(:,i)=NaN;
-    if depth==0
-    network_iEEG_space(i)=NaN;
-    Yeo_network_iEEG_space(i)=NaN;
-    end
-    vox_iEEG_space(i,:)=NaN;
- end  
-end
+% for i=1:length(vox_iEEG_space)
+%     y1=vox_iEEG_space(i,2);
+% difference=y1-vox_iEEG_space(:,2);
+%  if length(find(difference==0))>1
+%     HFB_slow_ts(:,i)=NaN;
+%     HFB_medium_ts(:,i)=NaN;
+%     Alpha_medium_ts(:,i)=NaN;
+%     Beta1_medium_ts(:,i)=NaN;
+%     BOLD_ts_iEEG_space(:,i)=NaN;
+%     if depth==0
+%     network_iEEG_space(i)=NaN;
+%     Yeo_network_iEEG_space(i)=NaN;
+%     end
+%     %vox_iEEG_space(i,:)=NaN;
+%  end  
+% end
 
 overlap_elec=find((BOLD_ts_iEEG_space(1,:))==0); % WM and overlapping electrodes
 for i=1:length(overlap_elec)
@@ -430,7 +430,7 @@ for i=1:length(overlap_elec)
     network_iEEG_space(overlap_elec(i))=NaN;
     Yeo_network_iEEG_space(overlap_elec(i))=NaN;
     end
-    vox_iEEG_space(overlap_elec(i),:)=NaN;
+    %vox_iEEG_space(overlap_elec(i),:)=NaN;
 end
 
 % Change any remaining NaNs in BOLD to NaNs in iEEG
@@ -444,24 +444,17 @@ for i=1:length(BOLD_ts_iEEG_space(1,:))
      network_iEEG_space(i)=NaN;
      Yeo_network_iEEG_space(i)=NaN;
      end
-     vox_iEEG_space(i,:)=NaN;              
+     %vox_iEEG_space(i,:)=NaN;              
     end
 end
 
-%% Transform iEEG, BOLD and vox coords back to iElvis order
+%% Transform iEEG and BOLD to iElvis order
 BOLD_iElvis=NaN(size(BOLD_ts,1),length(chanlabels));
 
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
     BOLD_iElvis(:,new_ind)=BOLD_ts_iEEG_space(:,curr_iEEG_chan);
-end
-
-vox_iElvis=[];
-for i=1:length(iElvis_to_iEEG_chanlabel)
-    new_ind=iEEG_to_iElvis_chanlabel(i);
-    elec_coord=vox_iEEG_space(i,:);
-    vox_iElvis(new_ind,:)=elec_coord;
 end
 
 for i=1:length(chanlabels);
@@ -503,12 +496,15 @@ for i=1:length(chanlabels);
     Beta1_medium_iElvis(:,new_ind)=Beta1_medium_ts(:,curr_iEEG_chan);
 end
 
+%% Get vox coordinates (iElvis order) and remove bad indices
+vox(find(isnan(BOLD_iElvis(1,:))),:)=NaN;
+
 %% calculate FC in BOLD and ECoG
-slow_allcorr=corrcoef(HFB_slow_ts); slow_column=slow_allcorr(:);
-medium_allcorr=corrcoef(HFB_medium_ts); medium_column=medium_allcorr(:);
-alpha_allcorr=corrcoef(Alpha_medium_ts); alpha_column=alpha_allcorr(:);
-beta1_allcorr=corrcoef(Beta1_medium_ts); beta1_column=beta1_allcorr(:);
-BOLD_allcorr=corrcoef(BOLD_ts_iEEG_space); BOLD_column=BOLD_allcorr(:);
+slow_allcorr=corrcoef(HFB_slow_iElvis); slow_column=slow_allcorr(:);
+medium_allcorr=corrcoef(HFB_medium_iElvis); medium_column=medium_allcorr(:);
+alpha_allcorr=corrcoef(Alpha_medium_iElvis); alpha_column=alpha_allcorr(:);
+beta1_allcorr=corrcoef(Beta1_medium_iElvis); beta1_column=beta1_allcorr(:);
+BOLD_allcorr=corrcoef(BOLD_iElvis); BOLD_column=BOLD_allcorr(:);
 
 slow_mat=slow_allcorr; slow_mat(find(slow_mat==1))=NaN;
 medium_mat=medium_allcorr; medium_mat(find(medium_mat==1))=NaN;
@@ -528,11 +524,11 @@ beta1_column(BOLD_column_ones>0.999)=NaN; beta1_column(isnan(beta1_column))=[];
 BOLD_column(find(BOLD_column_ones>0.999))=NaN; BOLD_column(isnan(BOLD_column))=[];
 
 % Calculate distances
-distances=zeros(size(vox_iEEG_space,1));
-for i = 1:size(vox_iEEG_space,1)
- coord = vox_iEEG_space(i,:);
-     for ii = 1:size(vox_iEEG_space,1)
-         distances(i,ii)=sqrt((vox_iEEG_space(ii,1)-coord(1))^2+(vox_iEEG_space(ii,2)-coord(2))^2+(vox_iEEG_space(ii,3)-coord(3))^2);
+distances=zeros(size(vox,1));
+for i = 1:size(vox,1)
+ coord = vox(i,:);
+     for ii = 1:size(vox,1)
+         distances(i,ii)=sqrt((vox(ii,1)-coord(1))^2+(vox(ii,2)-coord(2))^2+(vox(ii,3)-coord(3))^2);
      end
 end
 
