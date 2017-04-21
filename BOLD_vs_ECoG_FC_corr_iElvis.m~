@@ -343,9 +343,8 @@ end
 % beta1_electrode_ts=beta1_electrode_ts(edge:length(beta1_electrode_ts)-edge,:);
 % BOLD_ts_iEEG_space=NaN(length(BOLD_ts),max(iElvis_to_iEEG_chanlabel));
 
-%% iEEG-BOLD order transformations
+%% Transform BOLD to iEEG space
 
-% Transform BOLD time series to iEEG order
 for i=1:length(iElvis_to_iEEG_chanlabel)
     new_ind=iElvis_to_iEEG_chanlabel(i);
     elec_BOLD_ts=BOLD_ts(:,i);    
@@ -353,7 +352,7 @@ for i=1:length(iElvis_to_iEEG_chanlabel)
 end
 
 vox_iEEG_space=[];
-% Transform elec coordinates to iEEG order and calculate euclidean distance matrix
+%% Transform elec coordinates to iEEG order 
 for i=1:length(iElvis_to_iEEG_chanlabel)
     new_ind=iElvis_to_iEEG_chanlabel(i);
     elec_coord=vox(i,:);
@@ -449,7 +448,53 @@ for i=1:length(BOLD_ts_iEEG_space(1,:))
     end
 end
 
+%% Transform iEEG, BOLD and vox coords back to iElvis order
+BOLD_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));
 
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    BOLD_iElvis(:,new_ind)=BOLD_ts(:,curr_iEEG_chan);
+end
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
+end
+
+
+HFB_medium_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
+end
+
+HFB_slow_iElvis=NaN(size(HFB_slow_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    HFB_slow_iElvis(:,new_ind)=HFB_slow_ts(:,curr_iEEG_chan);
+end
+
+Alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    Alpha_medium_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
+end
+
+Beta1_medium_iElvis=NaN(size(Beta1_medium_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    Beta1_medium_iElvis(:,new_ind)=Beta1_medium_ts(:,curr_iEEG_chan);
+end
 
 %% calculate FC in BOLD and ECoG
 slow_allcorr=corrcoef(HFB_slow_ts); slow_column=slow_allcorr(:);

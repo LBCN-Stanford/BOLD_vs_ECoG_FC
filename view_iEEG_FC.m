@@ -2,6 +2,7 @@ Patient=input('Patient: ','s');
 runname=input('Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2): ','s');
+run_num=['run' runname];
 
 %% Load correlation matrix
 globalECoGDir=getECoGSubDir;
@@ -50,6 +51,8 @@ cfgOut=plotPialSurf(Patient,cfg);
   close;
   
 elseif iEEG=='2'
+    elec_ts=load([fsDir '/' Patient '/elec_recon/electrode_spheres/elec' elec_num run_num '_ts_PIALVOX.txt']);    
+    if elec_ts(1)~=0
      cfg=[];
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='r';
@@ -66,5 +69,6 @@ cfg.olayUnits='z';
 cfgOut=plotPialSurf(Patient,cfg);
   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD',filesep,'iEEG_FC_',elec_name,'_run' runname]));
   close;
+    end
 end 
 end
