@@ -94,9 +94,10 @@ for i=1:size(a,1)
 end
 fclose(fid);
 
+%% Get electrode names
+parcOut=elec2Parc(Patient);
 
-
-%Load channel name-network number mapping
+%% Load channel name-network number mapping
 if depth==0
     cd([fsDir '/' Patient '/elec_recon']);
    RAS_coords=dlmread([Patient '.LEPTO'],' ',2,0); 
@@ -510,7 +511,7 @@ slow_mat=slow_allcorr; slow_mat(find(slow_mat==1))=NaN;
 medium_mat=medium_allcorr; medium_mat(find(medium_mat==1))=NaN;
 alpha_mat=alpha_allcorr; alpha_mat(find(alpha_mat==1))=NaN;
 beta1_mat=beta1_allcorr; beta1_mat(find(beta1_mat==1))=NaN;
-BOLD_mat=BOLD_allcorr; BOLD_allcorr(find(BOLD_mat==1))=NaN;
+BOLD_mat=BOLD_allcorr; BOLD_mat(find(BOLD_mat==1))=NaN;
 
 % remove diagonal and lower triangle
 BOLD_column_ones=BOLD_column;
@@ -1015,6 +1016,7 @@ edge_width=2.5;
 %% Make plots
 mkdir BOLD_ECoG_figs
 cd BOLD_ECoG_figs
+mkdir all_elecs
 %% correlation matrices
 if depth==0
    
@@ -1259,6 +1261,34 @@ set(gcf,'PaperPositionMode','auto');
 print -depsc2 HFB_shortdist_vs_BOLD.eps
 pause; close;
 
+%% Plot ECoG vs BOLD for each seed electrode
+for i=1:length(BOLD_mat);
+ 
+    if sum(~isnan(BOLD_mat(:,i)))>0
+    
+ curr_elec_BOLD=BOLD_mat(:,i);
+ curr_elec_HFB=medium_mat(:,i);
+ curr_elec_BOLD(isnan(curr_elec_BOLD))=[];
+ curr_elec_HFB(isnan(curr_elec_HFB))=[];
+ elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB);
+ 
+ elec_name=char(parcOut(i,1)); 
+ 
+    figure(3)
+scatter(curr_elec_BOLD,curr_elec_HFB,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_name ': BOLD FC vs HFB (0.1-1Hz) FC']; ...
+    ['r = ' num2str(elec_BOLD_HFB_corr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('HFB (0.1-1Hz) FC');
+set(gcf,'PaperPositionMode','auto');
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs',filesep,elec_name '_BOLD_HFB_medium']));
+ close;
+    end
+end
+
 %% DMN vs other networks
 % Normalize time-courses prior to plotting
 if depth==0
@@ -1369,68 +1399,8 @@ end
 % title({['Salience HFB (0.1-1Hz) vs Salience alpha (0.1-1Hz)']; ['r = ' num2str(corr(SN_ECoG_medium_plot_ts,SN_ECoG_alpha_plot_ts))]} ,'Fontsize',12);
 % pause; close;
 
-% figure(5)
-% plot(1:length(DAN_ECoG_medium_plot_ts),DAN_ECoG_medium_plot_ts,1:length(DAN_ECoG_alpha_plot_ts),DAN_ECoG_alpha_plot_ts);
-% title({['DAN HFB (0.1-1Hz) vs DAN alpha (0.1-1Hz)']; ['r = ' num2str(corr(DAN_ECoG_medium_plot_ts,DAN_ECoG_alpha_plot_ts))]} ,'Fontsize',12);
-% pause; close;
-% 
-% figure(5)
-% plot(1:length(FPN_ECoG_medium_plot_ts),FPN_ECoG_medium_plot_ts,1:length(FPN_ECoG_alpha_plot_ts),FPN_ECoG_alpha_plot_ts);
-% title({['FPN HFB (0.1-1Hz) vs FPN alpha (0.1-1Hz)']; ['r = ' num2str(corr(FPN_ECoG_medium_plot_ts,FPN_ECoG_alpha_plot_ts))]} ,'Fontsize',12);
-% pause; close;
-% 
-% figure(5)
-% plot(1:length(SN_ECoG_medium_plot_ts),SN_ECoG_medium_plot_ts,1:length(DMN_ECoG_alpha_plot_ts),DMN_ECoG_alpha_plot_ts);
-% title({['SN HFB (0.1-1Hz) vs DMN alpha (0.1-1Hz)']; ['r = ' num2str(corr(SN_ECoG_medium_plot_ts,DMN_ECoG_alpha_plot_ts))]} ,'Fontsize',12);
-% pause; close;
-% 
-% figure(5)
-% plot(1:length(DAN_ECoG_medium_plot_ts),DAN_ECoG_medium_plot_ts,1:length(DMN_ECoG_alpha_plot_ts),DMN_ECoG_alpha_plot_ts);
-% title({['DAN HFB (0.1-1Hz) vs DMN alpha (0.1-1Hz)']; ['r = ' num2str(corr(DAN_ECoG_medium_plot_ts,DMN_ECoG_alpha_plot_ts))]} ,'Fontsize',12);
-% pause; close;
 
-%% correlation matrices for DMN, Salience, DAN, FPN
-% figure(5)
-% imagesc(DMN_BOLD_ordered_corr); colorbar('vert'); colormap copper
-% title(['BOLD FC matrix '])
-% 
-% figure(6)
-% imagesc(DMN_medium_ordered_corr,[-0.1 0.4]); colorbar('vert'); colormap copper
-% title(['ECoG HFB (0.1-1 Hz) FC matrix '])
-% 
-% figure(7)
-% imagesc(DMN_medium_ordered_corr,[-0.1 0.4]); colorbar('vert'); colormap copper
-% title(['ECoG HFB (<0.1 Hz) FC matrix '])
-% pause; close('all');
-% 
-% figure(8)
-% scatter(DMN_BOLD_scatter,DMN_medium_scatter,'MarkerEdgeColor','k','MarkerFaceColor',[1 0 0]); 
-% h=lsline; set(h(1),'color',[1 0 0],'LineWidth',3);
-% set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-% set(gcf,'color','w');
-% title({['Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' DMN_medium_vs_BOLD_r ' p = ' DMN_medium_vs_BOLD_p ]; ['Partial (distance-corrected) r = ' DMN_medium_partial]} ,'Fontsize',12);
-% xlabel('BOLD pair-wise FC');
-% ylabel('Medium pair-wise FC');
-% pause; close;
-% 
-% figure(9)
-% scatter(DMN_BOLD_scatter,DMN_slow_scatter,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 1]); 
-% h=lsline; set(h(1),'color',[0 0 1],'LineWidth',3);
-% set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-% set(gcf,'color','w');
-% title({['Slow (<0.1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' DMN_slow_vs_BOLD_r ' p = ' DMN_slow_vs_BOLD_p]; ['Partial (distance-corrected) r = ' DMN_slow_partial]},'Fontsize',12);
-% xlabel('BOLD pair-wise FC');
-% ylabel('Slow pair-wise FC');
-% pause; close;
 
-% scatter(slow_column,medium_column,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
-% h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-% set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-% set(gcf,'color','w');
-% title({['Medium (0.1-1Hz) HFB ECoG Slow (<0.1Hz) ECoG FC']; ['r = ' num2str(corr(slow_column,medium_column))]},'Fontsize',12);
-% xlabel('Slow pair-wise FC');
-% ylabel('Medium pair-wise FC');
-% pause; close;
 
 %% stepwise regression with HFB and alpha predicting BOLD
 x1=medium_scatter; x2=alpha_scatter;
