@@ -19,6 +19,12 @@ if tdt==0
 rm_last=1; else rm_last=0; % remove last iEEG chan (e.g. if it is reference)
 end
 
+if depth==0
+PIALVOX=1; % use PIALVOX coordinates
+else
+    PIALVOX=0;
+end
+
 %% Get file base name
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
@@ -38,7 +44,6 @@ Coords=1; % 1 = .PIAL, 2=brainmask_coords.mat
 autocorr_thr=1; % remove electrode pairs with this threshold in HFB (0.1-1Hz) corr
 sphere=1; % 1 for 6-mm sphere BOLD ROIs, 0 for single-voxel BOLD ROIs
 tf_type=1; % 1 = morlet; 2 = hilbert
-PIALVOX=1; % use PIALVOX coordinates
 output_elecs=1; % output plots for each electrode
 
 fsDir=getFsurfSubDir();
@@ -98,7 +103,7 @@ fclose(fid);
 parcOut=elec2Parc(Patient);
 
 %% Load channel name-network number mapping
-if depth==0
+if depth==2
     cd([fsDir '/' Patient '/elec_recon']);
    RAS_coords=dlmread([Patient '.LEPTO'],' ',2,0); 
    
@@ -259,7 +264,7 @@ total_bold=size(BOLD_ts,2);
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
     
 % create iElvis to iEEG chanlabel transformation vector
-if depth==0
+if depth==2
 for i=1:length(chanlabels)
 iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(parcOut(i,1),chanlabels,'exact'));
 end
@@ -270,7 +275,7 @@ for i=1:length(chanlabels)
 end
 end
 
-if depth==1
+if depth~=2 
     for i=1:length(chanlabels)
 iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
 end
@@ -361,7 +366,7 @@ end
 % end
 
 % Transform network labels to iEEG order
-if depth==0
+if depth==2
 for i=1:length(iElvis_to_iEEG_chanlabel)
     new_ind=iElvis_to_iEEG_chanlabel(i);
     elec_network_Yeo=Yeo_channetworks_iElvis(i);
@@ -395,7 +400,7 @@ for i=1:length(bad_indices)
     Alpha_medium_ts(:,bad_indices(i))=NaN;
     Beta1_medium_ts(:,bad_indices(i))=NaN;
     BOLD_ts_iEEG_space(:,bad_indices(i))=NaN;
-    if depth==0
+    if depth==2
     network_iEEG_space(bad_indices(i))=NaN;
     Yeo_network_iEEG_space(bad_indices(i))=NaN;
     end
@@ -412,7 +417,7 @@ end
 %     Alpha_medium_ts(:,i)=NaN;
 %     Beta1_medium_ts(:,i)=NaN;
 %     BOLD_ts_iEEG_space(:,i)=NaN;
-%     if depth==0
+%     if depth==2
 %     network_iEEG_space(i)=NaN;
 %     Yeo_network_iEEG_space(i)=NaN;
 %     end
@@ -427,7 +432,7 @@ for i=1:length(overlap_elec)
     Alpha_medium_ts(:,overlap_elec(i))=NaN;
     Beta1_medium_ts(:,overlap_elec(i))=NaN;
     BOLD_ts_iEEG_space(:,overlap_elec(i))=NaN;
-    if depth==0
+    if depth==2
     network_iEEG_space(overlap_elec(i))=NaN;
     Yeo_network_iEEG_space(overlap_elec(i))=NaN;
     end
@@ -441,7 +446,7 @@ for i=1:length(BOLD_ts_iEEG_space(1,:))
      HFB_medium_ts(:,i)=NaN;
      Alpha_medium_ts(:,i)=NaN;
      Beta1_medium_ts(:,i)=NaN;
-     if depth==0
+     if depth==2
      network_iEEG_space(i)=NaN;
      Yeo_network_iEEG_space(i)=NaN;
      end
@@ -553,7 +558,7 @@ slow_long=slow_column(long_dist_ind); slow_short=slow_column(short_dist_ind);
 alpha_long=alpha_column(long_dist_ind); alpha_short=alpha_column(short_dist_ind);
 beta1_long=beta1_column(long_dist_ind); beta1_short=beta1_column(short_dist_ind);
 
-if depth==1
+if depth~=2
    BOLD_scatter=BOLD_column;
    medium_scatter=medium_column;
    slow_scatter=slow_column;
@@ -565,7 +570,7 @@ end
 
 % Remove any ROIs that have overlapping coordinates
 %% Extract network time-courses from Yeo networks
-if depth==0
+if depth==2
 Yeo_CoreDMN_BOLD_ts=BOLD_ts_iEEG_space(:,find(Yeo_network_iEEG_space==1));
 Yeo_CoreDMN_ECoG_medium_ts=HFB_medium_ts(:,find(Yeo_network_iEEG_space==1));
 Yeo_CoreDMN_ECoG_slow_ts=HFB_slow_ts(:,find(Yeo_network_iEEG_space==1));
@@ -622,7 +627,7 @@ Yeo_VAN_beta1_column(find(Yeo_VAN_beta1_column==1))=NaN; Yeo_VAN_beta1_column(is
 end
 
 %% Extract network time-courses from IndiPar networks
-if depth==0
+if depth==2
 DMN_BOLD_ts=BOLD_ts_iEEG_space(:,find(network_iEEG_space==1));
 DMN_ECoG_medium_ts=HFB_medium_ts(:,find(network_iEEG_space==1));
 DMN_ECoG_slow_ts=HFB_slow_ts(:,find(network_iEEG_space==1));
@@ -852,7 +857,7 @@ remove_ind=[find(BOLD_scatter==1); find(medium_scatter>autocorr_thr & medium_sca
 BOLD_scatter(remove_ind)=[];
 end
 
-if depth==0
+if depth==2
 [x,y]=find(DMN_BOLD_ordered_corr==1);
 for i=1:length(x)
     distances_DMN_order(x(i),y(i))=NaN;
@@ -1002,7 +1007,7 @@ end
 mean_HFB_beta1_corr=mean(HFB_beta1_corr,2);
 end
 % for correlation matrix labeling
-if depth==0
+if depth==2
 DMN_interval=size(DMN_BOLD_corr,1);
 FPN_interval=DMN_interval+size(FPN_BOLD_corr,1);
 VAN_interval=FPN_interval+size(VAN_BOLD_corr,1);
@@ -1020,7 +1025,7 @@ mkdir all_elecs_HFB
 mkdir all_elecs_alpha
 mkdir all_elecs_beta1
 %% correlation matrices
-if depth==0
+if depth==2
    
 FigHandle = figure(1);
 set(FigHandle,'Position',[50, 50, 400, 300]);
@@ -1154,7 +1159,7 @@ medium_beta1_partial=num2str(r);
 [r,p]=partialcorr(fisherz(beta1_scatter),fisherz(BOLD_scatter),medium_scatter);
 beta1_medium_partial=num2str(r);
 
-if depth==0
+if depth==2
 [r p]=corr(DMN_medium_scatter,DMN_BOLD_scatter);
 DMN_medium_vs_BOLD_r=num2str(r); DMN_medium_vs_BOLD_p=num2str(p);
 [r p]=corr(DMN_slow_scatter,DMN_BOLD_scatter);
@@ -1293,6 +1298,13 @@ for i=1:length(BOLD_mat);
  elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
  elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
  
+ rho_elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB,'type','Spearman');
+ rho_elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha,'type','Spearman');
+ rho_elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1,'type','Spearman');
+ rho_elec_BOLD_HFB_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance,'type','Spearman');
+ 
  elec_name=char(parcOut(i,1)); 
  
     figure(3)
@@ -1301,19 +1313,32 @@ h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs HFB (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_HFB_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_HFB_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_partialcorr]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium']));
  close;
+ 
+    figure(3)
+scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
+    ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('alpha (0.1-1Hz) FC');
+set(gcf,'PaperPositionMode','auto');
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium']));
     end
 end
 
 %% DMN vs other networks
 % Normalize time-courses prior to plotting
-if depth==0
+if depth==2
 DMN_BOLD_plot_ts=(DMN_BOLD_mean_ts-mean(DMN_BOLD_mean_ts))/std(DMN_BOLD_mean_ts);
 SN_BOLD_plot_ts=(SN_BOLD_mean_ts-mean(SN_BOLD_mean_ts))/std(SN_BOLD_mean_ts);
 Yeo_CoreDMN_BOLD_plot_ts=(Yeo_CoreDMN_BOLD_mean_ts-mean(Yeo_CoreDMN_BOLD_mean_ts))/std(Yeo_CoreDMN_BOLD_mean_ts);

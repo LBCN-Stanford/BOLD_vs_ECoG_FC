@@ -16,17 +16,17 @@ depth=str2num(depth);
 %% Get file base name
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-Mfile=dir('Mfff*');
+Mfile=dir('btf_aMfff*');
 Mfile=Mfile(2,1).name;
 
 %% Load preprocessed iEEG data 
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
-HFB=spm_eeg_load(['pHFBtf_a' Mfile]);
-HFB_slow=spm_eeg_load(['slowpHFBtf_a' Mfile]);
-HFB_medium=spm_eeg_load(['bptf_mediumpHFBtf_a' Mfile]);
-Alpha_medium=spm_eeg_load(['bptf_mediumpAlphatf_a' Mfile]);
-Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1tf_a' Mfile]);
+HFB=spm_eeg_load(['pHFB' Mfile]);
+HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
+HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
+Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
+Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
 
 %% defaults
 HFB_spike_exclusion=0; HFB_zthresh=50 % exclude channels with HFB z-score spikes exceeding threshold
@@ -95,11 +95,19 @@ for Beta1_medium_chan=1:size(HFB,1)
     Beta1_medium_ts(:,Beta1_medium_chan)=Beta1_medium(Beta1_medium_chan,:)';      
 end
 
+%% Remove bad channels
+
 %% Transform time series from iEEG to iElvis order
-HFB_medium_iElvis=NaN(HFB_medium_ts,1),
+HFB_medium_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));
+alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
+
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
-    
+    HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
+    alpha_medium_iElvis(:,new_ind)=alpha
 end
 
+%% Make FC matrix
+HFB_medium_corr=corrcoef(HFB_medium_iElvis);
+save('HFB_medium_corr','HFB_medium_corr');
