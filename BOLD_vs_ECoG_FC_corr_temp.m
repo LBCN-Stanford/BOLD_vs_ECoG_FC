@@ -22,7 +22,7 @@ end
 %% Get file base name
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-Mfile=dir('Mfff*');
+Mfile=dir('btf_aMfff*');
 Mfile=Mfile(2,1).name;
 
 %% TO MODIFY
@@ -204,11 +204,11 @@ end
 %% Load preprocessed iEEG data 
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
-HFB=spm_eeg_load(['pHFBtf_a' Mfile]);
-HFB_slow=spm_eeg_load(['slowpHFBtf_a' Mfile]);
-HFB_medium=spm_eeg_load(['bptf_mediumpHFBtf_a' Mfile]);
-Alpha_medium=spm_eeg_load(['bptf_mediumpAlphatf_a' Mfile]);
-Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1tf_a' Mfile]);
+HFB=spm_eeg_load(['pHFB' Mfile]);
+HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
+HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
+Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
+Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
 
 % Load fMRI electrode time series (ordered according to iElvis)
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);

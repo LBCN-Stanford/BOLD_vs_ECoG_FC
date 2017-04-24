@@ -9,6 +9,13 @@
 %% Set patient name and run number
 Patient=input('Patient: ','s'); sub=Patient;
 runname=input('Run (e.g. 2): ','s'); run=runname; 
+TDT=input('TDT (1) or EDF (0): ','s');
+
+if TDT=='1'
+    sampling_rate=input('sampling rate (Hz): ','s');
+    sampling_rate=str2num(sampling_rate);
+end
+
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' sub]);
 
@@ -23,9 +30,14 @@ cd([globalECoGDir '/Rest/' sub '/Run' run]);
 %% Default parameters
 
 %% Convert EDF to SPM .mat
+if TDT=='0';
 display(['Choose raw EDF data']);
 fname=spm_select;
 [D,DC]=LBCN_convert_NKnew(fname);
+
+elseif TDT=='1'
+    [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],1); % downsample to 1000 Hz   
+end
 fname_spm = fullfile(D.path,D.fname);
 
 %% Filter iEEG data and detect bad channels

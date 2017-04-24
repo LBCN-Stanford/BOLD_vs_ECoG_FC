@@ -22,7 +22,7 @@ end
 %% Get file base name
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-Mfile=dir('Mfff*');
+Mfile=dir('btf_aMfff*');
 Mfile=Mfile(2,1).name;
 
 %% TO MODIFY
@@ -205,11 +205,11 @@ end
 %% Load preprocessed iEEG data 
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
-HFB=spm_eeg_load(['pHFBtf_a' Mfile]);
-HFB_slow=spm_eeg_load(['slowpHFBtf_a' Mfile]);
-HFB_medium=spm_eeg_load(['bptf_mediumpHFBtf_a' Mfile]);
-Alpha_medium=spm_eeg_load(['bptf_mediumpAlphatf_a' Mfile]);
-Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1tf_a' Mfile]);
+HFB=spm_eeg_load(['pHFB' Mfile]);
+HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
+HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
+Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
+Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
 
 % Load fMRI electrode time series (ordered according to iElvis)
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
@@ -1016,7 +1016,9 @@ edge_width=2.5;
 %% Make plots
 mkdir BOLD_ECoG_figs
 cd BOLD_ECoG_figs
-mkdir all_elecs
+mkdir all_elecs_HFB
+mkdir all_elecs_alpha
+mkdir all_elecs_beta1
 %% correlation matrices
 if depth==0
    
@@ -1262,15 +1264,34 @@ print -depsc2 HFB_shortdist_vs_BOLD.eps
 pause; close;
 
 %% Plot ECoG vs BOLD for each seed electrode
+distances_nan=distances;
+distances_nan(find(distances_nan==0))=NaN;
+
 for i=1:length(BOLD_mat);
  
     if sum(~isnan(BOLD_mat(:,i)))>0
     
  curr_elec_BOLD=BOLD_mat(:,i);
  curr_elec_HFB=medium_mat(:,i);
+ curr_elec_alpha=alpha_mat(:,i);
+ curr_elec_beta1=beta1_mat(:,i);
+ curr_elec_distance=distances_nan(:,i);
  curr_elec_BOLD(isnan(curr_elec_BOLD))=[];
  curr_elec_HFB(isnan(curr_elec_HFB))=[];
+ curr_elec_alpha(isnan(curr_elec_alpha))=[];
+ curr_elec_beta1(isnan(curr_elec_beta1))=[];
+ curr_elec_distance(isnan(curr_elec_distance))=[];
+ 
+ curr_elec_BOLD=fisherz(curr_elec_BOLD);
+ curr_elec_HFB=fisherz(curr_elec_HFB);
+ curr_elec_alpha=fisherz(curr_elec_alpha);
+ curr_elec_beta1=fisherz(curr_elec_beta1);
  elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB);
+ elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha);
+ elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1);
+ elec_BOLD_HFB_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
+ elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
+ elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
  
  elec_name=char(parcOut(i,1)); 
  
@@ -1280,11 +1301,12 @@ h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs HFB (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_HFB_corr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_HFB_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs',filesep,elec_name '_BOLD_HFB_medium']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium']));
  close;
     end
 end
