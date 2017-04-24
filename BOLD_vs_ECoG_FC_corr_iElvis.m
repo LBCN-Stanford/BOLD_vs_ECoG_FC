@@ -13,7 +13,9 @@ depth=str2num(depth);
 %BOLD_run=input('BOLD run # (e.g. run1): ','s');
 BOLD_run='run1';
 tdt=input('TDT data? (1=TDT,0=EDF): ','s');
+BOLD_pipeline=input('BOLD pipeline (1=GSR, 2=AROMA): ' ,'s'); % 1=GSR, 2=ICA-AROMA
 tdt=str2num(tdt);
+BOLD_pipeline=str2num(BOLD_pipeline);
 
 if tdt==0
 rm_last=1; else rm_last=0; % remove last iEEG chan (e.g. if it is reference)
@@ -38,7 +40,6 @@ end
 
 %% Defaults
 HFB_spike_exclusion=1; HFB_zthresh=50 % exclude channels with HFB z-score spikes exceeding threshold
-BOLD_pipeline=1; % 1=GSR, 2=ICA-AROMA
 BOLD_smooth=1; % 1=smoothing, 0=no spatial smoothing (for GSR)
 Coords=1; % 1 = .PIAL, 2=brainmask_coords.mat
 autocorr_thr=1; % remove electrode pairs with this threshold in HFB (0.1-1Hz) corr
@@ -255,7 +256,7 @@ elseif BOLD_pipeline==1 && PIALVOX==1
 elseif BOLD_pipeline==2
   for i=1:length(chanlabels)
     elec_num=num2str(i);
-    BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_FSL_AROMA.txt']);  
+    BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_AROMA.txt']);  
   end  
 end
 
@@ -1197,7 +1198,11 @@ title({['Slow (<0.1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' slow_vs_BOLD
 xlabel('BOLD pair-wise FC');
 ylabel('Slow pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_slow_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 HFB_slow_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+    print -depsc2 HFB_slow_vs_BOLD_AROMA.eps
+end
 pause; close;
 
 figure(2)
@@ -1211,7 +1216,11 @@ title({['Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' medium_vs
 xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 HFB_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+  print -depsc2 HFB_vs_BOLD_AROMA.eps  
+end
 pause; close;
 
 figure(3)
@@ -1225,7 +1234,11 @@ title({['Medium (0.1-1 Hz) alpha ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' alpha_v
 xlabel('BOLD pair-wise FC');
 ylabel('Medium alpha pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 alpha_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 alpha_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+  print -depsc2 alpha_vs_BOLD_AROMA.eps  
+end
 pause; close;
 
 figure(4)
@@ -1239,7 +1252,11 @@ title({['Medium (0.1-1 Hz) beta1 ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' beta1_v
 xlabel('BOLD pair-wise FC');
 ylabel('Medium beta1 pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 beta1_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 beta1_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+ print -depsc2 beta1_vs_BOLD_AROMA.eps   
+end
 pause; close;
 
 figure(1)
@@ -1252,7 +1269,12 @@ title({['Long distance pairs: Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC
 xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_longdist_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 HFB_longdist_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+   print -depsc2 HFB_longdist_vs_BOLD_AROMA.eps 
+end
+
 pause; close;
 
 figure(2)
@@ -1265,7 +1287,11 @@ title({['Short distance pairs: Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) F
 xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_shortdist_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 HFB_shortdist_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+print -depsc2 HFB_shortdist_vs_BOLD_AROMA.eps
+end
 pause; close;
 
 %% Plot ECoG vs BOLD for each seed electrode
@@ -1318,7 +1344,12 @@ title({[elec_name ': BOLD FC vs HFB (0.1-1Hz) FC']; ...
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium']));
+if BOLD_pipeline==1
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_GSR']));
+elseif BOLD_pipeline==2
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_AROMA']));   
+end
+
  close;
  
     figure(3)
@@ -1332,7 +1363,12 @@ title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
 xlabel('BOLD FC');
 ylabel('alpha (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium']));
+if BOLD_pipeline==1
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_GSR']));
+elseif BOLD_pipeline==2
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_AROMA']));
+end
+
     end
 end
 

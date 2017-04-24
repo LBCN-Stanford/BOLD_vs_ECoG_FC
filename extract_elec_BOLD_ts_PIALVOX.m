@@ -1,4 +1,5 @@
 %% Extract time series from electrode ROIs (created with mk_electrode_sphere_ROIs.m)
+% extract from GSR and AROMA data
 %==========================================================================
 % Written by Aaron Kucyi, LBCN, Stanford University
 %==========================================================================
@@ -71,6 +72,10 @@ for elec=1:length(coords);
 
 cmd=['fslmeants -i GSR_' run_num '_FSL -m electrode_spheres/elec' ...
     elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_PIALVOX.txt'];
+[b,c]=system(cmd);
+
+cmd=['fslmeants -i AROMA_' run_num '_FSL -m electrode_spheres/elec' ...
+    elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_AROMA.txt'];
 [b,c]=system(cmd);
 
 % cmd=['fslmeants -i GSR_' run_num '_nosmooth -m electrode_spheres/elec' ...

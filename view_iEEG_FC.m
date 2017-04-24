@@ -1,3 +1,5 @@
+% must first run iEEG_FC.m
+
 Patient=input('Patient: ','s');
 runname=input('Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
@@ -56,8 +58,13 @@ cfgOut=plotPialSurf(Patient,cfg);
   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,'iEEG_FC_',elec_name,'_run' runname]));
   close;
   
-elseif iEEG=='2'
-    elec_ts=load([fsDir '/' Patient '/elec_recon/electrode_spheres/elec' elec_num run_num '_ts_PIALVOX.txt']);    
+elseif iEEG=='2'    
+        if depth==0
+            elec_ts=load([fsDir '/' Patient '/elec_recon/electrode_spheres/elec' elec_num run_num '_ts_PIALVOX.txt']);   
+    elseif depth==1
+        elec_ts=load([fsDir '/' Patient '/elec_recon/electrode_spheres/elec' elec_num run_num '_ts_FSL.txt']);
+        end    
+          
     if elec_ts(1)~=0
      cfg=[];
 cfg.view=[hemi 'omni'];

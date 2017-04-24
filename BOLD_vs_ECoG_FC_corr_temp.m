@@ -32,7 +32,7 @@ end
 
 %% Defaults
 HFB_spike_exclusion=1; HFB_zthresh=50 % exclude channels with HFB z-score spikes exceeding threshold
-BOLD_pipeline=1; % 1=GSR, 2=ICA-AROMA
+BOLD_pipeline=2; % 1=GSR, 2=ICA-AROMA
 BOLD_smooth=1; % 1=smoothing, 0=no spatial smoothing (for GSR)
 Coords=1; % 1 = .PIAL, 2=brainmask_coords.mat
 autocorr_thr=1; % remove electrode pairs with this threshold in HFB (0.1-1Hz) corr
@@ -1140,7 +1140,11 @@ title({['Slow (<0.1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' slow_vs_BOLD
 xlabel('BOLD pair-wise FC');
 ylabel('Slow pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_slow_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 HFB_slow_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+    print -depsc2 HFB_slow_vs_BOLD_AROMA.eps
+end
 pause; close;
 
 figure(2)
@@ -1154,7 +1158,11 @@ title({['Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' medium_vs
 xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 HFB_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+    print -depsc2 HFB_vs_BOLD_AROMA.eps
+end
 pause; close;
 
 figure(3)
@@ -1168,7 +1176,11 @@ title({['Medium (0.1-1 Hz) alpha ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' alpha_v
 xlabel('BOLD pair-wise FC');
 ylabel('Medium alpha pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 alpha_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 alpha_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+print -depsc2 alpha_vs_BOLD_AROMA.eps
+end
 pause; close;
 
 figure(4)
@@ -1182,7 +1194,11 @@ title({['Medium (0.1-1 Hz) beta1 ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' beta1_v
 xlabel('BOLD pair-wise FC');
 ylabel('Medium beta1 pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 beta1_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 beta1_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+print -depsc2 beta1_vs_BOLD_AROMA.eps
+end
 pause; close;
 
 figure(1)
@@ -1195,7 +1211,11 @@ title({['Long distance pairs: Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC
 xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_longdist_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 HFB_longdist_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+  print -depsc2 HFB_longdist_vs_BOLD_AROMA.eps  
+end
 pause; close;
 
 figure(2)
@@ -1208,7 +1228,11 @@ title({['Short distance pairs: Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) F
 xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_shortdist_vs_BOLD.eps
+if BOLD_pipeline==1
+print -depsc2 HFB_shortdist_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+    print -depsc2 HFB_shortdist_vs_BOLD_AROMA.eps
+end
 pause; close;
 
 %% DMN vs other networks
