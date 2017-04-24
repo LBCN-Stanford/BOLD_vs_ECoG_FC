@@ -2,6 +2,8 @@ Patient=input('Patient: ','s');
 runname=input('Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2): ','s');
+depth=input('depth(1) or subdural(0)? ','s');
+depth=str2num(depth);
 run_num=['run' runname];
 
 %% Load correlation matrix

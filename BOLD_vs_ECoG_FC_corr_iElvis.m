@@ -1314,7 +1314,7 @@ set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs HFB (0.1-1Hz) FC']; ...
     ['r = ' num2str(elec_BOLD_HFB_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_partialcorr]},'Fontsize',12);
+    ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -1328,7 +1328,7 @@ set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
     ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr]},'Fontsize',12);
+    ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('alpha (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');

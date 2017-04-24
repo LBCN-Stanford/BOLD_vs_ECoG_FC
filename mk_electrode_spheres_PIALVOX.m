@@ -72,7 +72,21 @@ cmd = ['fslmaths electrode_spheres/elec' nElectrode '_PIALVOX -kernel sphere 6 -
 end
 % end
 
-
+cd electrode_spheres;
+%% Add all ROIs into single .nii file
+for electrode=1:length(coords)
+    nElectrode=num2str(electrode);
+    cmd=['fslmaths elec' nElectrode 'PIALVOX_sphere -mul ' nElectrode ' elec' nElectrode];
+    [b,c]=system(cmd);
+    if electrode==1
+cmd=['fslmaths elec' nElectrode ' all_electrodes_spheres'];
+[b,c]=system(cmd);
+    else
+        cmd=['fslmaths elec' nElectrode ' -add all_electrodes_spheres all_electrodes_spheres'];
+[b,c]=system(cmd);
+    end
+    delete(['elec' nElectrode '.nii.gz']);
+end
 
 
 

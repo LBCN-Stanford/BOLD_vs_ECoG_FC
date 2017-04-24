@@ -1,6 +1,8 @@
 Patient=input('Patient: ','s');
 runs=input('run (e.g. run1): ','s');
 hemi=input('Hemisphere (r or l): ','s');
+depth=input('depth(1) or subdural(0)? ','s');
+depth=str2num(depth);
 [total_runs y]=size(runs);
 Runs=cellstr(runs);
 
@@ -26,7 +28,13 @@ for run=1:total_runs;
 for elec=1:length(coords);
 elec_num=num2str(elec);
 elec_name=char(parcOut(elec,1));
-    elec_ts=load(['elec' elec_num run_num '_ts_PIALVOX.txt']);    
+
+    if depth==0
+    elec_ts=load(['elec' elec_num run_num '_ts_PIALVOX.txt']);
+    elseif depth==1
+       elec_ts=load(['elec' elec_num run_num '_ts_FSL.txt']);
+    end
+   
     if elec_ts(1)~=0 % ignore WM electrodes
         
 % Make color matrix
@@ -43,7 +51,7 @@ cfg.onlyShow={elec_name};
 %cfg.elecColors= color_matrix(:,1:3);   
 cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num run_num '_' Hemi 'H.mgh']
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'BOLD',filesep,'BOLD_FC_',elec_name]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'BOLD',filesep,'BOLD_FC_',elec_name '_' Hemi 'H']));
 close;
     end
 end
