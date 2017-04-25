@@ -27,8 +27,8 @@ else
 coords=dlmread([Patient '.PIAL'],' ',2,0);
 end
 
-%% make binarized mask of BOLD data
-cmd=['fslmaths GSR_run1_FSL -bin func_brainmask'];
+%% make binarized mask of BOLD data and erode by 1 voxel
+cmd=['fslmaths GSR_run1_FSL -bin -kernel 2D -ero func_brainmask'];
 [b,c]=system(cmd);
 % for run=1:total_runs;
 for electrode=1:length(coords)

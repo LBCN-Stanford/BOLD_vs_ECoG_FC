@@ -18,11 +18,6 @@ else
 coords=dlmread([Patient '.PIALVOX'],' ',2,0);
 end
 
-%% Get electrode names
-fsDir=getFsurfSubDir();
-parcOut=elec2Parc([Patient]);
-elecNames = parcOut(:,1);
-
 %% make binarized mask of BOLD data and erode by 1 voxel
 cmd=['fslmaths GSR_run1_FSL -bin -kernel 2D -ero func_brainmask'];
 [b,c]=system(cmd);
@@ -48,6 +43,9 @@ x2=num2str(d(1));
 y2=num2str(d(2));
 z2=num2str(d(3));
 
+
+
+
 nElectrode=int2str(electrode(:));
 
 %% Make 6-mm radius spherical ROI around coordinates
@@ -64,13 +62,6 @@ cmd=['fslmaths electrode_spheres/elec' nElectrode 'PIALVOX_sphere -mul func_brai
 end
 
 cd electrode_spheres;
-%% Copy files with electrode names on file name
-for elec=1:length(coords);
-   elec_num=num2str(elec);
-elec_name=char(parcOut(elec,1)); 
-copyfile(['elec' elec_num 'PIALVOX_sphere.nii.gz'],[elec_name '.nii.gz']);
-end
-
 %% Add all ROIs into single .nii file
 for electrode=1:length(coords)
     nElectrode=num2str(electrode);
