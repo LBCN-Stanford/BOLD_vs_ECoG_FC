@@ -23,7 +23,7 @@ fsDir=getFsurfSubDir();
 parcOut=elec2Parc([Patient]);
 elecNames = parcOut(:,1);
 
-%% make binarized mask of BOLD data and erode by 1 voxel
+%% make binarized mask of BOLD data and erode by 2 voxels
 cmd=['fslmaths GSR_run1_FSL -bin -kernel 2D -ero func_brainmask'];
 [b,c]=system(cmd);
 cmd=['fslmaths func_brainmask -kernel 2D -ero func_brainmask'];

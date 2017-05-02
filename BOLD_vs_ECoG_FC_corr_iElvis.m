@@ -243,7 +243,7 @@ elseif BOLD_pipeline==1 && PIALVOX==1
     display(['using PIALVOX coordinates'])
        for i=1:length(chanlabels)
     elec_num=num2str(i);
-    BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_PIALVOX.txt']);
+    BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_GSR.txt']);
    end
 
     

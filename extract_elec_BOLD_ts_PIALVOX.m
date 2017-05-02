@@ -10,6 +10,7 @@ setenv('FSLDIR','/usr/share/fsl');
 setenv('FSLOUTPUTTYPE','NIFTI_GZ');
 Patient=input('Patient: ','s');
 runs=input('run (e.g. run1): ','s');
+depth=input('subdural (1) or depth (2): ','s');
 [total_runs y]=size(runs);
 Runs=cellstr(runs);
 
@@ -71,16 +72,21 @@ for elec=1:length(coords);
     elec_num=num2str(elec);
 
 cmd=['fslmeants -i GSR_' run_num '_FSL -m electrode_spheres/elec' ...
-    elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_PIALVOX.txt'];
+    elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_GSR.txt'];
+[b,c]=system(cmd);
+
+cmd=['fslmeants -i NoGSR_' run_num '_FSL -m electrode_spheres/elec' ...
+    elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_NoGSR.txt'];
 [b,c]=system(cmd);
 
 cmd=['fslmeants -i AROMA_' run_num '_FSL -m electrode_spheres/elec' ...
     elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_AROMA.txt'];
 [b,c]=system(cmd);
 
-% cmd=['fslmeants -i GSR_' run_num '_nosmooth -m electrode_spheres/elec' ...
-%     elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_PIALVOX_nosmooth.txt'];
-% [b,c]=system(cmd);
+cmd=['fslmeants -i aCompCor_' run_num '_FSL -m electrode_spheres/elec' ...
+    elec_num 'PIALVOX_sphere -o electrode_spheres/elec' elec_num run_num '_ts_aCompCor.txt'];
+[b,c]=system(cmd);
+
 
 display(['Done extracting time series for electrode' elec_num run_num]);
 end
@@ -88,6 +94,7 @@ end
 % % label WM electrodes with zeros in their time series
 % Identify white-matter electrodes (>50% of voxels in WM classified
 % by FAST in func space (threshold as in Chai et al)
+if depth=='2'
 for elec=1:length(coords);
     elec_num=num2str(elec);
 
@@ -112,6 +119,7 @@ if WM==1
     cd ..
 end
 % end
+end
 end
 end
 
