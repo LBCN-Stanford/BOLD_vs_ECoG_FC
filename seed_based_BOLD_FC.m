@@ -26,7 +26,7 @@ for run=1:total_runs;
 for elec=1:length(coords);
     elec_num=num2str(elec);
     if depth==0
-    elec_ts=load(['elec' elec_num run_num '_ts_PIALVOX.txt']);
+    elec_ts=load(['elec' elec_num run_num '_ts_GSR.txt']);
     elseif depth==1
        elec_ts=load(['elec' elec_num run_num '_ts_FSL.txt']);
     end
@@ -35,7 +35,7 @@ for elec=1:length(coords);
     if elec_ts(1)~=0
         
         if depth==0
-       cmd=['fsl_glm -i ../GSR_run1_FSL.nii.gz -d elec' elec_num run_num '_ts_PIALVOX.txt --out_z=SBCA/elec' elec_num run_num '_z --demean']; 
+       cmd=['fsl_glm -i ../GSR_run1_FSL.nii.gz -d elec' elec_num run_num '_ts_GSR.txt --out_z=SBCA/elec' elec_num run_num '_z --demean']; 
 [b,c]=system(cmd);
         elseif depth==1
            cmd=['fsl_glm -i ../GSR_run1_FSL.nii.gz -d elec' elec_num run_num '_ts_FSL.txt --out_z=SBCA/elec' elec_num run_num '_z --demean'];  

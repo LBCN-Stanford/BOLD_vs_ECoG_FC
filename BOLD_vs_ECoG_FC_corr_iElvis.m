@@ -13,7 +13,7 @@ depth=str2num(depth);
 %BOLD_run=input('BOLD run # (e.g. run1): ','s');
 BOLD_run='run1';
 tdt=input('TDT data? (1=TDT,0=EDF): ','s');
-BOLD_pipeline=input('BOLD pipeline (1=GSR, 2=AROMA): ' ,'s'); % 1=GSR, 2=ICA-AROMA
+BOLD_pipeline=input('BOLD pipeline (1=GSR, 2=AROMA, 3=NoGSR, 4=aCompCor): ' ,'s'); % 1=GSR, 2=ICA-AROMA
 tdt=str2num(tdt);
 BOLD_pipeline=str2num(BOLD_pipeline);
 
@@ -246,17 +246,22 @@ elseif BOLD_pipeline==1 && PIALVOX==1
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_GSR.txt']);
    end
 
-    
-% elseif Coords==2;
-%     for i=1:length(chanlabels)
-%     elec_num=num2str(i);
-%     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_FSL_origcoords.txt']);
-%     end
-%     end
 elseif BOLD_pipeline==2
   for i=1:length(chanlabels)
     elec_num=num2str(i);
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_AROMA.txt']);  
+  end  
+
+elseif BOLD_pipeline==3
+  for i=1:length(chanlabels)
+    elec_num=num2str(i);
+    BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_NoGSR.txt']);  
+  end  
+
+  elseif BOLD_pipeline==4
+  for i=1:length(chanlabels)
+    elec_num=num2str(i);
+    BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_aCompCor.txt']);  
   end  
 end
 
@@ -513,10 +518,10 @@ alpha_allcorr=corrcoef(Alpha_medium_iElvis); alpha_column=alpha_allcorr(:);
 beta1_allcorr=corrcoef(Beta1_medium_iElvis); beta1_column=beta1_allcorr(:);
 BOLD_allcorr=corrcoef(BOLD_iElvis); BOLD_column=BOLD_allcorr(:);
 
-slow_mat=slow_allcorr; slow_mat(find(slow_mat==1))=NaN;
-medium_mat=medium_allcorr; medium_mat(find(medium_mat==1))=NaN;
-alpha_mat=alpha_allcorr; alpha_mat(find(alpha_mat==1))=NaN;
-beta1_mat=beta1_allcorr; beta1_mat(find(beta1_mat==1))=NaN;
+slow_mat=slow_allcorr; slow_mat(find(slow_mat==1))=NaN; slow_mat(find(BOLD_allcorr==1))=NaN;
+medium_mat=medium_allcorr; medium_mat(find(medium_mat==1))=NaN; medium_mat(find(BOLD_allcorr==1))=NaN;
+alpha_mat=alpha_allcorr; alpha_mat(find(alpha_mat==1))=NaN; alpha_mat(find(BOLD_allcorr==1))=NaN;
+beta1_mat=beta1_allcorr; beta1_mat(find(beta1_mat==1))=NaN; beta1_mat(find(BOLD_allcorr==1))=NaN;
 BOLD_mat=BOLD_allcorr; BOLD_mat(find(BOLD_mat==1))=NaN;
 
 % remove diagonal and lower triangle
@@ -539,6 +544,7 @@ for i = 1:size(vox,1)
      end
 end
 
+distances(find(BOLD_allcorr==1))=NaN;
 distance_column=distances(:);
 distance_column(find(BOLD_column_ones>0.999))=NaN; distance_column(isnan(distance_column))=[];
 
@@ -1202,6 +1208,10 @@ if BOLD_pipeline==1
 print -depsc2 HFB_slow_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
     print -depsc2 HFB_slow_vs_BOLD_AROMA.eps
+elseif BOLD_pipeline==3  
+    print -depsc2 HFB_slow_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 HFB_slow_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1220,6 +1230,10 @@ if BOLD_pipeline==1
 print -depsc2 HFB_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
   print -depsc2 HFB_vs_BOLD_AROMA.eps  
+  elseif BOLD_pipeline==3  
+    print -depsc2 HFB_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 HFB_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1238,6 +1252,10 @@ if BOLD_pipeline==1
 print -depsc2 alpha_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
   print -depsc2 alpha_vs_BOLD_AROMA.eps  
+  elseif BOLD_pipeline==3  
+    print -depsc2 alpha_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 alpha_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1255,7 +1273,11 @@ set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
 print -depsc2 beta1_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 beta1_vs_BOLD_AROMA.eps   
+ print -depsc2 beta1_vs_BOLD_AROMA.eps
+ elseif BOLD_pipeline==3  
+    print -depsc2 beta1_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 beta1_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1273,8 +1295,11 @@ if BOLD_pipeline==1
 print -depsc2 HFB_longdist_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
    print -depsc2 HFB_longdist_vs_BOLD_AROMA.eps 
-end
-
+elseif BOLD_pipeline==3  
+    print -depsc2 HFB_longdist_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 HFB_longdist_vs_BOLD_aCompCor.eps
+    end
 pause; close;
 
 figure(2)
@@ -1291,6 +1316,11 @@ if BOLD_pipeline==1
 print -depsc2 HFB_shortdist_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
 print -depsc2 HFB_shortdist_vs_BOLD_AROMA.eps
+elseif BOLD_pipeline==3  
+    print -depsc2 HFB_shortdist_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 HFB_shortdist_vs_BOLD_aCompCor.eps
+
 end
 pause; close;
 
@@ -1347,7 +1377,11 @@ set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_GSR']));
 elseif BOLD_pipeline==2
- print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_AROMA']));   
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_AROMA']));
+elseif BOLD_pipeline==3
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_NoGSR']));
+elseif BOLD_pipeline==4
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_aCompCor']));  
 end
 
  close;
@@ -1367,6 +1401,10 @@ if BOLD_pipeline==1
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_GSR']));
 elseif BOLD_pipeline==2
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_AROMA']));
+elseif BOLD_pipeline==3
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
+elseif BOLD_pipeline==4
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
 end
 
     end
