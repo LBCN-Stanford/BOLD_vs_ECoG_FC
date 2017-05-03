@@ -60,7 +60,7 @@ cfgOut=plotPialSurf(Patient,cfg);
   
 elseif iEEG=='2'    
         if depth==0
-            elec_ts=load([fsDir '/' Patient '/elec_recon/electrode_spheres/elec' elec_num run_num '_ts_PIALVOX.txt']);   
+            elec_ts=load([fsDir '/' Patient '/elec_recon/electrode_spheres/elec' elec_num run_num '_ts_GSR.txt']);   
     elseif depth==1
         elec_ts=load([fsDir '/' Patient '/elec_recon/electrode_spheres/elec' elec_num run_num '_ts_FSL.txt']);
         end    

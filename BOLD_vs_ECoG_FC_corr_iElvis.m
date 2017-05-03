@@ -1324,6 +1324,16 @@ elseif BOLD_pipeline==4
 end
 pause; close;
 
+if BOLD_pipeline==1
+    mkdir('GSR'); cd('GSR');
+elseif BOLD_pipeline==2
+    mkdir('AROMA'); cd('AROMA');
+    elseif BOLD_pipeline==3
+    mkdir('NoGSR'); cd('NoGSR');
+       elseif BOLD_pipeline==4
+    mkdir('aCompCor'); cd('aCompCor');
+end
+    
 %% Plot ECoG vs BOLD for each seed electrode
 distances_nan=distances;
 distances_nan(find(distances_nan==0))=NaN;
@@ -1350,7 +1360,7 @@ for i=1:length(BOLD_mat);
  elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB);
  elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha);
  elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1);
- elec_BOLD_HFB_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
+ [elec_BOLD_HFB_partialcorr,p_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
  elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
  elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
  
@@ -1362,6 +1372,7 @@ for i=1:length(BOLD_mat);
  rho_elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance,'type','Spearman');
  
  elec_name=char(parcOut(i,1)); 
+ 
  
     figure(3)
 scatter(curr_elec_BOLD,curr_elec_HFB,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
@@ -1375,40 +1386,52 @@ xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_GSR']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_GSR']));
 elseif BOLD_pipeline==2
- print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_AROMA']));
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_AROMA']));
 elseif BOLD_pipeline==3
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_NoGSR']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_NoGSR']));
 elseif BOLD_pipeline==4
- print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_medium_aCompCor']));  
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_aCompCor']));  
 end
 
  close;
  
-    figure(3)
-scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
-h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr)]},'Fontsize',12);
-xlabel('BOLD FC');
-ylabel('alpha (0.1-1Hz) FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_GSR']));
-elseif BOLD_pipeline==2
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_AROMA']));
-elseif BOLD_pipeline==3
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
-elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
+%     figure(3)
+% scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+% h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+% set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+% set(gcf,'color','w');
+% title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
+%     ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
+%     ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr)]},'Fontsize',12);
+% xlabel('BOLD FC');
+% ylabel('alpha (0.1-1Hz) FC');
+% set(gcf,'PaperPositionMode','auto');
+% if BOLD_pipeline==1
+% print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_GSR']));
+% elseif BOLD_pipeline==2
+%     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_AROMA']));
+% elseif BOLD_pipeline==3
+% print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
+% elseif BOLD_pipeline==4
+%     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
+% end
+
+partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
+ p_BOLD_HFB_allelecs(i,:)=p_partial;
+   else
+  partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
+   p_BOLD_HFB_allelecs(i,:)=NaN;
+    end
+  
 end
 
-    end
-end
+%% save correlations
+save('partialcorr_BOLD_HFB_allelecs','partialcorr_BOLD_HFB_allelecs');
+save('p_BOLD_HFB_allelecs','p_BOLD_HFB_allelecs');
+elec_names=parcOut(:,1);
+save('elec_names','elec_names');
 
 %% DMN vs other networks
 % Normalize time-courses prior to plotting
