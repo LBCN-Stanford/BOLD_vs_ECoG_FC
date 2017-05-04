@@ -22,6 +22,7 @@ end
 
 cd([globalECoGDir '/Rest/' sub '/Run' run]);
 %% Default parameters
+sampling=2000; %sampling rate
 
 %% Load SPM .mat
 display(['Choose EDF-converted .mat data']);
@@ -29,6 +30,8 @@ fname_spm=spm_select;
 D=spm_eeg_load([fname_spm]);
 %[D,DC]=LBCN_convert_NKnew(fname);
 %fname_spm = fullfile(D.path,D.fname);
+
+%% Correct the sampling rate to 2000 Hz and downsample to 1000 Hz
 
 %% Filter iEEG data and detect bad channels
 LBCN_filter_badchans_China(fname_spm,[],bad_chans,1,[]);
@@ -46,8 +49,8 @@ batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
 fname_spm_tf=['tf_aMfff' D.fname];
 
 %% LogR transform (normalize)
-% LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
-% fname_spm_btf=['btf_aMfff' D.fname];
+LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
+fname_spm_btf=['btf_aMfff' D.fname];
 
 %% Frequency band averaging
 batch_AverageFreq(fname_spm_tf);
