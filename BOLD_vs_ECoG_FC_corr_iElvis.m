@@ -9,6 +9,8 @@ Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
 hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
+distance_exclusion=input('exclude short-distance pairs (1)? ','s');
+dist_thr=input('How short (mm)? ','s');
 depth=str2num(depth);
 %BOLD_run=input('BOLD run # (e.g. run1): ','s');
 BOLD_run='run1';
@@ -46,6 +48,7 @@ autocorr_thr=1; % remove electrode pairs with this threshold in HFB (0.1-1Hz) co
 sphere=1; % 1 for 6-mm sphere BOLD ROIs, 0 for single-voxel BOLD ROIs
 tf_type=1; % 1 = morlet; 2 = hilbert
 output_elecs=1; % output plots for each electrode
+distance_thr=str2num(dist_thr); % Exclude electrode pairs below this distance apart
 
 fsDir=getFsurfSubDir();
 % set # of edge data points to delete from iEEG data
@@ -557,13 +560,13 @@ alpha_column_longrange=alpha_column; beta1_column_longrange=beta1_column;
 % slow_column_longrange(find(distance_column<15))=[];
 
 % Binary split dataset by distance
-long_dist_ind=find(distance_column>median(distance_column));
-short_dist_ind=find(distance_column<median(distance_column));
-BOLD_long=BOLD_column(long_dist_ind); BOLD_short=BOLD_column(short_dist_ind);
-medium_long=medium_column(long_dist_ind); medium_short=medium_column(short_dist_ind);
-slow_long=slow_column(long_dist_ind); slow_short=slow_column(short_dist_ind);
-alpha_long=alpha_column(long_dist_ind); alpha_short=alpha_column(short_dist_ind);
-beta1_long=beta1_column(long_dist_ind); beta1_short=beta1_column(short_dist_ind);
+% long_dist_ind=find(distance_column>median(distance_column));
+% short_dist_ind=find(distance_column<median(distance_column));
+% BOLD_long=BOLD_column(long_dist_ind); BOLD_short=BOLD_column(short_dist_ind);
+% medium_long=medium_column(long_dist_ind); medium_short=medium_column(short_dist_ind);
+% slow_long=slow_column(long_dist_ind); slow_short=slow_column(short_dist_ind);
+% alpha_long=alpha_column(long_dist_ind); alpha_short=alpha_column(short_dist_ind);
+% beta1_long=beta1_column(long_dist_ind); beta1_short=beta1_column(short_dist_ind);
 
 if depth~=2
    BOLD_scatter=BOLD_column;
@@ -863,6 +866,28 @@ remove_ind=[find(BOLD_scatter==1); find(medium_scatter>autocorr_thr & medium_sca
  distance_scatter(remove_ind)=[];
 BOLD_scatter(remove_ind)=[];
 end
+
+%% exclude electrode pairs below distance threshold
+if distance_exclusion=='1'
+    display(['Excluding pairs that are <' num2str(distance_thr) 'mm apart']);
+distance_scatter(find(distance_scatter<distance_thr))=NaN;
+medium_scatter(isnan(distance_scatter))=[];
+slow_scatter(isnan(distance_scatter))=[];
+alpha_scatter(isnan(distance_scatter))=[];
+beta1_scatter(isnan(distance_scatter))=[];
+BOLD_scatter(isnan(distance_scatter))=[];
+distance_scatter(isnan(distance_scatter))=[];
+end
+
+%% Binary split short and long distances
+long_dist_ind=find(distance_scatter>median(distance_scatter));
+short_dist_ind=find(distance_scatter<median(distance_scatter));
+BOLD_long=BOLD_scatter(long_dist_ind); BOLD_short=BOLD_scatter(short_dist_ind);
+medium_long=medium_scatter(long_dist_ind); medium_short=medium_scatter(short_dist_ind);
+slow_long=slow_scatter(long_dist_ind); slow_short=slow_scatter(short_dist_ind);
+alpha_long=alpha_scatter(long_dist_ind); alpha_short=alpha_scatter(short_dist_ind);
+beta1_long=beta1_scatter(long_dist_ind); beta1_short=beta1_scatter(short_dist_ind);
+
 
 if depth==2
 [x,y]=find(DMN_BOLD_ordered_corr==1);
@@ -1192,6 +1217,12 @@ medium_vs_BOLD_long_Spearman=num2str(r);
 slow_vs_BOLD_short=num2str(r);
 [r,p]=corr(fisherz(BOLD_long),fisherz(slow_long));
 slow_vs_BOLD_long=num2str(r);
+
+%% Distance histogram
+figure(1)
+histogram(distance_scatter);
+title(['Euclidean distances among all electrodes']);
+pause; close;
 
 %% Slow vs medium vs BOLD
 figure(1)

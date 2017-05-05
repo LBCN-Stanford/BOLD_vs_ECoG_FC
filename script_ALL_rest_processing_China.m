@@ -10,6 +10,7 @@
 %% Set patient name and run number
 Patient=input('Patient: ','s'); sub=Patient;
 runname=input('Run (e.g. 2): ','s'); run=runname; 
+sampling=input('Sampling rate (Hz): ','s'); srate=str2num(sampling);
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' sub]);
 
@@ -22,7 +23,6 @@ end
 
 cd([globalECoGDir '/Rest/' sub '/Run' run]);
 %% Default parameters
-sampling=2000; %sampling rate
 
 %% Load SPM .mat
 display(['Choose EDF-converted .mat data']);
@@ -30,17 +30,18 @@ fname_spm=spm_select;
 load([fname_spm]);
 
 %% Correct the sampling rate to 2000 Hz and downsample to 1000 Hz
-D.Fsample=sampling;
-save(fname_spm,'D');
-D=spm_eeg_load([fname_spm]);
 
-S.D=D;
-S.fsample_new=1000;
-D=spm_eeg_downsample(S);
-fname_dspm=[D.fname];
+% D.Fsample=sampling;
+% save(fname_spm,'D');
+% D=spm_eeg_load([fname_spm]);
+% 
+% S.D=D;
+% S.fsample_new=1000;
+% D=spm_eeg_downsample(S);
+% fname_dspm=[D.fname];
 
 %% Filter iEEG data and detect bad channels
-LBCN_filter_badchans_China(fname_dspm,[],bad_chans,1,[]);
+LBCN_filter_badchans_China(fname_spm,[],bad_chans,1,[]);
 fname_spm_fff=['fff' D.fname];
 
 %% Plot power spectrum for manual removal of outlier channels
