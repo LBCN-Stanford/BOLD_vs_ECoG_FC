@@ -7,10 +7,12 @@
 % Needed: manually created channel name-number mapping file (.xls format)
 Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
-hemi=input('hemisphere (lh or rh): ','s');
+%hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
 distance_exclusion=input('exclude short-distance pairs (1)? ','s');
+if distance_exclusion=='1'
 dist_thr=input('How short (mm)? ','s');
+end
 depth=str2num(depth);
 %BOLD_run=input('BOLD run # (e.g. run1): ','s');
 BOLD_run='run1';
@@ -29,8 +31,11 @@ else
     PIALVOX=0;
 end
 
-%% Get file base name
+%% Get hemisphere file base name
 getECoGSubDir; global globalECoGDir;
+cd ([globalECoGDir '/Rest/' Patient]);
+hemi=importdata(['hemi.txt']); 
+hemi=char(hemi);
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 Mfile=dir('btf_aMfff*');
 Mfile=Mfile(2,1).name;
@@ -48,7 +53,9 @@ autocorr_thr=1; % remove electrode pairs with this threshold in HFB (0.1-1Hz) co
 sphere=1; % 1 for 6-mm sphere BOLD ROIs, 0 for single-voxel BOLD ROIs
 tf_type=1; % 1 = morlet; 2 = hilbert
 output_elecs=1; % output plots for each electrode
+if distance_exclusion=='1'
 distance_thr=str2num(dist_thr); % Exclude electrode pairs below this distance apart
+end
 
 fsDir=getFsurfSubDir();
 % set # of edge data points to delete from iEEG data
