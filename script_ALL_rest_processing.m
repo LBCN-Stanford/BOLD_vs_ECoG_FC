@@ -44,6 +44,12 @@ fname_spm = fullfile(D.path,D.fname);
 LBCN_filter_badchans(fname_spm,[],bad_chans,1,[]);
 fname_spm_fff=['fff' D.fname];
 
+A=spm_eeg_load(['f' D.fname]);
+delete([A.fname]); delete([A.fnamedat]);
+A=spm_eeg_load(['ff' D.fname]);
+delete([A.fname]); delete([A.fnamedat]); A=[];
+
+
 %% Plot power spectrum for manual removal of outlier channels
 LBCN_plot_power_spectrum(fname_spm_fff,[10:1000]);
 
