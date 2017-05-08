@@ -64,7 +64,7 @@ cfg.opaqueness=1;
 cfgOut=plotPialSurf(Patient,cfg);
 
 if networks=='0'
-print('-opengl','-r300','-dpng',strcat(['IndiPar_all_' runname '_' viewpoint]));
+print('-opengl','-r300','-dpng',strcat(['IndiPar_all_' runname '_' viewpoint '_' hemi 'h']));
 elseif networks=='1'
-print('-opengl','-r300','-dpng',strcat(['IndiPar_4networks_' runname '_' viewpoint]));  
+print('-opengl','-r300','-dpng',strcat(['IndiPar_4networks_' runname '_' viewpoint '_' hemi 'h']));  
 end
