@@ -395,7 +395,8 @@ end
 
 
 %% Find channels with HFB z-score spikes for exclusion
-bad_indices=HFB.badchannels;
+bad_indices=HFB_medium.badchannels; 
+% use bad indices from HFB 0.1-1Hz file (where bursts were excluded) 
 
 if HFB_spike_exclusion==1
 for i=1:length(iElvis_to_iEEG_chanlabel);

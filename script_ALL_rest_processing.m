@@ -78,9 +78,6 @@ fname_Beta1=['pBeta1btf_aMfff' D.fname];
 fname_Beta2=['pBeta2btf_aMfff' D.fname];
 fname_Gamma=['pGammabtf_aMfff' D.fname];
 
-%% Remove spectral bursts (as in Honey et al 2012, Neuron)
-% currently only for HFB
-%exclude_spectral_bursts_func(Patient,runname)
 
 %% Temporal filtering: 0.1-1Hz, <0.1Hz
 batch_bandpass_medium(fname_HFB);
@@ -98,4 +95,7 @@ batch_lowpass_slow(fname_Theta);
 batch_lowpass_slow(fname_Beta1);
 batch_lowpass_slow(fname_Beta2);
 batch_lowpass_slow(fname_Gamma);
+
+%% Label channels with HFB (0.1-1 Hz) spectral bursts as bad
+exclude_spectral_bursts_func(Patient,runname);
 

@@ -3,11 +3,12 @@ hemi=input('l or r: ','s');
 run_num=input('run (e.g. 1): ','s');
 viewpoint=input('medial (m), lateral (l), inferior (i), omni (o): ','s');
 networks=input('plot all (0) or just 4 networks (1)? ','s');
+runname=['run' run_num];
 FSdir=getFsurfSubDir;
 fsdir=[FSdir '/' Patient ];
-annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_run1.annot'];
+annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_' runname '.annot'];
 %annot=[fsdir '/label/' hemi 'h.Yeo2011_17Networks_N1000.annot'];
-runname=['run' run_num];
+
 plotElecs=1;
 
 
