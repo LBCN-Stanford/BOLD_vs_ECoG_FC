@@ -1,6 +1,9 @@
 Patient=input('Patient: ','s');
 run_num=input('run (e.g. 1): ','s');
+depth=input('depth (1) or subdural (0) ','s');
+if depth=='0'
 hemi=input('hemi (R or L): ','s');
+end
 tdt=0; % tdt=1, edf=0
 
 runname=['Run' run_num];
@@ -9,8 +12,6 @@ fsDir=getFsurfSubDir();
 
 cd([globalECoGDir '/Rest/' Patient '/' runname]);
 mkdir(['HFB_plots']);
-parcOut=elec2Parc([Patient]);
-elecNames = parcOut(:,1);
 
 % Load HFB data (no temporal filter)
 display(['1. Select raw ECoG file']);
@@ -19,24 +20,45 @@ display(['2. Select HFB file']);
 HFB=spm_eeg_load;
 
 %% Create transformation vector for iElvis labels
+parcOut=elec2Parc([Patient]);
+elecNames = parcOut(:,1);
 cd([fsDir '/' Patient '/elec_recon']);
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
 % Load channel names (in freesurfer/elec recon order)
 chan_names=importdata([Patient '.electrodeNames'],' ');
 
+if depth=='0'
 for i=1:length(parcOut)
-new_elec=strcat(hemi,parcOut(i,1))
-chans(i,:)=new_elec;
+new_elec=strcat(hemi,parcOut(i,1));
+fs_chanlabels(i,:)=new_elec;
 end
+elseif depth=='1'
+fs_chanlabels={};
+
+for chan=3:length(chan_names)
+    chan_name=chan_names(chan); chan_name=char(chan_name);
+    [a b]=strtok(chan_name); 
+    bsize=size(strfind(b,' '),2);
+    if bsize==2
+    [c d]=strtok(b); 
+    fs_chanlabels{chan,1}=[d(2) a];
+    elseif bsize==3
+    [c d]=strtok(b); [e f]=strtok(d);
+    fs_chanlabels{chan,1}=[f(2) a c];
+    end
+end
+fs_chanlabels=fs_chanlabels(3:end);
+end
+
 
 % create iEEG to iElvis chanlabel transformation vector
 for i=1:length(chanlabels)
-    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),chans,'exact');    
+    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels,'exact');    
 end
 
 %% Make plots
 cd([globalECoGDir '/Rest/' Patient '/' runname]);
-for i=1:length(raw.chanlabels)
+for i=1:length(chanlabels)
     HFB_z=[];
     HFB_z=(HFB(i,:)-mean(HFB(i,:)))/std(HFB(i,:));
     chan_sd=num2str(std(raw(i,:)));
@@ -44,7 +66,7 @@ for i=1:length(raw.chanlabels)
        bad='good';
     else bad='bad';
     end
-    elec_name=chans(iEEG_to_iElvis_chanlabel(i))
+    elec_name=fs_chanlabels(iEEG_to_iElvis_chanlabel(i))
     
     FigHandle = figure('Position', [200, 600, 1200, 800]);
    figure(1);

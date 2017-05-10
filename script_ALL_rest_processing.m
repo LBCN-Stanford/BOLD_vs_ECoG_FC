@@ -49,6 +49,8 @@ delete([A.fname]); delete([A.fnamedat]);
 A=spm_eeg_load(['ff' D.fname]);
 delete([A.fname]); delete([A.fnamedat]); A=[];
 
+%% Chop 2 sec from edges (beginning and end) - to deal with flat line effects
+crop_edges_postTF_func(Patient,runname,fname_spm_fff);
 
 %% Plot power spectrum for manual removal of outlier channels
 LBCN_plot_power_spectrum(fname_spm_fff,[10:1000]);
@@ -69,7 +71,7 @@ fname_spm_btf=['btf_aMfff' D.fname];
 batch_AverageFreq(fname_spm_btf);
 
 %% Chop 2 sec from edges (beginning and end)
-crop_edges_postTF_func(Patient,runname,fname_spm_btf);
+% crop_edges_postTF_func(Patient,runname,fname_spm_btf);
 fname_HFB=['pHFBbtf_aMfff' D.fname];
 fname_Alpha=['pAlphabtf_aMfff' D.fname];
 fname_Delta=['pDeltabtf_aMfff' D.fname];

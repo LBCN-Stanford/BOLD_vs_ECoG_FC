@@ -1,4 +1,4 @@
-function crop_edges_postTF(Patient,runname,fname_spm_logtf)
+function crop_edges_postTF(Patient,runname,fname_chop)
 
 getECoGSubDir;
 global globalECoGDir;
@@ -8,65 +8,14 @@ global globalECoGDir;
 cropping=2000;
 
 %% Crop data for each freq band
-load(['HFB' fname_spm_logtf]);
-S.D = ['HFB' fname_spm_logtf];
+load([fname_chop]);
+S.D = [fname_chop];
 last=D.Nsamples-cropping;
 S.timewin= [cropping last];
 S.freqwin = [-Inf Inf];
 S.all = 'all';
 S.prefix = 'p';
 D=spm_eeg_crop(S);
+display(['done chopping ' num2str(cropping) 'ms from beginning and end']);
 
-load(['Alpha' fname_spm_logtf]);
-S.D = ['Alpha' fname_spm_logtf];
-last=D.Nsamples-cropping;
-S.timewin= [cropping last];
-S.freqwin = [-Inf Inf];
-S.all = 'all';
-S.prefix = 'p';
-D=spm_eeg_crop(S);
 
-load(['Delta' fname_spm_logtf]);
-S.D = ['Delta' fname_spm_logtf];
-last=D.Nsamples-cropping;
-S.timewin= [cropping last];
-S.freqwin = [-Inf Inf];
-S.all = 'all';
-S.prefix = 'p';
-D=spm_eeg_crop(S);
-
-load(['Theta' fname_spm_logtf]);
-S.D = ['Theta' fname_spm_logtf];
-last=D.Nsamples-cropping;
-S.timewin= [cropping last];
-S.freqwin = [-Inf Inf];
-S.all = 'all';
-S.prefix = 'p';
-D=spm_eeg_crop(S);
-
-load(['Beta1' fname_spm_logtf]);
-S.D = ['Beta1' fname_spm_logtf];
-last=D.Nsamples-cropping;
-S.timewin= [cropping last];
-S.freqwin = [-Inf Inf];
-S.all = 'all';
-S.prefix = 'p';
-D=spm_eeg_crop(S);
-
-load(['Beta2' fname_spm_logtf]);
-S.D = ['Beta2' fname_spm_logtf];
-last=D.Nsamples-cropping;
-S.timewin= [cropping last];
-S.freqwin = [-Inf Inf];
-S.all = 'all';
-S.prefix = 'p';
-D=spm_eeg_crop(S);
-
-load(['Gamma' fname_spm_logtf]);
-S.D = ['Gamma' fname_spm_logtf];
-last=D.Nsamples-cropping;
-S.timewin= [cropping last];
-S.freqwin = [-Inf Inf];
-S.all = 'all';
-S.prefix = 'p';
-D=spm_eeg_crop(S);
