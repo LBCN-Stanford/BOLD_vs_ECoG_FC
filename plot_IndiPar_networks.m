@@ -2,16 +2,22 @@ Patient=input('Patient: ','s');
 hemi=input('l or r: ','s');
 run_num=input('run (e.g. 1): ','s');
 viewpoint=input('medial (m), lateral (l), inferior (i), omni (o): ','s');
-condition=input('rest (1) OBJ (2) Rt_Finger (3) ARN (4) VRN (5): ','s');
+condition=input('Rst or OBJ or RFg or ARN or VRN: ','s');
 networks=input('plot all (0) or just 4 networks (1)? ','s');
 runname=['run' run_num];
 FSdir=getFsurfSubDir;
 fsdir=[FSdir '/' Patient ];
-condition=str2num(condition)
-if condition==1
+
+if condition=='Rst'
 annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_' runname '.annot'];
-elseif condition==2
-     annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_OBJ.annot'];   
+elseif condition=='OBJ'
+     annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_OBJ.annot'];  
+elseif condition=='RFg'
+    annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_Rt_Finger.annot']; 
+    elseif condition=='ARN'
+    annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_ARN.annot'];
+    elseif condition=='VRN'
+    annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_VRN.annot'];
     end
 %annot=[fsdir '/label/' hemi 'h.Yeo2011_17Networks_N1000.annot'];
 
@@ -71,7 +77,7 @@ cfg.opaqueness=1;
 cfgOut=plotPialSurf(Patient,cfg);
 
 if networks=='0'
-print('-opengl','-r300','-dpng',strcat(['IndiPar_all_' runname '_' viewpoint '_' hemi 'h']));
+print('-opengl','-r300','-dpng',strcat(['IndiPar_all_' runname '_' viewpoint '_' condition '_' hemi 'h']));
 elseif networks=='1'
-print('-opengl','-r300','-dpng',strcat(['IndiPar_4networks_' runname '_' viewpoint '_' hemi 'h']));  
+print('-opengl','-r300','-dpng',strcat(['IndiPar_4networks_' runname '_' viewpoint '_' condition '_' hemi 'h']));  
 end

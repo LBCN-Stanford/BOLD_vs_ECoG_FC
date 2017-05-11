@@ -34,8 +34,10 @@ end
 %% Get hemisphere file base name
 getECoGSubDir; global globalECoGDir;
 cd ([globalECoGDir '/Rest/' Patient]);
+if depth=='0'
 hemi=importdata(['hemi.txt']); 
 hemi=char(hemi);
+end
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 Mfile=dir('btf_aMfff*');
 Mfile=Mfile(2,1).name;
