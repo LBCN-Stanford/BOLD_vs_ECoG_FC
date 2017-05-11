@@ -46,7 +46,8 @@ rm_last=1; else rm_last=0; % remove last iEEG chan (e.g. if it is reference)
 end
 
 %% Defaults
-HFB_spike_exclusion=1; HFB_zthresh=50 % exclude channels with HFB z-score spikes exceeding threshold
+Chop=10000; % chop first 10 seconds of each time series
+HFB_spike_exclusion=1; HFB_zthresh=50; % exclude channels with HFB z-score spikes exceeding threshold
 BOLD_smooth=1; % 1=smoothing, 0=no spatial smoothing (for GSR)
 Coords=1; % 1 = .PIAL, 2=brainmask_coords.mat
 autocorr_thr=1; % remove electrode pairs with this threshold in HFB (0.1-1Hz) corr
@@ -357,13 +358,14 @@ end
 
 end
 
-% Chop iEEG time series (delete first and last 20000 time points) to avoid edge effects
-% change 'edge' variable at beginning of code to change 20000
-% slow_electrode_ts=slow_electrode_ts(edge:length(slow_electrode_ts)-edge,:);
-% medium_electrode_ts=medium_electrode_ts(edge:length(medium_electrode_ts)-edge,:);
-% alpha_electrode_ts=alpha_electrode_ts(edge:length(alpha_electrode_ts)-edge,:);
-% beta1_electrode_ts=beta1_electrode_ts(edge:length(beta1_electrode_ts)-edge,:);
-% BOLD_ts_iEEG_space=NaN(length(BOLD_ts),max(iElvis_to_iEEG_chanlabel));
+% Chop iEEG time series (delete beginning time points) 
+% change 'Chop' variable at beginning of code to change 
+
+HFB_slow_ts=HFB_slow_ts(Chop:length(HFB_slow_ts),:);
+HFB_medium_ts=HFB_medium_ts(Chop:length(HFB_medium_ts),:);
+Alpha_medium_ts=Alpha_medium_ts(Chop:length(Alpha_medium_ts),:);
+Beta1_medium_ts=Beta1_medium_ts(Chop:length(Beta1_medium_ts),:);
+%BOLD_ts_iEEG_space=NaN(length(BOLD_ts),max(iElvis_to_iEEG_chanlabel));
 
 %% Transform BOLD to iEEG space
 

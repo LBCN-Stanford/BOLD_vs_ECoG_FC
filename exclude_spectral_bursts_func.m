@@ -34,7 +34,7 @@ for HFB_chan=1:size(pHFB,1)
 end
 
 for i=1:size(pHFB,1)
-    max_HFB=abs(max(HFB_ts_z(:,i)));
+    max_HFB=abs(max(HFB_ts_z(10000:end,i))); % exclude first 10 secs from determining max
     if max_HFB>8
         HFB_burst_chans=[HFB_burst_chans i];
         display(['chan ' num2str(i) ' has HFB bursts'])

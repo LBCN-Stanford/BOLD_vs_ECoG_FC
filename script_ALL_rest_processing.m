@@ -53,7 +53,7 @@ delete([A.fname]); delete([A.fnamedat]); A=[];
 crop_edges_postTF_func(Patient,runname,fname_spm_fff);
 
 %% Plot power spectrum for manual removal of outlier channels
-LBCN_plot_power_spectrum(fname_spm_fff,[10:1000]);
+LBCN_plot_power_spectrum(fname_spm_fff);
 
 %% Common average re-referencing
 LBCN_montage(fname_spm_fff);

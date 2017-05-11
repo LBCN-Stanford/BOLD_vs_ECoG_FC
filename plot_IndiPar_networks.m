@@ -2,18 +2,24 @@ Patient=input('Patient: ','s');
 hemi=input('l or r: ','s');
 run_num=input('run (e.g. 1): ','s');
 viewpoint=input('medial (m), lateral (l), inferior (i), omni (o): ','s');
+condition=input('rest (1) OBJ (2) Rt_Finger (3) ARN (4) VRN (5): ','s');
 networks=input('plot all (0) or just 4 networks (1)? ','s');
 runname=['run' run_num];
 FSdir=getFsurfSubDir;
 fsdir=[FSdir '/' Patient ];
+condition=str2num(condition)
+if condition==1
 annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_' runname '.annot'];
+elseif condition==2
+     annot=[FSdir '/' Patient '/label/' hemi 'h_parc_result_OBJ.annot'];   
+    end
 %annot=[fsdir '/label/' hemi 'h.Yeo2011_17Networks_N1000.annot'];
 
-plotElecs=1;
+plotElecs=0;
 
 
 cd([fsdir '/elec_recon'])
-if plotElecs==1
+if plotElecs==1    
 coords=importdata([Patient '.LEPTO']);
 nElec=size(coords.data,1);
 whiteElecs=ones(nElec,3)*1;
