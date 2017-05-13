@@ -6,6 +6,7 @@ ecog_runname=input('ECoG Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
+freq=input('HFB (1) or alpha (2) ','s');
 depth=str2num(depth);
 bold_run_num=['run' bold_runname];
 ecog_run_num=['run' ecog_runname];
@@ -75,32 +76,40 @@ cfg.pullOut=3;
 cfg.title=[elec_name];  
 cfg.showLabels='n';
 cfg.elecNames=curr_elecNames;
+if freq=='1'
 cfg.elecColors=elecColors_HFB;
+elseif freq=='2'
+   cfg.elecColors=elecColors_alpha; 
+end
 cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num bold_run_num '_' Hemi 'H.mgh']
 cfg.elecColorScale='minmax';
 cfg.olayUnits='z';
 % cfg.elecShape='sphere';
 % cfg.elecSize=2;
 cfgOut=plotPialSurf(Patient,cfg);
+if freq=='1'
   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB',filesep,'HFB_iEEG_FC_',elec_name,'_run' ecog_runname]));
-  close;
+elseif freq=='2'
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_alpha',filesep,'alpha_iEEG_FC_',elec_name,'_run' ecog_runname]));
+end
+    close;
   
-      cfg=[];
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='r';
-cfg.pullOut=3;
-cfg.title=[elec_name];  
-cfg.showLabels='n';
-cfg.elecNames=curr_elecNames;
-cfg.elecColors=elecColors_alpha;
-cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num bold_run_num '_' Hemi 'H.mgh']
-cfg.elecColorScale='minmax';
-cfg.olayUnits='z';
-% cfg.elecShape='sphere';
-% cfg.elecSize=2;
-cfgOut=plotPialSurf(Patient,cfg);
-  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_alpha',filesep,'alpha_iEEG_FC_',elec_name,'_run' ecog_runname]));
-  close; 
+%       cfg=[];
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='r';
+% cfg.pullOut=3;
+% cfg.title=[elec_name];  
+% cfg.showLabels='n';
+% cfg.elecNames=curr_elecNames;
+% cfg.elecColors=elecColors_alpha;
+% cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num bold_run_num '_' Hemi 'H.mgh']
+% cfg.elecColorScale='minmax';
+% cfg.olayUnits='z';
+% % cfg.elecShape='sphere';
+% % cfg.elecSize=2;
+% cfgOut=plotPialSurf(Patient,cfg);
+%   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_alpha',filesep,'alpha_iEEG_FC_',elec_name,'_run' ecog_runname]));
+%   close; 
   
     end
 end 

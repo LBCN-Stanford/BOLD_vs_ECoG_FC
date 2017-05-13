@@ -18,6 +18,7 @@ depth=str2num(depth);
 BOLD_run='run1';
 tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 BOLD_pipeline=input('BOLD pipeline (1=GSR, 2=AROMA, 3=NoGSR, 4=aCompCor): ' ,'s'); % 1=GSR, 2=ICA-AROMA
+plotting=input('plot HFB (1) or alpha (2)? ','s');
 tdt=str2num(tdt);
 BOLD_pipeline=str2num(BOLD_pipeline);
 
@@ -1416,7 +1417,7 @@ for i=1:length(BOLD_mat);
  
  elec_name=char(parcOut(i,1)); 
  
- 
+ if plotting=='1'
     figure(3)
 scatter(curr_elec_BOLD,curr_elec_HFB,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
@@ -1440,26 +1441,27 @@ end
 
  close;
  
-%     figure(3)
-% scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
-% h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-% set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-% set(gcf,'color','w');
-% title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
-%     ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
-%     ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr)]},'Fontsize',12);
-% xlabel('BOLD FC');
-% ylabel('alpha (0.1-1Hz) FC');
-% set(gcf,'PaperPositionMode','auto');
-% if BOLD_pipeline==1
-% print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_GSR']));
-% elseif BOLD_pipeline==2
-%     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_AROMA']));
-% elseif BOLD_pipeline==3
-% print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
-% elseif BOLD_pipeline==4
-%     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
-% end
+ elseif plotting=='2'
+    figure(3)
+scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
+    ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('alpha (0.1-1Hz) FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_GSR']));
+elseif BOLD_pipeline==2
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_AROMA']));
+elseif BOLD_pipeline==3
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
+elseif BOLD_pipeline==4
+    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
+end
 
 partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
  p_BOLD_HFB_allelecs(i,:)=p_partial;
@@ -1467,7 +1469,7 @@ partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
   partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
    p_BOLD_HFB_allelecs(i,:)=NaN;
     end
-  
+    end
 end
 
 %% save correlations
