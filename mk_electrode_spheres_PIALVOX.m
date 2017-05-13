@@ -20,7 +20,7 @@ end
 
 %% Get electrode names
 fsDir=getFsurfSubDir();
-parcOut=elec2Parc([Patient]);
+parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
 
 %% make binarized mask of BOLD data and erode by 2 voxels
