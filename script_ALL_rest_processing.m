@@ -39,7 +39,7 @@ elseif TDT=='1'
     [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],1); % downsample to 1000 Hz   
 end
 fname_spm = fullfile(D.path,D.fname);
-run_length=(D.Nsamples/D.Fsample)/60;
+run_length=(D.nsamples/D.fsample)/60;
 
 %% Filter iEEG data and detect bad channels
 LBCN_filter_badchans(fname_spm,[],bad_chans,1,[]);
