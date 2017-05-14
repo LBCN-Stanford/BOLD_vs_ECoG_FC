@@ -50,7 +50,8 @@ A=spm_eeg_load(['ff' D.fname]);
 delete([A.fname]); delete([A.fnamedat]); A=[];
 
 %% Chop 2 sec from edges (beginning and end) - to deal with flat line effects
-crop_edges_postTF_func(Patient,runname,fname_spm_fff);
+cropping=2000; both=1;
+crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both);
 fname_spm_pfff=['pfff' D.fname];
 
 %% Plot power spectrum for manual removal of outlier channels
@@ -71,15 +72,17 @@ fname_spm_btf=['btf_aMpfff' D.fname];
 %% Frequency band averaging
 batch_AverageFreq(fname_spm_btf);
 
-%% Chop 2 sec from edges (beginning and end)
-%crop_edges_postTF_func(Patient,runname,fname_spm_btf);
-fname_HFB=['HFBbtf_aMpfff' D.fname];
-fname_Alpha=['Alphabtf_aMpfff' D.fname];
-fname_Delta=['Deltabtf_aMpfff' D.fname];
-fname_Theta=['Thetabtf_aMpfff' D.fname];
-fname_Beta1=['Beta1btf_aMpfff' D.fname];
-fname_Beta2=['Beta2btf_aMpfff' D.fname];
-fname_Gamma=['Gammabtf_aMpfff' D.fname];
+%% Chop 10 sec from beginning
+cropping=10000; both=0;
+crop_edges_postTF_func(Patient,runname,fname_spm_btf,cropping,both);
+
+fname_HFB=['pHFBbtf_aMpfff' D.fname];
+fname_Alpha=['pAlphabtf_aMpfff' D.fname];
+fname_Delta=['pDeltabtf_aMpfff' D.fname];
+fname_Theta=['pThetabtf_aMpfff' D.fname];
+fname_Beta1=['pBeta1btf_aMpfff' D.fname];
+fname_Beta2=['pBeta2btf_aMpfff' D.fname];
+fname_Gamma=['pGammabtf_aMpfff' D.fname];
 
 
 %% Temporal filtering: 0.1-1Hz, <0.1Hz

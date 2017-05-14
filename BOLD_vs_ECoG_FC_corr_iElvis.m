@@ -40,8 +40,14 @@ hemi=importdata(['hemi.txt']);
 hemi=char(hemi);
 end
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-Mfile=dir('btf_aMfff*');
+Mfile=dir('btf_aMpfff*');
+if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
+else
+    Mfile=dir('btf_aMfff*');
+    Mfile=Mfile(2,1).name;
+end
+    
 
 %% TO MODIFY
 if tdt==0
@@ -115,7 +121,7 @@ end
 fclose(fid);
 
 %% Get electrode names
-parcOut=elec2Parc(Patient);
+parcOut=elec2Parc_v2(Patient,'DK',0);
 
 %% Load channel name-network number mapping
 if depth==2
@@ -225,12 +231,20 @@ end
 %% Load preprocessed iEEG data 
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
+if ~isempty(dir('pHFB*'))
 HFB=spm_eeg_load(['pHFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
 Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
-
+else
+HFB=spm_eeg_load(['HFB' Mfile]);
+HFB_slow=spm_eeg_load(['slowHFB' Mfile]);
+HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
+Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
+Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);    
+    
+end
 % Load fMRI electrode time series (ordered according to iElvis)
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
@@ -1385,7 +1399,7 @@ distances_nan(find(distances_nan==0))=NaN;
 for i=1:length(BOLD_mat);
  
     if sum(~isnan(BOLD_mat(:,i)))>0
-    
+    use_elec=1;
  curr_elec_BOLD=BOLD_mat(:,i);
  curr_elec_HFB=medium_mat(:,i);
  curr_elec_alpha=alpha_mat(:,i);
@@ -1438,9 +1452,15 @@ print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_
 elseif BOLD_pipeline==4
  print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_aCompCor']));  
 end
-
  close;
- 
+ if use_elec==1
+ partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
+ p_BOLD_HFB_allelecs(i,:)=p_partial;
+   else
+  partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
+   p_BOLD_HFB_allelecs(i,:)=NaN;
+ end
+   
  elseif plotting=='2'
     figure(3)
 scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
@@ -1463,20 +1483,18 @@ elseif BOLD_pipeline==4
     print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
 end
 
-partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
- p_BOLD_HFB_allelecs(i,:)=p_partial;
-   else
-  partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
-   p_BOLD_HFB_allelecs(i,:)=NaN;
+
     end
     end
 end
 
 %% save correlations
+if plotting=='1'
 save('partialcorr_BOLD_HFB_allelecs','partialcorr_BOLD_HFB_allelecs');
 save('p_BOLD_HFB_allelecs','p_BOLD_HFB_allelecs');
 elec_names=parcOut(:,1);
 save('elec_names','elec_names');
+end
 
 %% DMN vs other networks
 % Normalize time-courses prior to plotting

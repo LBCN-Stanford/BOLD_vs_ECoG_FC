@@ -20,7 +20,7 @@ display(['2. Select HFB file']);
 HFB=spm_eeg_load;
 
 %% Create transformation vector for iElvis labels
-parcOut=elec2Parc([Patient]);
+parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
 cd([fsDir '/' Patient '/elec_recon']);
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');

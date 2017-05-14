@@ -16,20 +16,33 @@ depth=str2num(depth);
 %% Get file base name
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-Mfile=dir('btf_aMfff*');
+Mfile=dir('btf_aMpfff*');
+if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
+else
+    Mfile=dir('btf_aMfff*');
+    Mfile=Mfile(2,1).name;
+end
 
 %% Load preprocessed iEEG data 
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-
+if ~isempty(dir('pHFB*'))
 HFB=spm_eeg_load(['pHFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
 Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
+else
+HFB=spm_eeg_load(['HFB' Mfile]);
+HFB_slow=spm_eeg_load(['slowHFB' Mfile]);
+HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
+Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
+Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);    
+    
+end
 
 %% defaults
-HFB_spike_exclusion=0; HFB_zthresh=50 % exclude channels with HFB z-score spikes exceeding threshold
+HFB_spike_exclusion=0; HFB_zthresh=50; % exclude channels with HFB z-score spikes exceeding threshold
 BOLD_pipeline=1; % 1=GSR, 2=ICA-AROMA
 BOLD_smooth=1; % 1=smoothing, 0=no spatial smoothing (for GSR)
 Coords=1; % 1 = .PIAL, 2=brainmask_coords.mat
