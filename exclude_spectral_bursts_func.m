@@ -21,7 +21,7 @@ global globalECoGDir;
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
 %% Load HFB
-pHFB_fname=dir('bptf_mediumHFBbtf*');
+pHFB_fname=dir('bptf_mediumpHFBbtf*');
 pHFB_fname=pHFB_fname(2,1).name;
 pHFB=spm_eeg_load([pHFB_fname]);
 

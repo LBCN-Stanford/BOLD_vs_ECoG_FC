@@ -39,6 +39,7 @@ elseif TDT=='1'
     [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],1); % downsample to 1000 Hz   
 end
 fname_spm = fullfile(D.path,D.fname);
+run_length=(D.Nsamples/D.Fsample)/60;
 
 %% Filter iEEG data and detect bad channels
 LBCN_filter_badchans(fname_spm,[],bad_chans,1,[]);
@@ -55,6 +56,7 @@ crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both);
 fname_spm_pfff=['pfff' D.fname];
 
 %% Plot power spectrum for manual removal of outlier channels
+display(['Run length is ' num2str(run_length) ' mins']);
 LBCN_plot_power_spectrum(fname_spm_pfff);
 
 %% Common average re-referencing
@@ -72,9 +74,24 @@ fname_spm_btf=['btf_aMpfff' D.fname];
 %% Frequency band averaging
 batch_AverageFreq(fname_spm_btf);
 
-%% Chop 10 sec from beginning
-cropping=10000; both=0;
-crop_edges_postTF_func(Patient,runname,fname_spm_btf,cropping,both);
+%% Chop 20 sec from beginning
+cropping=20000; both=0;
+
+fname_HFB=['HFBbtf_aMpfff' D.fname];
+fname_Alpha=['Alphabtf_aMpfff' D.fname];
+fname_Delta=['Deltabtf_aMpfff' D.fname];
+fname_Theta=['Thetabtf_aMpfff' D.fname];
+fname_Beta1=['Beta1btf_aMpfff' D.fname];
+fname_Beta2=['Beta2btf_aMpfff' D.fname];
+fname_Gamma=['Gammabtf_aMpfff' D.fname];
+
+crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both);
+crop_edges_postTF_func(Patient,runname,fname_Alpha,cropping,both);
+crop_edges_postTF_func(Patient,runname,fname_Delta,cropping,both);
+crop_edges_postTF_func(Patient,runname,fname_Theta,cropping,both);
+crop_edges_postTF_func(Patient,runname,fname_Beta1,cropping,both);
+crop_edges_postTF_func(Patient,runname,fname_Beta2,cropping,both);
+crop_edges_postTF_func(Patient,runname,fname_Gamma,cropping,both);
 
 fname_HFB=['pHFBbtf_aMpfff' D.fname];
 fname_Alpha=['pAlphabtf_aMpfff' D.fname];
@@ -83,7 +100,6 @@ fname_Theta=['pThetabtf_aMpfff' D.fname];
 fname_Beta1=['pBeta1btf_aMpfff' D.fname];
 fname_Beta2=['pBeta2btf_aMpfff' D.fname];
 fname_Gamma=['pGammabtf_aMpfff' D.fname];
-
 
 %% Temporal filtering: 0.1-1Hz, <0.1Hz
 batch_bandpass_medium(fname_HFB);

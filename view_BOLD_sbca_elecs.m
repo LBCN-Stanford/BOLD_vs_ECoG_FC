@@ -14,7 +14,7 @@ cd electrode_spheres;
 mkdir('SBCA/figs');
 mkdir('SBCA/figs/BOLD');
 
-parcOut=elec2Parc([Patient]);
+parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = cell(length(parcOut),1);
 if hemi=='r'
     Hemi='R';
@@ -30,7 +30,7 @@ elec_num=num2str(elec);
 elec_name=char(parcOut(elec,1));
 
     if depth==0
-    elec_ts=load(['elec' elec_num run_num '_ts_PIALVOX.txt']);
+    elec_ts=load(['elec' elec_num run_num '_ts_GSR.txt']);
     elseif depth==1
        elec_ts=load(['elec' elec_num run_num '_ts_FSL.txt']);
     end
