@@ -26,7 +26,7 @@ mkdir('SBCA/figs/iEEG');
 mkdir('SBCA/figs/iEEG_BOLD_HFB');
 mkdir('SBCA/figs/iEEG_BOLD_alpha');
 
-parcOut=elec2Parc([Patient]);
+parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
 if hemi=='r'
     Hemi='R';

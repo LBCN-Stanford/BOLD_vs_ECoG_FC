@@ -1,0 +1,53 @@
+% plot sliding-window dFC for a pair of regions - BOLD
+
+Patient=input('Patient: ','s');
+runs=input('run (e.g. 1): ','s');
+roi1=input('ROI 1 (e.g. AFS9): ','s');
+roi2=input('ROI 2 (e.g. PIHS4): ','s');
+
+%% Defaults
+TR=2; % TR in seconds
+step=1; % step length (number of TRs)
+window_size=15; % number of TRs per window
+window_duration=TR*window_size;
+
+runnum=['run' runs];
+fsDir=getFsurfSubDir();
+
+parcOut=elec2Parc_v2([Patient],'DK',0);
+elecNames = parcOut(:,1);
+%% Convert ROI names to numbers
+roi1_num=strmatch(roi1,parcOut(:,1),'exact');
+roi2_num=strmatch(roi2,parcOut(:,1),'exact');
+
+%% Load ROI time series
+cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
+
+roi1_ts=load(['elec' num2str(roi1_num) runnum '_ts_GSR.txt']);
+roi2_ts=load(['elec' num2str(roi2_num) runnum '_ts_GSR.txt']);
+
+%% Static FC
+static_fc=corr(roi1_ts,roi2_ts);
+
+%% Sliding windows
+for i=1:step:length(roi1_ts)-window_size;
+    a=i+window_size;
+    roi1_window_ts=roi1_ts(i:a);
+    roi2_window_ts=roi2_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_corr(i,:)=window_corr;
+    all_windows_fisher(i,:)=window_fisher;
+end
+
+
+%% Plots
+pl
+
+% Static FC
+figure(1)
+plot(1:length(roi1_ts),roi1_ts,1:length(roi2_ts),roi2_ts);
+title({['BOLD: ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
+pause; close;
+
+Dynamic FC
