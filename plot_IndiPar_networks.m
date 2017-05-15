@@ -21,7 +21,7 @@ elseif condition=='RFg'
     end
 %annot=[fsdir '/label/' hemi 'h.Yeo2011_17Networks_N1000.annot'];
 
-plotElecs=0;
+plotElecs=1;
 
 
 cd([fsdir '/elec_recon'])

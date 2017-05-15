@@ -25,7 +25,6 @@ BOLD_window_duration=TR*BOLD_window_size;
 
 %% iEEG defaults
 iEEG_step=2000;
-iEEG_window_size=30000;
 depth='0';
 
 
@@ -44,9 +43,6 @@ else
     Mfile=dir('btf_aMfff*');
     Mfile=Mfile(2,1).name;
 end
-%Load channel name-number mapping
-cd([fsDir '/' Patient '/elec_recon']);
-[channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
 end
 
 %% For iEEG, load channel names (in freesurfer/elec recon order)
@@ -87,46 +83,23 @@ HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
 Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);        
 end
-
-for HFB_medium_chan=1:size(HFB,1)
-    HFB_medium_ts(:,HFB_medium_chan)=HFB_medium(HFB_medium_chan,:)';      
 end
 
-for Alpha_medium_chan=1:size(HFB,1)
-    Alpha_medium_ts(:,Alpha_medium_chan)=Alpha_medium(Alpha_medium_chan,:)';      
-end
-
-end
-
-%% Convert ROI names to numbers (iElvis space)
+%% Convert BOLD ROI names to numbers
+if BOLD=='BOLD'
 roi1_num=strmatch(roi1,parcOut(:,1),'exact');
 roi2_num=strmatch(roi2,parcOut(:,1),'exact');
+end
 
 %% Convert iEEG numbers to names
-if BOLD=='iEEG'
 % create iEEG to iElvis chanlabel transformation vector
 for i=1:length(chanlabels)
-    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
-end
-
-    for i=1:length(chanlabels)
-iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
-    end
-
-end
-
-%% Transform time series from iEEG to iElvis order
-if BOLD=='iEEG'
-HFB_medium_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));
-alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
-
-for i=1:length(chanlabels);
-    curr_iEEG_chan=channumbers_iEEG(i);
-    new_ind=iEEG_to_iElvis_chanlabel(i);
-    HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
-    alpha_medium_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
+    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),parcOut(:,1),'exact');    
 end
 end
+% if BOLD=='iEEG'
+%     
+% end
 
 %% Load ROI time series
 if BOLD=='BOLD'
@@ -134,14 +107,6 @@ cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
 roi1_ts=load(['elec' num2str(roi1_num) runnum '_ts_GSR.txt']);
 roi2_ts=load(['elec' num2str(roi2_num) runnum '_ts_GSR.txt']);
-end
-
-if BOLD=='iEEG'
-    roi1_iEEG_num=iElvis_to_iEEG_chanlabel(roi1_num);
-    roi2_iEEG_num=iElvis_to_iEEG_chanlabel(roi2_num);
-    
-    roi1_ts=HFB_medium_ts(:,roi1_iEEG_num);   
-    roi2_ts=HFB_medium_ts(:,roi2_iEEG_num);    
 end
 
 %% Static FC
@@ -159,24 +124,6 @@ for i=1:BOLD_step:length(roi1_ts)-BOLD_window_size;
     all_windows_fisher(i,:)=window_fisher;
 end
 end
-
-if BOLD=='iEEG'
-    all_windows_corr=[]; all_windows_fisher=[];
-  %for i=1:iEEG_step:floor(length(roi1_ts)/iEEG_step);
-  for i=1:iEEG_step:length(roi1_ts)-iEEG_window_size;
-    a=i+iEEG_window_size;
-    roi1_window_ts=roi1_ts(i:a);
-    roi2_window_ts=roi2_ts(i:a);
-    window_corr=corr(roi1_window_ts,roi2_window_ts);
-    window_fisher=fisherz(window_corr);
-    all_windows_corr=[all_windows_corr window_corr];   
-   all_windows_fisher=[all_windows_fisher window_fisher];
-  end  
-all_windows_corr=all_windows_corr';
-all_windows_fisher=all_windows_fisher';
-end
-
-
 
 %% Normalize time series
 roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
