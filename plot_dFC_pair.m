@@ -2,6 +2,9 @@
 
 Patient=input('Patient: ','s');
 BOLD=input('BOLD (1) or iEEG (2): ','s');
+if BOLD=='2'
+   frequency=input('HFB 0.1-1Hz (1) or HFB <0.1 Hz (2): ','s'); 
+end
 runs=input('run (e.g. 1): ','s');
 roi1=input('ROI 1 (e.g. AFS9): ','s');
 roi2=input('ROI 2 (e.g. PIHS4): ','s');
@@ -88,6 +91,10 @@ Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);        
 end
 
+for HFB_slow_chan=1:size(HFB,1)
+    HFB_slow_ts(:,HFB_slow_chan)=HFB_slow(HFB_slow_chan,:)';      
+end
+
 for HFB_medium_chan=1:size(HFB,1)
     HFB_medium_ts(:,HFB_medium_chan)=HFB_medium(HFB_medium_chan,:)';      
 end
@@ -123,6 +130,7 @@ alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
+    HFB_slow_iElvis(:,new_ind)=HFB_slow_ts(:,curr_iEEG_chan);
     HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
     alpha_medium_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
 end
@@ -140,8 +148,14 @@ if BOLD=='iEEG'
     roi1_iEEG_num=iElvis_to_iEEG_chanlabel(roi1_num);
     roi2_iEEG_num=iElvis_to_iEEG_chanlabel(roi2_num);
     
+    if frequency=='1'
     roi1_ts=HFB_medium_ts(:,roi1_iEEG_num);   
-    roi2_ts=HFB_medium_ts(:,roi2_iEEG_num);    
+    roi2_ts=HFB_medium_ts(:,roi2_iEEG_num);   
+    
+elseif frequency=='2'
+     roi1_ts=HFB_slow_ts(:,roi1_iEEG_num);   
+    roi2_ts=HFB_slow_ts(:,roi2_iEEG_num);  
+    end
 end
 
 %% Static FC
@@ -183,11 +197,21 @@ roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
 
 %% Plots
+if BOLD=='iEEG'
+if frequency=='1'
+    freq=['HFB (0.1-1 Hz)'];
+elseif frequency=='2'
+        freq=['HFB (<0.1 Hz)'];
+end
+else
+    freq=[''];
+end
+
 % Static FC
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 subplot(2,1,1);
-title({[BOLD ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
+title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
 plot(1:length(roi1_ts),roi1_ts_norm,1:length(roi2_ts),roi2_ts_norm,'LineWidth',2);
