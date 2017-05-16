@@ -237,12 +237,20 @@ HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
 Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
+Beta2_medium=spm_eeg_load(['bptf_mediumpBeta2' Mfile]);
+Delta_medium=spm_eeg_load(['bptf_mediumpDelta1' Mfile]);
+Theta_medium=spm_eeg_load(['bptf_mediumpTheta1' Mfile]);
+Gamma_medium=spm_eeg_load(['bptf_mediumpGamma' Mfile]);
 else
 HFB=spm_eeg_load(['HFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
 Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);    
+Beta2_medium=spm_eeg_load(['bptf_mediumBeta2' Mfile]);
+Delta_medium=spm_eeg_load(['bptf_mediumDelta1' Mfile]);
+Theta_medium=spm_eeg_load(['bptf_mediumTheta1' Mfile]);
+Gamma_medium=spm_eeg_load(['bptf_mediumGamma' Mfile]);    
     
 end
 % Load fMRI electrode time series (ordered according to iElvis)
@@ -351,6 +359,20 @@ for Beta1_medium_chan=1:total_bold;
     Beta1_medium_ts(:,Beta1_medium_chan)=Beta1_medium(Beta1_medium_chan,:)';      
 end
 
+for Beta2_medium_chan=1:total_bold;
+    Beta2_medium_ts(:,Beta2_medium_chan)=Beta2_medium(Beta2_medium_chan,:)';      
+end
+
+for Theta_medium_chan=1:total_bold;
+    Theta_medium_ts(:,Theta_medium_chan)=Theta_medium(Theta_medium_chan,:)';      
+end
+for Delta_medium_chan=1:total_bold;
+    Delta_medium_ts(:,Delta_medium_chan)=Delta_medium(Delta_medium_chan,:)';      
+end
+
+for Gamma_medium_chan=1:total_bold;
+    Gamma_medium_ts(:,Gamma_medium_chan)=Gamma_medium(Gamma_medium_chan,:)';      
+end
 
 else
 for HFB_chan=1:size(HFB,1)
@@ -373,6 +395,22 @@ for Beta1_medium_chan=1:size(HFB,1)
     Beta1_medium_ts(:,Beta1_medium_chan)=Beta1_medium(Beta1_medium_chan,:)';      
 end
 
+for Beta2_medium_chan=1:size(HFB,1)
+    Beta2_medium_ts(:,Beta2_medium_chan)=Beta2_medium(Beta2_medium_chan,:)';      
+end
+
+for Theta_medium_chan=1:size(HFB,1)
+    Theta_medium_ts(:,Theta_medium_chan)=Theta_medium(Theta_medium_chan,:)';      
+end
+
+for Delta_medium_chan=1:size(HFB,1)
+    Delta_medium_ts(:,Delta_medium_chan)=Delta_medium(Delta_medium_chan,:)';      
+end
+
+for Gamma_medium_chan=1:size(HFB,1)
+    Gamma_medium_ts(:,Gamma_medium_chan)=Gamma_medium(Gamma_medium_chan,:)';      
+end
+
 end
 
 % Chop iEEG time series (delete beginning time points) 
@@ -382,6 +420,11 @@ HFB_slow_ts=HFB_slow_ts(Chop:length(HFB_slow_ts),:);
 HFB_medium_ts=HFB_medium_ts(Chop:length(HFB_medium_ts),:);
 Alpha_medium_ts=Alpha_medium_ts(Chop:length(Alpha_medium_ts),:);
 Beta1_medium_ts=Beta1_medium_ts(Chop:length(Beta1_medium_ts),:);
+Beta2_medium_ts=Beta2_medium_ts(Chop:length(Beta2_medium_ts),:);
+Theta_medium_ts=Theta_medium_ts(Chop:length(Theta_medium_ts),:);
+Delta_medium_ts=Delta_medium_ts(Chop:length(Delta_medium_ts),:);
+Gamma_medium_ts=Gamma_medium_ts(Chop:length(Gamma_medium_ts),:);
+
 %BOLD_ts_iEEG_space=NaN(length(BOLD_ts),max(iElvis_to_iEEG_chanlabel));
 
 %% Transform BOLD to iEEG space
@@ -435,6 +478,10 @@ for i=1:length(bad_indices)
     HFB_medium_ts(:,bad_indices(i))=NaN;
     Alpha_medium_ts(:,bad_indices(i))=NaN;
     Beta1_medium_ts(:,bad_indices(i))=NaN;
+    Beta2_medium_ts(:,bad_indices(i))=NaN;
+    Theta_medium_ts(:,bad_indices(i))=NaN;
+    Delta_medium_ts(:,bad_indices(i))=NaN;
+    Gamma_medium_ts(:,bad_indices(i))=NaN;
     BOLD_ts_iEEG_space(:,bad_indices(i))=NaN;
     if depth==2
     network_iEEG_space(bad_indices(i))=NaN;
@@ -467,6 +514,10 @@ for i=1:length(overlap_elec)
     HFB_medium_ts(:,overlap_elec(i))=NaN;
     Alpha_medium_ts(:,overlap_elec(i))=NaN;
     Beta1_medium_ts(:,overlap_elec(i))=NaN;
+    Beta2_medium_ts(:,overlap_elec(i))=NaN;
+    Theta_medium_ts(:,overlap_elec(i))=NaN;
+    Delta_medium_ts(:,overlap_elec(i))=NaN;
+    Gamma_medium_ts(:,overlap_elec(i))=NaN;
     BOLD_ts_iEEG_space(:,overlap_elec(i))=NaN;
     if depth==2
     network_iEEG_space(overlap_elec(i))=NaN;
@@ -482,6 +533,10 @@ for i=1:length(BOLD_ts_iEEG_space(1,:))
      HFB_medium_ts(:,i)=NaN;
      Alpha_medium_ts(:,i)=NaN;
      Beta1_medium_ts(:,i)=NaN;
+     Beta2_medium_ts(:,i)=NaN;
+     Theta_medium_ts(:,i)=NaN;
+     Delta_medium_ts(:,i)=NaN;
+     Gamma_medium_ts(:,i)=NaN;
      if depth==2
      network_iEEG_space(i)=NaN;
      Yeo_network_iEEG_space(i)=NaN;
@@ -538,6 +593,38 @@ for i=1:length(chanlabels);
     Beta1_medium_iElvis(:,new_ind)=Beta1_medium_ts(:,curr_iEEG_chan);
 end
 
+Beta2_medium_iElvis=NaN(size(Beta2_medium_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    Beta2_medium_iElvis(:,new_ind)=Beta2_medium_ts(:,curr_iEEG_chan);
+end
+
+Theta_medium_iElvis=NaN(size(Theta_medium_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    Theta_medium_iElvis(:,new_ind)=Theta_medium_ts(:,curr_iEEG_chan);
+end
+
+Delta_medium_iElvis=NaN(size(Delta_medium_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    Delta_medium_iElvis(:,new_ind)=Delta_medium_ts(:,curr_iEEG_chan);
+end
+
+Gamma_medium_iElvis=NaN(size(Gamma_medium_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    Gamma_medium_iElvis(:,new_ind)=Gamma_medium_ts(:,curr_iEEG_chan);
+end
+
 %% Get vox coordinates (iElvis order) and remove bad indices
 vox(find(isnan(BOLD_iElvis(1,:))),:)=NaN;
 
@@ -546,6 +633,10 @@ slow_allcorr=corrcoef(HFB_slow_iElvis); slow_column=slow_allcorr(:);
 medium_allcorr=corrcoef(HFB_medium_iElvis); medium_column=medium_allcorr(:);
 alpha_allcorr=corrcoef(Alpha_medium_iElvis); alpha_column=alpha_allcorr(:);
 beta1_allcorr=corrcoef(Beta1_medium_iElvis); beta1_column=beta1_allcorr(:);
+beta2_allcorr=corrcoef(Beta2_medium_iElvis); beta2_column=beta2_allcorr(:);
+Theta_allcorr=corrcoef(Theta_medium_iElvis); Theta_column=Theta_allcorr(:);
+
+
 BOLD_allcorr=corrcoef(BOLD_iElvis); BOLD_column=BOLD_allcorr(:);
 
 slow_mat=slow_allcorr; slow_mat(find(slow_mat==1))=NaN; slow_mat(find(BOLD_allcorr==1))=NaN;
@@ -1423,16 +1514,18 @@ for i=1:length(BOLD_mat);
  elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1);
  elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow);
  [elec_BOLD_HFB_partialcorr,p_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
- [elec
+ [elec_BOLD_HFBslow_partialcorr,p_partial_slow]=partialcorr(curr_elec_BOLD,curr_elec_HFBslow,curr_elec_distance);
  elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
  elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
  
  rho_elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB,'type','Spearman');
  rho_elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha,'type','Spearman');
  rho_elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1,'type','Spearman');
+ rho_elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow,'type','Spearman');
  rho_elec_BOLD_HFB_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_HFBslow_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFBslow,curr_elec_distance,'type','Spearman');
  
  elec_name=char(parcOut(i,1)); 
  
@@ -1488,6 +1581,35 @@ elseif BOLD_pipeline==4
     print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
 end
 
+elseif plotting=='3'
+    figure(3)
+scatter(curr_elec_BOLD,curr_elec_HFBslow,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_name ': BOLD FC vs HFB (<0.1) FC']; ...
+    ['r = ' num2str(elec_BOLD_HFBslow_corr) '; rho = ' num2str(rho_elec_BOLD_HFBslow_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFBslow_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFBslow_partialcorr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('HFB (<0.1) FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_slow_GSR']));
+elseif BOLD_pipeline==2
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_slow_AROMA']));
+elseif BOLD_pipeline==3
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_slow_NoGSR']));
+elseif BOLD_pipeline==4
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_slow_aCompCor']));  
+end
+ close;
+ if use_elec==1
+ partialcorr_BOLD_HFBslow_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
+ p_BOLD_HFBslow_allelecs(i,:)=p_partial;
+   else
+  partialcorr_BOLD_HFBslow_allelecs(i,:)=NaN; 
+   p_BOLD_HFBslow_allelecs(i,:)=NaN;
+ end
 
     end
     end
