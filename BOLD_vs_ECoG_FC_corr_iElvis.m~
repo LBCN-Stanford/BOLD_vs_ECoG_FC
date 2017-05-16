@@ -18,6 +18,7 @@ depth=str2num(depth);
 BOLD_run='run1';
 tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 BOLD_pipeline=input('BOLD pipeline (1=GSR, 2=AROMA, 3=NoGSR, 4=aCompCor): ' ,'s'); % 1=GSR, 2=ICA-AROMA
+plotting=input('plot HFB 0.1-1Hz (1) or alpha 0.1-1Hz (2) or HFB <0.1Hz? ','s');
 tdt=str2num(tdt);
 BOLD_pipeline=str2num(BOLD_pipeline);
 
@@ -34,11 +35,19 @@ end
 %% Get hemisphere file base name
 getECoGSubDir; global globalECoGDir;
 cd ([globalECoGDir '/Rest/' Patient]);
+if depth=='0'
 hemi=importdata(['hemi.txt']); 
 hemi=char(hemi);
+end
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-Mfile=dir('btf_aMfff*');
+Mfile=dir('btf_aMpfff*');
+if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
+else
+    Mfile=dir('btf_aMfff*');
+    Mfile=Mfile(2,1).name;
+end
+    
 
 %% TO MODIFY
 if tdt==0
@@ -112,7 +121,7 @@ end
 fclose(fid);
 
 %% Get electrode names
-parcOut=elec2Parc(Patient);
+parcOut=elec2Parc_v2(Patient,'DK',0);
 
 %% Load channel name-network number mapping
 if depth==2
@@ -222,12 +231,20 @@ end
 %% Load preprocessed iEEG data 
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
+if ~isempty(dir('pHFB*'))
 HFB=spm_eeg_load(['pHFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
 Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
-
+else
+HFB=spm_eeg_load(['HFB' Mfile]);
+HFB_slow=spm_eeg_load(['slowHFB' Mfile]);
+HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
+Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
+Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);    
+    
+end
 % Load fMRI electrode time series (ordered according to iElvis)
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
@@ -361,10 +378,10 @@ end
 % Chop iEEG time series (delete beginning time points) 
 % change 'Chop' variable at beginning of code to change 
 
-HFB_slow_ts=HFB_slow_ts(Chop:length(HFB_slow),:);
-medium_electrode_ts=medium_electrode_ts(Chop:length(medium_electrode_ts),:);
-alpha_electrode_ts=alpha_electrode_ts(Chop:length(alpha_electrode_ts),:);
-beta1_electrode_ts=beta1_electrode_ts(Chop:length(beta1_electrode_ts),:);
+HFB_slow_ts=HFB_slow_ts(Chop:length(HFB_slow_ts),:);
+HFB_medium_ts=HFB_medium_ts(Chop:length(HFB_medium_ts),:);
+Alpha_medium_ts=Alpha_medium_ts(Chop:length(Alpha_medium_ts),:);
+Beta1_medium_ts=Beta1_medium_ts(Chop:length(Beta1_medium_ts),:);
 %BOLD_ts_iEEG_space=NaN(length(BOLD_ts),max(iElvis_to_iEEG_chanlabel));
 
 %% Transform BOLD to iEEG space
@@ -1382,26 +1399,31 @@ distances_nan(find(distances_nan==0))=NaN;
 for i=1:length(BOLD_mat);
  
     if sum(~isnan(BOLD_mat(:,i)))>0
-    
+    use_elec=1;
  curr_elec_BOLD=BOLD_mat(:,i);
  curr_elec_HFB=medium_mat(:,i);
  curr_elec_alpha=alpha_mat(:,i);
  curr_elec_beta1=beta1_mat(:,i);
+ curr_elec_HFBslow=slow_mat(:,i);
  curr_elec_distance=distances_nan(:,i);
  curr_elec_BOLD(isnan(curr_elec_BOLD))=[];
  curr_elec_HFB(isnan(curr_elec_HFB))=[];
  curr_elec_alpha(isnan(curr_elec_alpha))=[];
  curr_elec_beta1(isnan(curr_elec_beta1))=[];
+ curr_elec_HFBslow(isnan(curr_elec_HFBslow))=[];
  curr_elec_distance(isnan(curr_elec_distance))=[];
  
  curr_elec_BOLD=fisherz(curr_elec_BOLD);
  curr_elec_HFB=fisherz(curr_elec_HFB);
  curr_elec_alpha=fisherz(curr_elec_alpha);
  curr_elec_beta1=fisherz(curr_elec_beta1);
+ curr_elec_HFBslow=fisherz(curr_elec_HFBslow);
  elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB);
  elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha);
  elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1);
+ elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow);
  [elec_BOLD_HFB_partialcorr,p_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
+ [elec
  elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
  elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
  
@@ -1414,7 +1436,7 @@ for i=1:length(BOLD_mat);
  
  elec_name=char(parcOut(i,1)); 
  
- 
+ if plotting=='1'
     figure(3)
 scatter(curr_elec_BOLD,curr_elec_HFB,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
@@ -1435,44 +1457,49 @@ print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_
 elseif BOLD_pipeline==4
  print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_aCompCor']));  
 end
-
  close;
- 
-%     figure(3)
-% scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
-% h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-% set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-% set(gcf,'color','w');
-% title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
-%     ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
-%     ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr)]},'Fontsize',12);
-% xlabel('BOLD FC');
-% ylabel('alpha (0.1-1Hz) FC');
-% set(gcf,'PaperPositionMode','auto');
-% if BOLD_pipeline==1
-% print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_GSR']));
-% elseif BOLD_pipeline==2
-%     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_AROMA']));
-% elseif BOLD_pipeline==3
-% print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
-% elseif BOLD_pipeline==4
-%     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
-% end
-
-partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
+ if use_elec==1
+ partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
  p_BOLD_HFB_allelecs(i,:)=p_partial;
    else
   partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
    p_BOLD_HFB_allelecs(i,:)=NaN;
+ end
+   
+ elseif plotting=='2'
+    figure(3)
+scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
+    ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('alpha (0.1-1Hz) FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_GSR']));
+elseif BOLD_pipeline==2
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_AROMA']));
+elseif BOLD_pipeline==3
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
+elseif BOLD_pipeline==4
+    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
+end
+
+
     end
-  
+    end
 end
 
 %% save correlations
+if plotting=='1'
 save('partialcorr_BOLD_HFB_allelecs','partialcorr_BOLD_HFB_allelecs');
 save('p_BOLD_HFB_allelecs','p_BOLD_HFB_allelecs');
 elec_names=parcOut(:,1);
 save('elec_names','elec_names');
+end
 
 %% DMN vs other networks
 % Normalize time-courses prior to plotting

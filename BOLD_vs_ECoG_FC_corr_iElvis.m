@@ -18,7 +18,7 @@ depth=str2num(depth);
 BOLD_run='run1';
 tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 BOLD_pipeline=input('BOLD pipeline (1=GSR, 2=AROMA, 3=NoGSR, 4=aCompCor): ' ,'s'); % 1=GSR, 2=ICA-AROMA
-plotting=input('plot HFB (1) or alpha (2)? ','s');
+plotting=input('plot HFB 0.1-1Hz (1) or alpha 0.1-1Hz (2) or HFB <0.1Hz? ','s');
 tdt=str2num(tdt);
 BOLD_pipeline=str2num(BOLD_pipeline);
 
@@ -1404,30 +1404,37 @@ for i=1:length(BOLD_mat);
  curr_elec_HFB=medium_mat(:,i);
  curr_elec_alpha=alpha_mat(:,i);
  curr_elec_beta1=beta1_mat(:,i);
+ curr_elec_HFBslow=slow_mat(:,i);
  curr_elec_distance=distances_nan(:,i);
  curr_elec_BOLD(isnan(curr_elec_BOLD))=[];
  curr_elec_HFB(isnan(curr_elec_HFB))=[];
  curr_elec_alpha(isnan(curr_elec_alpha))=[];
  curr_elec_beta1(isnan(curr_elec_beta1))=[];
+ curr_elec_HFBslow(isnan(curr_elec_HFBslow))=[];
  curr_elec_distance(isnan(curr_elec_distance))=[];
  
  curr_elec_BOLD=fisherz(curr_elec_BOLD);
  curr_elec_HFB=fisherz(curr_elec_HFB);
  curr_elec_alpha=fisherz(curr_elec_alpha);
  curr_elec_beta1=fisherz(curr_elec_beta1);
+ curr_elec_HFBslow=fisherz(curr_elec_HFBslow);
  elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB);
  elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha);
  elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1);
+ elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow);
  [elec_BOLD_HFB_partialcorr,p_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
+ [elec_BOLD_HFBslow_partialcorr,p_partial_slow]=partialcorr(curr_elec_BOLD,curr_elec_HFBslow,curr_elec_distance);
  elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
  elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
  
  rho_elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB,'type','Spearman');
  rho_elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha,'type','Spearman');
  rho_elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1,'type','Spearman');
+ rho_elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow,'type','Spearman');
  rho_elec_BOLD_HFB_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_HFBslow_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFBslow,curr_elec_distance,'type','Spearman');
  
  elec_name=char(parcOut(i,1)); 
  
@@ -1483,6 +1490,35 @@ elseif BOLD_pipeline==4
     print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
 end
 
+elseif plotting=='3'
+    figure(3)
+scatter(curr_elec_BOLD,curr_elec_HFBslow,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_name ': BOLD FC vs HFB (<0.1) FC']; ...
+    ['r = ' num2str(elec_BOLD_HFBslow_corr) '; rho = ' num2str(rho_elec_BOLD_HFBslow_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFBslow_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFBslow_partialcorr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('HFB (<0.1) FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_slow_GSR']));
+elseif BOLD_pipeline==2
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_slow_AROMA']));
+elseif BOLD_pipeline==3
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_slow_NoGSR']));
+elseif BOLD_pipeline==4
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_slow_aCompCor']));  
+end
+ close;
+ if use_elec==1
+ partialcorr_BOLD_HFBslow_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
+ p_BOLD_HFBslow_allelecs(i,:)=p_partial;
+   else
+  partialcorr_BOLD_HFBslow_allelecs(i,:)=NaN; 
+   p_BOLD_HFBslow_allelecs(i,:)=NaN;
+ end
 
     end
     end

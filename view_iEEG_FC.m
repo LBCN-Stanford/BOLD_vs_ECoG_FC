@@ -6,7 +6,7 @@ ecog_runname=input('ECoG Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
-freq=input('HFB (1) or alpha (2) ','s');
+freq=input('HFB 0.1-1Hz (1) or alpha (2) or HFB <0.1Hz (3) ','s');
 depth=str2num(depth);
 bold_run_num=['run' bold_runname];
 ecog_run_num=['run' ecog_runname];
@@ -16,6 +16,7 @@ globalECoGDir=getECoGSubDir;
 cd([globalECoGDir '/Rest/' Patient '/Run' ecog_runname]);
 load('HFB_medium_corr.mat');
 load('alpha_medium_corr.mat');
+load('HFB_slow_corr.mat');
 
 fsDir=getFsurfSubDir();
 cd([fsDir '/' Patient '/elec_recon']);
@@ -25,6 +26,7 @@ mkdir('SBCA/figs');
 mkdir('SBCA/figs/iEEG');
 mkdir('SBCA/figs/iEEG_BOLD_HFB');
 mkdir('SBCA/figs/iEEG_BOLD_alpha');
+mkdir('SBCA/figs/iEEG_BOLD_HFBslow');
 
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
@@ -41,6 +43,8 @@ elec_name=char(parcOut(elec,1));
    elecColors_HFB(elec)=[];
    elecColors_alpha=alpha_medium_corr(:,elec);
    elecColors_alpha(elec)=[];
+   elecColors_HFBslow=HFB_slow_corr(:,elec);
+   elecColors_HFBslow(elec)=[];
 curr_elecNames=elecNames;
 curr_elecNames(elec)=[];
 
@@ -80,6 +84,8 @@ if freq=='1'
 cfg.elecColors=elecColors_HFB;
 elseif freq=='2'
    cfg.elecColors=elecColors_alpha; 
+elseif freq=='3'
+    cfg.elecColors=elecColors_HFBslow;
 end
 cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num bold_run_num '_' Hemi 'H.mgh']
 cfg.elecColorScale='minmax';
@@ -91,6 +97,8 @@ if freq=='1'
   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB',filesep,'HFB_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='2'
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_alpha',filesep,'alpha_iEEG_FC_',elec_name,'_run' ecog_runname]));
+elseif freq=='3'
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFBslow',filesep,'HFBslow_iEEG_FC_',elec_name,'_run' ecog_runname]));
 end
     close;
   
