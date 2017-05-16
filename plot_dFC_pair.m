@@ -27,8 +27,10 @@ BOLD_window_size=15; % number of TRs per window
 BOLD_window_duration=TR*BOLD_window_size;
 
 %% iEEG defaults
+iEEG_sampling=1000;
 iEEG_step=2000;
 iEEG_window_size=30000;
+iEEG_window_duration=iEEG_window_size/iEEG_sampling;
 depth='0';
 
 
@@ -207,11 +209,18 @@ else
     freq=[''];
 end
 
+if BOLD=='BOLD'
+window_duration=BOLD_window_duration;
+elseif BOLD=='iEEG'
+    window_duration=iEEG_window_duration;
+end
+
 % Static FC
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 subplot(2,1,1);
 title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
+xlabel(['Time']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
 plot(1:length(roi1_ts),roi1_ts_norm,1:length(roi2_ts),roi2_ts_norm,'LineWidth',2);
@@ -224,6 +233,7 @@ subplot(2,1,2);
 %hold on;
 plot(1:length(all_windows_fisher),all_windows_fisher,'LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]} ,'Fontsize',12);
+xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
 
