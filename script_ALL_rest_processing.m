@@ -63,6 +63,9 @@ LBCN_plot_power_spectrum(fname_spm_pfff);
 LBCN_montage(fname_spm_pfff);
 fname_spm_fffM=['Mpfff' D.fname];
 
+%% Filter to slow cortical potential range (<1Hz)
+batch_lowpass_medium(fname_spm_fffM);
+
 %% TF decomposition
 batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
 fname_spm_tf=['tf_aMpfff' D.fname];

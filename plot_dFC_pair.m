@@ -3,7 +3,7 @@
 Patient=input('Patient: ','s');
 BOLD=input('BOLD (1) or iEEG (2): ','s');
 if BOLD=='2'
-   frequency=input('HFB 0.1-1Hz (1) or HFB <0.1 Hz (2): ','s'); 
+   frequency=input('HFB <0.1 Hz (1), HFB 0.1-1 Hz (2), alpha (3), beta1 (4), beta2 (5), Theta (6), Delta (7), Gamma (8): ','s'); 
 end
 runs=input('run (e.g. 1): ','s');
 roi1=input('ROI 1 (e.g. AFS9): ','s');
@@ -80,29 +80,45 @@ if BOLD=='iEEG'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
 
 if ~isempty(dir('pHFB*'))
-HFB=spm_eeg_load(['pHFB' Mfile]);
-HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
-HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
-Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
-Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
+    if frequency=='1'
+iEEG_data=spm_eeg_load(['slowpHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
+    elseif frequency=='2'
+iEEG_data=spm_eeg_load(['bptf_mediumpHFB' Mfile]); freq=['HFB (0.1-1 Hz)'];
+    elseif frequency=='3'
+iEEG_data=spm_eeg_load(['bptf_mediumpAlpha' Mfile]); freq=['Alpha (0.1-1 Hz)'];
+    elseif frequency=='4'
+iEEG_data=spm_eeg_load(['bptf_mediumpBeta1' Mfile]); freq=['Beta1 (0.1-1 Hz)'];
+    elseif frequency=='5'
+iEEG_data=spm_eeg_load(['bptf_mediumpBeta2' Mfile]); freq=['Beta2 (0.1-1 Hz)'];
+    elseif frequency=='6'
+iEEG_data=spm_eeg_load(['bptf_mediumpTheta' Mfile]); freq=['Theta (0.1-1 Hz)'];
+    elseif frequency=='7'
+iEEG_data=spm_eeg_load(['bptf_mediumpDelta' Mfile]); freq=['Delta (0.1-1 Hz)'];
+    elseif frequency=='8'
+iEEG_data=spm_eeg_load(['bptf_mediumpGamma' Mfile]); freq=['Gamma (0.1-1 Hz)'];
+    end
 else
-HFB=spm_eeg_load(['HFB' Mfile]);
-HFB_slow=spm_eeg_load(['slowHFB' Mfile]);
-HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
-Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
-Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);        
+if frequency=='1'
+iEEG_data=spm_eeg_load(['slowHFB' Mfile]);
+elseif frequency=='2'
+iEEG_data=spm_eeg_load(['bptf_mediumHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
+elseif frequency=='3'
+iEEG_data=spm_eeg_load(['bptf_mediumAlpha' Mfile]); freq=['Alpha (0.1-1 Hz)'];
+elseif frequency=='4'
+iEEG_data=spm_eeg_load(['bptf_mediumBeta1' Mfile]); freq=['Beta1 (0.1-1 Hz)'];
+elseif frequency=='5'
+iEEG_data=spm_eeg_load(['bptf_mediumBeta2' Mfile]); freq=['Beta2 (0.1-1 Hz)'];
+elseif frequency=='6'
+ iEEG_data=spm_eeg_load(['bptf_mediumTheta' Mfile]);   freq=['Theta (0.1-1 Hz)'];
+elseif frequency=='7'
+ iEEG_data=spm_eeg_load(['bptf_mediumDelta' Mfile]);  freq=['Delta (0.1-1 Hz)'];  
+elseif frequency=='8'
+   iEEG_data=spm_eeg_load(['bptf_mediumGamma' Mfile]);  freq=['Gamma (0.1-1 Hz)'];
+end
 end
 
-for HFB_slow_chan=1:size(HFB,1)
-    HFB_slow_ts(:,HFB_slow_chan)=HFB_slow(HFB_slow_chan,:)';      
-end
-
-for HFB_medium_chan=1:size(HFB,1)
-    HFB_medium_ts(:,HFB_medium_chan)=HFB_medium(HFB_medium_chan,:)';      
-end
-
-for Alpha_medium_chan=1:size(HFB,1)
-    Alpha_medium_ts(:,Alpha_medium_chan)=Alpha_medium(Alpha_medium_chan,:)';      
+for iEEG_chan=1:size(iEEG_data,1)
+    iEEG_ts(:,iEEG_chan)=iEEG_data(iEEG_chan,:)';      
 end
 
 end
@@ -126,15 +142,12 @@ end
 
 %% Transform time series from iEEG to iElvis order
 if BOLD=='iEEG'
-HFB_medium_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));
-alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
+iEEG_ts_iElvis=NaN(size(iEEG_ts,1),length(chanlabels));
 
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
-    HFB_slow_iElvis(:,new_ind)=HFB_slow_ts(:,curr_iEEG_chan);
-    HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
-    alpha_medium_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
+    iEEG_ts_iElvis(:,new_ind)=iEEG_ts(:,curr_iEEG_chan);
 end
 end
 
@@ -150,14 +163,8 @@ if BOLD=='iEEG'
     roi1_iEEG_num=iElvis_to_iEEG_chanlabel(roi1_num);
     roi2_iEEG_num=iElvis_to_iEEG_chanlabel(roi2_num);
     
-    if frequency=='1'
-    roi1_ts=HFB_medium_ts(:,roi1_iEEG_num);   
-    roi2_ts=HFB_medium_ts(:,roi2_iEEG_num);   
-    
-elseif frequency=='2'
-     roi1_ts=HFB_slow_ts(:,roi1_iEEG_num);   
-    roi2_ts=HFB_slow_ts(:,roi2_iEEG_num);  
-    end
+    roi1_ts=iEEG_ts(:,roi1_iEEG_num);   
+    roi2_ts=iEEG_ts(:,roi2_iEEG_num);      
 end
 
 %% Static FC
@@ -192,20 +199,12 @@ all_windows_corr=all_windows_corr';
 all_windows_fisher=all_windows_fisher';
 end
 
-
-
 %% Normalize time series
 roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
 
 %% Plots
-if BOLD=='iEEG'
-if frequency=='1'
-    freq=['HFB (0.1-1 Hz)'];
-elseif frequency=='2'
-        freq=['HFB (<0.1 Hz)'];
-end
-else
+if BOLD=='BOLD'
     freq=[''];
 end
 
@@ -217,8 +216,6 @@ elseif BOLD=='iEEG'
     step_size=iEEG_step/iEEG_sampling;
 end
 
-
-
 % Static FC
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
@@ -228,7 +225,8 @@ xlabel(['Time']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
 plot(1:length(roi1_ts),roi1_ts_norm,1:length(roi2_ts),roi2_ts_norm,'LineWidth',2);
-
+xlim([0,length(roi1_ts)]);
+legend([roi1],[roi2]);
 hold on;
 
 % Dynamic FC
