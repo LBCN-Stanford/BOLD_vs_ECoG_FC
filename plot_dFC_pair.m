@@ -337,7 +337,7 @@ if BOLD=='iEEG'
 all_windows_corr=all_windows_corr';
 all_windows_fisher=all_windows_fisher';
     end
-elseif frequency=='0'
+if frequency=='0'
      all_windows_HFB_corr=[]; all_windows_HFB_fisher=[];
   for i=1:iEEG_step:length(roi1_HFB_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
@@ -429,7 +429,8 @@ all_windows_Delta_fisher=all_windows_Delta_fisher';
 all_windows_Gamma_corr=all_windows_Gamma_corr';
 all_windows_Gamma_fisher=all_windows_Gamma_fisher';
 end
-    
+end
+
 %% Normalize time series
 if BOLD=='BOLD'
 roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
@@ -443,7 +444,19 @@ roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
 
     elseif frequency=='0'
         roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(roi1_HFB_medium_ts))/std(roi1_HFB_medium_ts);
-        
+        roi1_Alpha_medium_ts_norm=(roi1_Alpha_medium_ts-mean(roi1_Alpha_medium_ts))/std(roi1_Alpha_medium_ts);
+        roi1_Beta1_medium_ts_norm=(roi1_Beta1_medium_ts-mean(roi1_Beta1_medium_ts))/std(roi1_Beta1_medium_ts);
+        roi1_Beta2_medium_ts_norm=(roi1_Beta2_medium_ts-mean(roi1_Beta2_medium_ts))/std(roi1_Beta2_medium_ts);
+        roi1_Theta_medium_ts_norm=(roi1_Theta_medium_ts-mean(roi1_Theta_medium_ts))/std(roi1_Theta_medium_ts);
+        roi1_Delta_medium_ts_norm=(roi1_Delta_medium_ts-mean(roi1_Delta_medium_ts))/std(roi1_Delta_medium_ts);
+        roi1_Gamma_medium_ts_norm=(roi1_Gamma_medium_ts-mean(roi1_Gamma_medium_ts))/std(roi1_Gamma_medium_ts);
+        roi2_HFB_medium_ts_norm=(roi2_HFB_medium_ts-mean(roi2_HFB_medium_ts))/std(roi2_HFB_medium_ts);
+        roi2_Alpha_medium_ts_norm=(roi2_Alpha_medium_ts-mean(roi2_Alpha_medium_ts))/std(roi2_Alpha_medium_ts);
+        roi2_Beta1_medium_ts_norm=(roi2_Beta1_medium_ts-mean(roi2_Beta1_medium_ts))/std(roi2_Beta1_medium_ts);
+        roi2_Beta2_medium_ts_norm=(roi2_Beta2_medium_ts-mean(roi2_Beta2_medium_ts))/std(roi2_Beta2_medium_ts);
+        roi2_Theta_medium_ts_norm=(roi2_Theta_medium_ts-mean(roi2_Theta_medium_ts))/std(roi2_Theta_medium_ts);
+        roi2_Delta_medium_ts_norm=(roi2_Delta_medium_ts-mean(roi2_Delta_medium_ts))/std(roi2_Delta_medium_ts);
+        roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);  
     end
 end
 
@@ -461,6 +474,7 @@ elseif BOLD=='iEEG'
 end
 
 % Static FC
+if BOLD=='BOLD' frequency~='0'
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 subplot(2,1,1);
@@ -483,6 +497,21 @@ title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fish
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
+end
 
-
+% dFC for all frequencies on one plot
+if frequency=='0'
+plot(1:length(all_windows_HFB_fisher),all_windows_HFB_fisher,...
+    1:length(all_windows_Alpha_fisher),all_windows_Alpha_fisher,...
+    1:length(all_windows_Beta1_fisher),all_windows_Beta1_fisher,...
+    1:length(all_windows_Beta2_fisher),all_windows_Beta2_fisher,...
+    1:length(all_windows_Theta_fisher),all_windows_Theta_fisher,...
+    1:length(all_windows_Delta_fisher),all_windows_Delta_fisher,...
+    1:length(all_windows_Gamma_fisher),all_windows_Gamma_fisher,...
+    'LineWidth',2);
+title({['Dynamic FC: ' roi1 ' vs ' roi2]; ...
+    ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
+xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+end
 
