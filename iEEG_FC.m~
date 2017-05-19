@@ -16,20 +16,36 @@ depth=str2num(depth);
 %% Get file base name
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-Mfile=dir('btf_aMfff*');
+Mfile=dir('btf_aMpfff*');
+if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
+else
+    Mfile=dir('btf_aMfff*');
+    Mfile=Mfile(2,1).name;
+end
+SCPfile=dir('SCP_*');
+SCPfile=SCPfile(2,1).name;
+SCP=spm_eeg_load([SCPfile]);
 
 %% Load preprocessed iEEG data 
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
-
+if ~isempty(dir('pHFB*'))
 HFB=spm_eeg_load(['pHFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
 Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
+else
+HFB=spm_eeg_load(['HFB' Mfile]);
+HFB_slow=spm_eeg_load(['slowHFB' Mfile]);
+HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
+Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
+Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);    
+    
+end
 
 %% defaults
-HFB_spike_exclusion=0; HFB_zthresh=50 % exclude channels with HFB z-score spikes exceeding threshold
+HFB_spike_exclusion=0; HFB_zthresh=50; % exclude channels with HFB z-score spikes exceeding threshold
 BOLD_pipeline=1; % 1=GSR, 2=ICA-AROMA
 BOLD_smooth=1; % 1=smoothing, 0=no spatial smoothing (for GSR)
 Coords=1; % 1 = .PIAL, 2=brainmask_coords.mat
@@ -95,19 +111,33 @@ for Beta1_medium_chan=1:size(HFB,1)
     Beta1_medium_ts(:,Beta1_medium_chan)=Beta1_medium(Beta1_medium_chan,:)';      
 end
 
+for SCP_medium_chan=1:size(HFB,1)
+    SCP_medium_ts(:,SCP_medium_chan)=SCP(SCP_medium_chan,:)';      
+end
+
 %% Remove bad channels
 
 %% Transform time series from iEEG to iElvis order
 HFB_medium_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));
 alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
+SCP_medium_iElvis=NaN(size(SCP_medium_ts,1),length(chanlabels));
+HFB_slow_iElvis=NaN(size(HFB_slow_ts,1),length(chanlabels));
 
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
     HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
-    alpha_medium_iElvis(:,new_ind)=alpha
+    alpha_medium_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
+    SCP_medium_iElvis(:,new_ind)=SCP_medium_ts(:,curr_iEEG_chan);
+    HFB_slow_iElvis(:,new_ind)=HFB_slow_ts(:,curr_iEEG_chan);
 end
 
 %% Make FC matrix
 HFB_medium_corr=corrcoef(HFB_medium_iElvis);
+alpha_medium_corr=corrcoef(alpha_medium_iElvis);
+SCP_medium_corr=corrcoef(SCP_medium
+HFB_slow_corr=corrcoef(HFB_slow_iElvis);
 save('HFB_medium_corr','HFB_medium_corr');
+save('alpha_medium_corr','alpha_medium_corr');
+save('HFB_slow_corr','HFB_slow_corr');
+

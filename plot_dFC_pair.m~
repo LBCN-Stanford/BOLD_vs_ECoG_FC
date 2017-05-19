@@ -3,7 +3,9 @@
 Patient=input('Patient: ','s');
 BOLD=input('BOLD (1) or iEEG (2): ','s');
 if BOLD=='2'
-   frequency=input('HFB <0.1 Hz (1), HFB 0.1-1 Hz (2), alpha (3), beta1 (4), beta2 (5), Theta (6), Delta (7), Gamma (8): ','s'); 
+   frequency=input('all (0), HFB <0.1 Hz (1), HFB 0.1-1 Hz (2), alpha (3), beta1 (4), beta2 (5), Theta (6), Delta (7), Gamma (8): ','s'); 
+else
+    frequency=' ';
 end
 runs=input('run (e.g. 1): ','s');
 roi1=input('ROI 1 (e.g. AFS9): ','s');
@@ -80,46 +82,135 @@ if BOLD=='iEEG'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
 
 if ~isempty(dir('pHFB*'))
-    if frequency=='1'
+    if frequency=='1' || frequency=='0'
 iEEG_data=spm_eeg_load(['slowpHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
-    elseif frequency=='2'
-iEEG_data=spm_eeg_load(['bptf_mediumpHFB' Mfile]); freq=['HFB (0.1-
-    elseif frequency=='3'
-iEEG_data=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
-    elseif frequency=='4'
-iEEG_data=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
-    elseif frequency=='5'
-iEEG_data=spm_eeg_load(['bptf_mediumpBeta2' Mfile]);
-    elseif frequency=='6'
-iEEG_data=spm_eeg_load(['bptf_mediumpTheta' Mfile]);
-    elseif frequency=='7'
-iEEG_data=spm_eeg_load(['bptf_mediumpDelta' Mfile]);
-    elseif frequency=='8'
-iEEG_data=spm_eeg_load(['bptf_mediumpGamma' Mfile]);
+if frequency=='0'
+    HFB_slow=iEEG_data; iEEG_data=[];
+end
+    end
+    if frequency=='2' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumpHFB' Mfile]); freq=['HFB (0.1-1 Hz)'];
+if frequency=='0'
+    HFB_medium=iEEG_data; iEEG_data=[];
+end
+    end
+    if frequency=='3' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumpAlpha' Mfile]); freq=['Alpha (0.1-1 Hz)'];
+if frequency=='0'
+    Alpha_medium=iEEG_data; iEEG_data=[];
+end
+    end
+    if frequency=='4' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumpBeta1' Mfile]); freq=['Beta1 (0.1-1 Hz)'];
+if frequency=='0'
+    Beta1_medium=iEEG_data; iEEG_data=[];
+end
+    end
+    if frequency=='5' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumpBeta2' Mfile]); freq=['Beta2 (0.1-1 Hz)'];
+if frequency=='0'
+    Beta2_medium=iEEG_data; iEEG_data=[];
+end
+    end
+    if frequency=='6' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumpTheta' Mfile]); freq=['Theta (0.1-1 Hz)'];
+if frequency=='0'
+    Theta_medium=iEEG_data; iEEG_data=[];
+end
+    end
+    if frequency=='7' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumpDelta' Mfile]); freq=['Delta (0.1-1 Hz)'];
+if frequency=='0'
+    Delta_medium=iEEG_data; iEEG_data=[];
+end
+    end
+    if frequency=='8' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumpGamma' Mfile]); freq=['Gamma (0.1-1 Hz)'];
+if frequency=='0'
+    Gamma_medium=iEEG_data; iEEG_data=[];
+end
     end
 else
-if frequency=='1'
+if frequency=='1' || frequency=='0'
 iEEG_data=spm_eeg_load(['slowHFB' Mfile]);
-elseif frequency=='2'
-iEEG_data=spm_eeg_load(['bptf_mediumHFB' Mfile]);
-elseif frequency=='3'
-iEEG_data=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
-elseif frequency=='4'
-iEEG_data=spm_eeg_load(['bptf_mediumBeta1' Mfile]);
-elseif frequency=='5'
-iEEG_data=spm_eeg_load(['bptf_mediumBeta2' Mfile]);
-elseif frequency=='6'
- iEEG_data=spm_eeg_load(['bptf_mediumTheta' Mfile]);   
-elseif frequency=='7'
- iEEG_data=spm_eeg_load(['bptf_mediumDelta' Mfile]);    
-elseif frequency=='8'
-   iEEG_data=spm_eeg_load(['bptf_mediumGamma' Mfile]);  
+if frequency=='0'
+    HFB_slow=iEEG_data; iEEG_data=[];
+end
+end
+if frequency=='2' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
+if frequency=='0'
+    HFB_medium=iEEG_data; iEEG_data=[];
+end
+end
+if frequency=='3' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumAlpha' Mfile]); freq=['Alpha (0.1-1 Hz)'];
+if frequency=='0'
+    Alpha_medium=iEEG_data; iEEG_data=[];
+end
+end
+if frequency=='4' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumBeta1' Mfile]); freq=['Beta1 (0.1-1 Hz)'];
+if frequency=='0'
+    Beta1_medium=iEEG_data; iEEG_data=[];
+end
+end
+if frequency=='5' || frequency=='0'
+iEEG_data=spm_eeg_load(['bptf_mediumBeta2' Mfile]); freq=['Beta2 (0.1-1 Hz)'];
+if frequency=='0'
+    Beta2_medium=iEEG_data; iEEG_data=[];
+end
+end
+if frequency=='6' || frequency=='0'
+ iEEG_data=spm_eeg_load(['bptf_mediumTheta' Mfile]);   freq=['Theta (0.1-1 Hz)'];
+ if frequency=='0'
+    Theta_medium=iEEG_data; iEEG_data=[];
+end
+end
+if frequency=='7' || frequency=='0'
+ iEEG_data=spm_eeg_load(['bptf_mediumDelta' Mfile]);  freq=['Delta (0.1-1 Hz)']; 
+ if frequency=='0'
+    Delta_medium=iEEG_data; iEEG_data=[];
+end
+end
+if frequency=='8' || frequency=='0'
+   iEEG_data=spm_eeg_load(['bptf_mediumGamma' Mfile]);  freq=['Gamma (0.1-1 Hz)'];
+   if frequency=='0'
+    Gamma_medium=iEEG_data; iEEG_data=[];
+end
 end
 end
 
+if frequency ~='0'
 for iEEG_chan=1:size(iEEG_data,1)
     iEEG_ts(:,iEEG_chan)=iEEG_data(iEEG_chan,:)';      
 end
+end
+
+if frequency=='0'
+    for iEEG_chan=1:size(HFB_medium,1)
+    HFB_medium_ts(:,iEEG_chan)=HFB_medium(iEEG_chan,:)';      
+    end
+     for iEEG_chan=1:size(HFB_medium,1)
+    Alpha_medium_ts(:,iEEG_chan)=Alpha_medium(iEEG_chan,:)';      
+     end   
+    for iEEG_chan=1:size(HFB_medium,1)
+    Beta1_medium_ts(:,iEEG_chan)=Beta1_medium(iEEG_chan,:)';      
+end
+      for iEEG_chan=1:size(HFB_medium,1)
+    Beta2_medium_ts(:,iEEG_chan)=Beta2_medium(iEEG_chan,:)';      
+      end
+    for iEEG_chan=1:size(HFB_medium,1)
+    Theta_medium_ts(:,iEEG_chan)=Theta_medium(iEEG_chan,:)';      
+end
+       for iEEG_chan=1:size(HFB_medium,1)
+    Delta_medium_ts(:,iEEG_chan)=Delta_medium(iEEG_chan,:)';      
+       end
+    for iEEG_chan=1:size(HFB_medium,1)
+    Gamma_medium_ts(:,iEEG_chan)=Gamma_medium(iEEG_chan,:)';      
+end
+end
+
 
 end
 
@@ -142,13 +233,36 @@ end
 
 %% Transform time series from iEEG to iElvis order
 if BOLD=='iEEG'
+    if frequency~='0'
 iEEG_ts_iElvis=NaN(size(iEEG_ts,1),length(chanlabels));
-
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
     iEEG_ts_iElvis(:,new_ind)=iEEG_ts(:,curr_iEEG_chan);
 end
+
+    elseif frequency=='0'
+HFB_medium_ts_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));  
+Alpha_medium_ts_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
+Beta1_medium_ts_iElvis=NaN(size(Beta1_medium_ts,1),length(chanlabels));
+Beta2_medium_ts_iElvis=NaN(size(Beta2_medium_ts,1),length(chanlabels));
+Theta_medium_ts_iElvis=NaN(size(Theta_medium_ts,1),length(chanlabels));
+Delta_medium_ts_iElvis=NaN(size(Delta_medium_ts,1),length(chanlabels));
+Gamma_medium_ts_iElvis=NaN(size(Gamma_medium_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    HFB_medium_ts_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
+    Alpha_medium_ts_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
+    Beta1_medium_ts_iElvis(:,new_ind)=Beta1_medium_ts(:,curr_iEEG_chan);
+    Beta2_medium_ts_iElvis(:,new_ind)=Beta2_medium_ts(:,curr_iEEG_chan);
+    Theta_medium_ts_iElvis(:,new_ind)=Theta_medium_ts(:,curr_iEEG_chan);
+    Delta_medium_ts_iElvis(:,new_ind)=Delta_medium_ts(:,curr_iEEG_chan);
+    Gamma_medium_ts_iElvis(:,new_ind)=Gamma_medium_ts(:,curr_iEEG_chan);
+end
+
+    end  
 end
 
 %% Load ROI time series
@@ -162,13 +276,37 @@ end
 if BOLD=='iEEG'
     roi1_iEEG_num=iElvis_to_iEEG_chanlabel(roi1_num);
     roi2_iEEG_num=iElvis_to_iEEG_chanlabel(roi2_num);
-    
+
+    if frequency ~='0'
     roi1_ts=iEEG_ts(:,roi1_iEEG_num);   
-    roi2_ts=iEEG_ts(:,roi2_iEEG_num);      
+    roi2_ts=iEEG_ts(:,roi2_iEEG_num);   
+     elseif frequency=='0'
+         roi1_HFB_medium_ts=HFB_medium_ts(:,roi1_iEEG_num);
+         roi1_Alpha_medium_ts=Alpha_medium_ts(:,roi1_iEEG_num);
+         roi1_Beta1_medium_ts=Beta1_medium_ts(:,roi1_iEEG_num);
+         roi1_Beta2_medium_ts=Beta2_medium_ts(:,roi1_iEEG_num);
+         roi1_Theta_medium_ts=Theta_medium_ts(:,roi1_iEEG_num);
+         roi1_Delta_medium_ts=Delta_medium_ts(:,roi1_iEEG_num);
+         roi1_Gamma_medium_ts=Gamma_medium_ts(:,roi1_iEEG_num);
+         roi2_HFB_medium_ts=HFB_medium_ts(:,roi2_iEEG_num);
+         roi2_Alpha_medium_ts=Alpha_medium_ts(:,roi2_iEEG_num);
+         roi2_Beta1_medium_ts=Beta1_medium_ts(:,roi2_iEEG_num);
+         roi2_Beta2_medium_ts=Beta2_medium_ts(:,roi2_iEEG_num);
+         roi2_Theta_medium_ts=Theta_medium_ts(:,roi2_iEEG_num);
+         roi2_Delta_medium_ts=Delta_medium_ts(:,roi2_iEEG_num);
+         roi2_Gamma_medium_ts=Gamma_medium_ts(:,roi2_iEEG_num);
+end
 end
 
 %% Static FC
+if BOLD=='BOLD'
 static_fc=corr(roi1_ts,roi2_ts);
+end
+if BOLD=='iEEG'
+    if frequency~='0'
+   static_fc=corr(roi1_ts,roi2_ts); 
+    end
+end
 
 %% Sliding windows
 if BOLD=='BOLD'
@@ -184,6 +322,7 @@ end
 end
 
 if BOLD=='iEEG'
+    if frequency~='0'
     all_windows_corr=[]; all_windows_fisher=[];
   %for i=1:iEEG_step:floor(length(roi1_ts)/iEEG_step);
   for i=1:iEEG_step:length(roi1_ts)-iEEG_window_size;
@@ -197,24 +336,119 @@ if BOLD=='iEEG'
   end  
 all_windows_corr=all_windows_corr';
 all_windows_fisher=all_windows_fisher';
-end
+    end
+elseif frequency=='0'
+     all_windows_HFB_corr=[]; all_windows_HFB_fisher=[];
+  for i=1:iEEG_step:length(roi1_HFB_medium_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_HFB_medium_ts(i:a);
+    roi2_window_ts=roi2_HFB_medium_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_HFB_corr=[all_windows_HFB_corr window_corr];   
+   all_windows_HFB_fisher=[all_windows_HFB_fisher window_fisher];
+  end  
+all_windows_HFB_corr=all_windows_HFB_corr';
+all_windows_HFB_fisher=all_windows_HFB_fisher';
 
+       all_windows_Alpha_corr=[]; all_windows_Alpha_fisher=[];
+  for i=1:iEEG_step:length(roi1_Alpha_medium_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Alpha_medium_ts(i:a);
+    roi2_window_ts=roi2_Alpha_medium_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Alpha_corr=[all_windows_Alpha_corr window_corr];   
+   all_windows_Alpha_fisher=[all_windows_Alpha_fisher window_fisher];
+  end  
+all_windows_Alpha_corr=all_windows_Alpha_corr';
+all_windows_Alpha_fisher=all_windows_Alpha_fisher';
+
+       all_windows_Beta1_corr=[]; all_windows_Beta1_fisher=[];
+  for i=1:iEEG_step:length(roi1_Beta1_medium_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Beta1_medium_ts(i:a);
+    roi2_window_ts=roi2_Beta1_medium_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Beta1_corr=[all_windows_Beta1_corr window_corr];   
+   all_windows_Beta1_fisher=[all_windows_Beta1_fisher window_fisher];
+  end  
+all_windows_Beta1_corr=all_windows_Beta1_corr';
+all_windows_Beta1_fisher=all_windows_Beta1_fisher';
+
+       all_windows_Beta2_corr=[]; all_windows_Beta2_fisher=[];
+  for i=1:iEEG_step:length(roi1_Beta2_medium_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Beta2_medium_ts(i:a);
+    roi2_window_ts=roi2_Beta2_medium_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Beta2_corr=[all_windows_Beta2_corr window_corr];   
+   all_windows_Beta2_fisher=[all_windows_Beta2_fisher window_fisher];
+  end  
+all_windows_Beta2_corr=all_windows_Beta2_corr';
+all_windows_Beta2_fisher=all_windows_Beta2_fisher';
+
+       all_windows_Theta_corr=[]; all_windows_Theta_fisher=[];
+  for i=1:iEEG_step:length(roi1_Theta_medium_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Theta_medium_ts(i:a);
+    roi2_window_ts=roi2_Theta_medium_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Theta_corr=[all_windows_Theta_corr window_corr];   
+   all_windows_Theta_fisher=[all_windows_Theta_fisher window_fisher];
+  end  
+all_windows_Theta_corr=all_windows_Theta_corr';
+all_windows_Theta_fisher=all_windows_Theta_fisher';
+
+       all_windows_Delta_corr=[]; all_windows_Delta_fisher=[];
+  for i=1:iEEG_step:length(roi1_Delta_medium_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Delta_medium_ts(i:a);
+    roi2_window_ts=roi2_Delta_medium_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Delta_corr=[all_windows_Delta_corr window_corr];   
+   all_windows_Delta_fisher=[all_windows_Delta_fisher window_fisher];
+  end  
+all_windows_Delta_corr=all_windows_Delta_corr';
+all_windows_Delta_fisher=all_windows_Delta_fisher';
+
+       all_windows_Gamma_corr=[]; all_windows_Gamma_fisher=[];
+  for i=1:iEEG_step:length(roi1_Gamma_medium_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Gamma_medium_ts(i:a);
+    roi2_window_ts=roi2_Gamma_medium_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Gamma_corr=[all_windows_Gamma_corr window_corr];   
+   all_windows_Gamma_fisher=[all_windows_Gamma_fisher window_fisher];
+  end  
+all_windows_Gamma_corr=all_windows_Gamma_corr';
+all_windows_Gamma_fisher=all_windows_Gamma_fisher';
+end
+    
 %% Normalize time series
+if BOLD=='BOLD'
 roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
+end
+
+if BOLD=='iEEG'
+    if frequency~='0'
+   roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
+roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
+
+    elseif frequency=='0'
+        roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(HFBM_mediu
+        
+    end
+end
 
 %% Plots
-if BOLD=='iEEG'
-if frequency=='1'
-    freq=['HFB (0.1-1 Hz)'];
-elseif frequency=='2'
-        freq=['HFB (<0.1 Hz)'];
-elseif frequency=='3'
-    freq=['Alpha (0.1-1 Hz)'];
-elseif frequency=='4'
-    freq=['Beta1 (0.1-1 Hz)'];
-end
-else
+if BOLD=='BOLD'
     freq=[''];
 end
 
