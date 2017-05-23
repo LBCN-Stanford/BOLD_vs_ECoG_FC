@@ -40,6 +40,7 @@ for i=1:size(corr_allseeds_allfreqs,1)
         'LineWidth',2,'Color',[.8 .8 .8],'MarkerSize',20,'MarkerEdgeColor',[.6 .6 .6]);
     
     hold on
+   set(gca,'box','off'); 
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
@@ -47,7 +48,8 @@ title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
    set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'', 'θ', 'δ', 'α','β1','β2','γ','HFB'})
 ylabel('BOLD-ECoG partial correlation (r)'); 
-        
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_allfreqs']));
+close;
     end
 end
 
