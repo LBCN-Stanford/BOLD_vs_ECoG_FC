@@ -460,8 +460,6 @@ roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
     end
 end
 
-pause
-
 %% Plots
 if BOLD=='BOLD'
     freq=[''];
@@ -476,6 +474,7 @@ elseif BOLD=='iEEG'
 end
 
 % Static FC
+if BOLD=='BOLD' frequency~='0'
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 subplot(2,1,1);
@@ -498,13 +497,22 @@ title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fish
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
-
+end
 
 % dFC for all frequencies on one plot
+if frequency=='0'
 plot(1:length(all_windows_HFB_fisher),all_windows_HFB_fisher,...
+    1:length(all_windows_Alpha_fisher),all_windows_Alpha_fisher,...
+    1:length(all_windows_Beta1_fisher),all_windows_Beta1_fisher,...
+    1:length(all_windows_Beta2_fisher),all_windows_Beta2_fisher,...
+    1:length(all_windows_Theta_fisher),all_windows_Theta_fisher,...
+    1:length(all_windows_Delta_fisher),all_windows_Delta_fisher,...
+    1:length(all_windows_Gamma_fisher),all_windows_Gamma_fisher,...
     'LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+
+end
 
