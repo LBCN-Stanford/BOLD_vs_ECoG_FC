@@ -513,6 +513,20 @@ title({['Dynamic FC: ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+legend('HFB','α','β1','β2','θ','δ','γ','Location','southeast')
+
+% dFC cross-correlation of frequencies
+all_windows_allfreqs=[all_windows_Delta_fisher all_windows_Theta_fisher all_windows_Alpha_fisher ...
+    all_windows_Beta1_fisher all_windows_Beta2_fisher all_windows_Gamma_fisher all_windows_HFB_fisher];
+
+xcorr_allfreqs=corrcoeff(all_windows_allfreqs);
+
+FigHandle = figure(1);
+set(FigHandle,'Position',[50, 50, 400, 300]);
+imagesc(xco,[-0.1 0.4]); h=colorbar('vert'); colormap jet
+set(h,'fontsize',16);
+title(['Dynamic FC cross-correlation of frequencies'])
 
 end
 

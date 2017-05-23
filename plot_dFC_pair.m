@@ -515,5 +515,23 @@ xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['C
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
 legend('HFB','α','β1','β2','θ','δ','γ','Location','southeast')
+pause; close;
+
+% dFC cross-correlation of frequencies
+all_windows_allfreqs=[all_windows_Delta_fisher all_windows_Theta_fisher all_windows_Alpha_fisher ...
+    all_windows_Beta1_fisher all_windows_Beta2_fisher all_windows_Gamma_fisher all_windows_HFB_fisher];
+
+xcorr_allfreqs=corrcoef(all_windows_allfreqs);
+
+FigHandle = figure(1);
+set(FigHandle,'Position',[50, 50, 700, 600]);
+set(gcf,'color','w');
+imagesc(xcorr_allfreqs,[-1 1]); h=colorbar('vert'); colormap jet
+set(h,'fontsize',16);
+set(get(h,'title'),'string','r');
+set(gca,'XTickLabel',{'θ', 'δ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
+set(gca,'YTickLabel',{'θ', 'δ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
+title(['Dynamic FC cross-correlation of frequencies'])
+
 end
 
