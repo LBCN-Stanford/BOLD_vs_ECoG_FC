@@ -2120,7 +2120,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Gamma=Gamma_mat(:,i);
  
  curr_elec_SCP=SCP_mat(:,i);
- curr_elec_HFBslow=slow_mat(:,i);
+ curr_elec_HFB_slow=slow_mat(:,i);
  curr_elec_distance=distances_nan(:,i);
  curr_elec_BOLD(isnan(curr_elec_BOLD))=[];
  curr_elec_HFB(isnan(curr_elec_HFB))=[];
@@ -2138,7 +2138,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Delta_medium(isnan(curr_elec_Delta_medium))=[];
  curr_elec_Gamma_medium(isnan(curr_elec_Gamma_medium))=[];
  curr_elec_SCP(isnan(curr_elec_SCP))=[];
- curr_elec_HFBslow(isnan(curr_elec_HFBslow))=[];
+ curr_elec_HFB_slow(isnan(curr_elec_HFB_slow))=[];
  curr_elec_distance(isnan(curr_elec_distance))=[];
  
  curr_elec_BOLD=fisherz(curr_elec_BOLD);
@@ -2158,7 +2158,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Gamma_medium=fisherz(curr_elec_Gamma_medium);
  curr_elec_SCP=fisherz(curr_elec_SCP);
  
- curr_elec_HFBslow=fisherz(curr_elec_HFBslow);
+ curr_elec_HFB_slow=fisherz(curr_elec_HFB_slow);
  elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB);
  elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha);
  elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1);
@@ -2166,18 +2166,31 @@ for i=1:length(BOLD_mat);
  elec_BOLD_Theta_corr=corr(curr_elec_BOLD,curr_elec_Theta);
  elec_BOLD_Delta_corr=corr(curr_elec_BOLD,curr_elec_Delta);
  elec_BOLD_Gamma_corr=corr(curr_elec_BOLD,curr_elec_Gamma);
- 
+  elec_BOLD_HFB_medium_corr=corr(curr_elec_BOLD,curr_elec_HFB_medium);
+ elec_BOLD_alpha_medium_corr=corr(curr_elec_BOLD,curr_elec_alpha_medium);
+ elec_BOLD_beta1_medium_corr=corr(curr_elec_BOLD,curr_elec_beta1_medium);
+ elec_BOLD_beta2_medium_corr=corr(curr_elec_BOLD,curr_elec_beta2_medium);
+ elec_BOLD_Theta_medium_corr=corr(curr_elec_BOLD,curr_elec_Theta_medium);
+ elec_BOLD_Delta_medium_corr=corr(curr_elec_BOLD,curr_elec_Delta_medium);
+ elec_BOLD_Gamma_medium_corr=corr(curr_elec_BOLD,curr_elec_Gamma_medium);
  elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP);
- elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow);
+ elec_BOLD_HFB_slow_corr=corr(curr_elec_BOLD,curr_elec_HFB_slow);
  [elec_BOLD_HFB_partialcorr,p_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
- [elec_BOLD_HFBslow_partialcorr,p_partial_slow]=partialcorr(curr_elec_BOLD,curr_elec_HFBslow,curr_elec_distance);
- elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
- elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
- elec_BOLD_beta2_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta2,curr_elec_distance);
- elec_BOLD_Theta_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Theta,curr_elec_distance);
- elec_BOLD_Delta_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Delta,curr_elec_distance);
- elec_BOLD_Gamma_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Gamma,curr_elec_distance);
- elec_BOLD_SCP_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_SCP,curr_elec_distance);
+ [elec_BOLD_HFB_slow_partialcorr,p_slow_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB_slow,curr_elec_distance);
+ [elec_BOLD_alpha_partialcorr,p_alpha_partial]=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
+ [elec_BOLD_beta1_partialcorr,p_beta1_partial]=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
+ [elec_BOLD_beta2_partialcorr,p_beta2_partial]=partialcorr(curr_elec_BOLD,curr_elec_beta2,curr_elec_distance);
+ [elec_BOLD_Theta_partialcorr,p_Theta_partial]=partialcorr(curr_elec_BOLD,curr_elec_Theta,curr_elec_distance);
+ [elec_BOLD_Delta_partialcorr,p_Delta_partial]=partialcorr(curr_elec_BOLD,curr_elec_Delta,curr_elec_distance);
+ [elec_BOLD_Gamma_partialcorr,p_Gamma_partial]=partialcorr(curr_elec_BOLD,curr_elec_Gamma,curr_elec_distance);
+  [elec_BOLD_alpha_medium_partialcorr,p_alpha_medium_partial]=partialcorr(curr_elec_BOLD,curr_elec_alpha_medium,curr_elec_distance);
+ [elec_BOLD_beta1_medium_partialcorr,p_beta1_medium_partial]=partialcorr(curr_elec_BOLD,curr_elec_beta1_medium,curr_elec_distance);
+ [elec_BOLD_beta2_medium_partialcorr,p_beta2_medium_partial]=partialcorr(curr_elec_BOLD,curr_elec_beta2_medium,curr_elec_distance);
+ [elec_BOLD_Theta_medium_partialcorr,p_Theta_medium_partial]=partialcorr(curr_elec_BOLD,curr_elec_Theta_medium,curr_elec_distance);
+ [elec_BOLD_Delta_medium_partialcorr,p_Delta_medium_partial]=partialcorr(curr_elec_BOLD,curr_elec_Delta_medium,curr_elec_distance);
+ [elec_BOLD_Gamma_medium_partialcorr,p_Gamma_medium_partial]=partialcorr(curr_elec_BOLD,curr_elec_Gamma_medium,curr_elec_distance);
+ [elec_BOLD_HFB_medium_partialcorr,p_medium_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB_medium,curr_elec_distance);
+ [elec_BOLD_SCP_partialcorr,p_SCP_partial]=partialcorr(curr_elec_BOLD,curr_elec_SCP,curr_elec_distance);
  
  rho_elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB,'type','Spearman');
  rho_elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha,'type','Spearman');
@@ -2186,29 +2199,44 @@ for i=1:length(BOLD_mat);
  rho_elec_BOLD_Theta_corr=corr(curr_elec_BOLD,curr_elec_Theta,'type','Spearman');
   rho_elec_BOLD_Delta_corr=corr(curr_elec_BOLD,curr_elec_Delta,'type','Spearman');
    rho_elec_BOLD_Gamma_corr=corr(curr_elec_BOLD,curr_elec_Gamma,'type','Spearman');
+    rho_elec_BOLD_HFB_medium_corr=corr(curr_elec_BOLD,curr_elec_HFB_medium,'type','Spearman');
+ rho_elec_BOLD_alpha_medium_corr=corr(curr_elec_BOLD,curr_elec_alpha_medium,'type','Spearman');
+ rho_elec_BOLD_beta1_medium_corr=corr(curr_elec_BOLD,curr_elec_beta1_medium,'type','Spearman');
+ rho_elec_BOLD_beta2_medium_corr=corr(curr_elec_BOLD,curr_elec_beta2_medium,'type','Spearman');
+ rho_elec_BOLD_Theta_medium_corr=corr(curr_elec_BOLD,curr_elec_Theta_medium,'type','Spearman');
+  rho_elec_BOLD_Delta_medium_corr=corr(curr_elec_BOLD,curr_elec_Delta_medium,'type','Spearman');
+   rho_elec_BOLD_Gamma_medium_corr=corr(curr_elec_BOLD,curr_elec_Gamma_medium,'type','Spearman');  
    rho_elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP,'type','Spearman');
- rho_elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow,'type','Spearman');
+ rho_elec_BOLD_HFB_slow_corr=corr(curr_elec_BOLD,curr_elec_HFB_slow,'type','Spearman');
  
  rho_elec_BOLD_HFB_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance,'type','Spearman');
- rho_elec_BOLD_HFBslow_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFBslow,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_HFB_slow_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB_slow,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_beta2_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta2,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Theta_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Theta,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Delta_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Delta,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Gamma_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Gamma,curr_elec_distance,'type','Spearman');
+  rho_elec_BOLD_HFB_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB_medium,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_alpha_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha_medium,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_beta1_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1_medium,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_HFB_slow_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB_slow,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_beta2_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta2_medium,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_Theta_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Theta_medium,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_Delta_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Delta_medium,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_Gamma_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Gamma_medium,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_SCP_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_SCP,curr_elec_distance,'type','Spearman');
  elec_name=char(parcOut(i,1)); 
  
  if plotting=='1' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_HFB,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_HFB_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs HFB (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_HFB_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_HFB_medium_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_medium_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFB_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_medium_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2223,23 +2251,23 @@ elseif BOLD_pipeline==4
 end
  close;
  if use_elec==1
- partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
- p_BOLD_HFB_allelecs(i,:)=p_partial;
+ partialcorr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_partialcorr;
+ p_BOLD_HFB_medium_allelecs(i,:)=p_medium_partial;
    else
-  partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
-   p_BOLD_HFB_allelecs(i,:)=NaN;
+  partialcorr_BOLD_HFB_medium_allelecs(i,:)=NaN; 
+   p_BOLD_HFB_medium_allelecs(i,:)=NaN;
  end
  end
  
  if plotting=='2' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_alpha,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_alpha_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs alpha (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_alpha_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_alpha_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_alpha_medium_corr) '; rho = ' num2str(rho_elec_BOLD_alpha_medium_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_alpha_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_medium_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('alpha (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2254,23 +2282,23 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
- partialcorr_BOLD_alpha_allelecs(i,:)=elec_BOLD_alpha_partialcorr;
- p_BOLD_alpha_allelecs(i,:)=p_partial;
+ partialcorr_BOLD_alpha_medium_allelecs(i,:)=elec_BOLD_alpha_medium_partialcorr;
+ p_BOLD_alpha_medium_allelecs(i,:)=p_alpha_medium_partial;
    else
-  partialcorr_BOLD_alpha_allelecs(i,:)=NaN; 
-   p_BOLD_alpha_allelecs(i,:)=NaN;
+  partialcorr_BOLD_alpha_medium_allelecs(i,:)=NaN; 
+   p_BOLD_alpha_medium_allelecs(i,:)=NaN;
  end
  end
 
 if plotting=='3' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_HFBslow,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_HFB_slow,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs HFB (<0.1) FC']; ...
-    ['r = ' num2str(elec_BOLD_HFBslow_corr) '; rho = ' num2str(rho_elec_BOLD_HFBslow_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_HFBslow_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFBslow_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_HFB_slow_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_slow_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFB_slow_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_slow_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('HFB (<0.1) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2285,23 +2313,23 @@ elseif BOLD_pipeline==4
 end
  close;
  if use_elec==1
- partialcorr_BOLD_HFBslow_allelecs(i,:)=elec_BOLD_HFBslow_partialcorr;
- p_BOLD_HFBslow_allelecs(i,:)=p_partial;
+ partialcorr_BOLD_HFB_slow_allelecs(i,:)=elec_BOLD_HFB_slow_partialcorr;
+ p_BOLD_HFB_slow_allelecs(i,:)=p_slow_partial;
    else
-  partialcorr_BOLD_HFBslow_allelecs(i,:)=NaN; 
-   p_BOLD_HFBslow_allelecs(i,:)=NaN;
+  partialcorr_BOLD_HFB_slow_allelecs(i,:)=NaN; 
+   p_BOLD_HFB_slow_allelecs(i,:)=NaN;
  end
 end
 
   if plotting=='4' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_beta1,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_beta1_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs beta1 (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_beta1_corr) '; rho = ' num2str(rho_elec_BOLD_beta1_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_beta1_partialcorr) '; rho = ' num2str(rho_elec_BOLD_beta1_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_beta1_medium_corr) '; rho = ' num2str(rho_elec_BOLD_beta1_medium_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_beta1_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_beta1_medium_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('beta1 (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2316,23 +2344,23 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
- partialcorr_BOLD_beta1_allelecs(i,:)=elec_BOLD_beta1_partialcorr;
- p_BOLD_beta1_allelecs(i,:)=p_partial;
+ partialcorr_BOLD_beta1_medium_allelecs(i,:)=elec_BOLD_beta1_medium_partialcorr;
+ p_BOLD_beta1_medium_allelecs(i,:)=p_beta1_medium_partial;
    else
-  partialcorr_BOLD_beta1_allelecs(i,:)=NaN; 
-   p_BOLD_beta1_allelecs(i,:)=NaN;
+  partialcorr_BOLD_beta1_medium_allelecs(i,:)=NaN; 
+   p_BOLD_beta1_medium_allelecs(i,:)=NaN;
  end
   end
  
   if plotting=='5' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_beta2,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_beta2_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs beta2 (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_beta2_corr) '; rho = ' num2str(rho_elec_BOLD_beta2_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_beta2_partialcorr) '; rho = ' num2str(rho_elec_BOLD_beta2_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_beta2_medium_corr) '; rho = ' num2str(rho_elec_BOLD_beta2_medium_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_beta2_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_beta2_medium_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('beta2 (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2347,23 +2375,23 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
- partialcorr_BOLD_beta2_allelecs(i,:)=elec_BOLD_beta2_partialcorr;
- p_BOLD_beta2_allelecs(i,:)=p_partial;
+ partialcorr_BOLD_beta2_medium_allelecs(i,:)=elec_BOLD_beta2_medium_partialcorr;
+ p_BOLD_beta2_medium_allelecs(i,:)=p_beta2_medium_partial;
    else
-  partialcorr_BOLD_beta2_allelecs(i,:)=NaN; 
-   p_BOLD_beta2_allelecs(i,:)=NaN;
+  partialcorr_BOLD_beta2_medium_allelecs(i,:)=NaN; 
+   p_BOLD_beta2_medium_allelecs(i,:)=NaN;
  end
   end
  
  if plotting=='6' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_Theta,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_Theta_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs Theta (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_Theta_corr) '; rho = ' num2str(rho_elec_BOLD_Theta_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_Theta_partialcorr) '; rho = ' num2str(rho_elec_BOLD_Theta_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_Theta_medium_corr) '; rho = ' num2str(rho_elec_BOLD_Theta_medium_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_Theta_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_Theta_medium_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('Theta (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2378,23 +2406,23 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
- partialcorr_BOLD_Theta_allelecs(i,:)=elec_BOLD_Theta_partialcorr;
- p_BOLD_Theta_allelecs(i,:)=p_partial;
+ partialcorr_BOLD_Theta_medium_allelecs(i,:)=elec_BOLD_Theta_medium_partialcorr;
+ p_BOLD_Theta_medium_allelecs(i,:)=p_Theta_medium_partial;
    else
-  partialcorr_BOLD_Theta_allelecs(i,:)=NaN; 
-   p_BOLD_Theta_allelecs(i,:)=NaN;
+  partialcorr_BOLD_Theta_medium_allelecs(i,:)=NaN; 
+   p_BOLD_Theta_medium_allelecs(i,:)=NaN;
  end
  end
  
   if plotting=='7' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_Delta,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_Delta_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs Delta (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_Delta_corr) '; rho = ' num2str(rho_elec_BOLD_Delta_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_Delta_partialcorr) '; rho = ' num2str(rho_elec_BOLD_Delta_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_Delta_medium_corr) '; rho = ' num2str(rho_elec_BOLD_Delta_medium_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_Delta_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_Delta_medium_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('Delta (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2409,23 +2437,23 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
- partialcorr_BOLD_Delta_allelecs(i,:)=elec_BOLD_Delta_partialcorr;
- p_BOLD_Delta_allelecs(i,:)=p_partial;
+ partialcorr_BOLD_Delta_medium_allelecs(i,:)=elec_BOLD_Delta_medium_partialcorr;
+ p_BOLD_Delta_medium_allelecs(i,:)=p_Delta_medium_partial;
    else
-  partialcorr_BOLD_Delta_allelecs(i,:)=NaN; 
-   p_BOLD_Delta_allelecs(i,:)=NaN;
+  partialcorr_BOLD_Delta_medium_allelecs(i,:)=NaN; 
+   p_BOLD_Delta_medium_allelecs(i,:)=NaN;
  end
   end
  
   if plotting=='8' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_Gamma,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_Gamma_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs Gamma (0.1-1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_Gamma_corr) '; rho = ' num2str(rho_elec_BOLD_Gamma_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_Gamma_partialcorr) '; rho = ' num2str(rho_elec_BOLD_Gamma_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_Gamma_medium_corr) '; rho = ' num2str(rho_elec_BOLD_Gamma_medium_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_Gamma_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_Gamma_medium_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('Gamma (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2440,11 +2468,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
- partialcorr_BOLD_Gamma_allelecs(i,:)=elec_BOLD_Gamma_partialcorr;
- p_BOLD_Gamma_allelecs(i,:)=p_partial;
+ partialcorr_BOLD_Gamma_medium_allelecs(i,:)=elec_BOLD_Gamma_medium_partialcorr;
+ p_BOLD_Gamma_medium_allelecs(i,:)=p_Gamma_medium_partial;
    else
-  partialcorr_BOLD_Gamma_allelecs(i,:)=NaN; 
-   p_BOLD_Gamma_allelecs(i,:)=NaN;
+  partialcorr_BOLD_Gamma_medium_allelecs(i,:)=NaN; 
+   p_BOLD_Gamma_medium_allelecs(i,:)=NaN;
  end
   end
   
@@ -2472,7 +2500,7 @@ end
 close;
  if use_elec==1
  partialcorr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_partialcorr;
- p_BOLD_SCP_allelecs(i,:)=p_partial;
+ p_BOLD_SCP_allelecs(i,:)=p_SCP_partial;
    else
   partialcorr_BOLD_SCP_allelecs(i,:)=NaN; 
    p_BOLD_SCP_allelecs(i,:)=NaN;
@@ -2483,36 +2511,36 @@ end
 
 %% save correlations
 if plotting=='1' || plotting=='0'
-save('partialcorr_BOLD_HFB_allelecs','partialcorr_BOLD_HFB_allelecs');
-save('p_BOLD_HFB_allelecs','p_BOLD_HFB_allelecs');
+save('partialcorr_BOLD_HFB_medium_allelecs','partialcorr_BOLD_HFB_medium_allelecs');
+save('p_BOLD_HFB_medium_allelecs','p_BOLD_HFB_medium_allelecs');
 end
 if plotting=='2' || plotting=='0'
-   save('partialcorr_BOLD_alpha_allelecs','partialcorr_BOLD_alpha_allelecs');
-save('p_BOLD_alpha_allelecs','p_BOLD_alpha_allelecs'); 
+   save('partialcorr_BOLD_alpha_medium_allelecs','partialcorr_BOLD_alpha_medium_allelecs');
+save('p_BOLD_alpha_medium_allelecs','p_BOLD_alpha_medium_allelecs'); 
 end
   if plotting=='3' || plotting=='0'
-   save('partialcorr_BOLD_HFBslow_allelecs','partialcorr_BOLD_HFBslow_allelecs');
-save('p_BOLD_HFBslow_allelecs','p_BOLD_HFBslow_allelecs'); 
+   save('partialcorr_BOLD_HFB_slow_allelecs','partialcorr_BOLD_HFB_slow_allelecs');
+save('p_BOLD_HFB_slow_allelecs','p_BOLD_HFB_slow_allelecs'); 
   end
   if plotting=='4' || plotting=='0'
-   save('partialcorr_BOLD_beta1_allelecs','partialcorr_BOLD_beta1_allelecs');
-save('p_BOLD_beta1_allelecs','p_BOLD_beta1_allelecs'); 
+   save('partialcorr_BOLD_beta1_medium_allelecs','partialcorr_BOLD_beta1_medium_allelecs');
+save('p_BOLD_beta1_medium_allelecs','p_BOLD_beta1_medium_allelecs'); 
   end
   if plotting=='5' || plotting=='0'
-   save('partialcorr_BOLD_beta2_allelecs','partialcorr_BOLD_beta2_allelecs');
-save('p_BOLD_beta2_allelecs','p_BOLD_beta2_allelecs'); 
+   save('partialcorr_BOLD_beta2_medium_allelecs','partialcorr_BOLD_beta2_medium_allelecs');
+save('p_BOLD_beta2_medium_allelecs','p_BOLD_beta2_medium_allelecs'); 
   end
   if plotting=='6' || plotting=='0'
-   save('partialcorr_BOLD_Theta_allelecs','partialcorr_BOLD_Theta_allelecs');
-save('p_BOLD_Theta_allelecs','p_BOLD_Theta_allelecs');
+   save('partialcorr_BOLD_Theta_medium_allelecs','partialcorr_BOLD_Theta_medium_allelecs');
+save('p_BOLD_Theta_medium_allelecs','p_BOLD_Theta_medium_allelecs');
   end
   if plotting=='7' || plotting=='0'
-   save('partialcorr_BOLD_Delta_allelecs','partialcorr_BOLD_Delta_allelecs');
-save('p_BOLD_Delta_allelecs','p_BOLD_Delta_allelecs'); 
+   save('partialcorr_BOLD_Delta_medium_allelecs','partialcorr_BOLD_Delta_medium_allelecs');
+save('p_BOLD_Delta_medium_allelecs','p_BOLD_Delta_medium_allelecs'); 
   end
   if plotting=='8' || plotting=='0'
-   save('partialcorr_BOLD_Gamma_allelecs','partialcorr_BOLD_Gamma_allelecs');
-save('p_BOLD_Gamma_allelecs','p_BOLD_Gamma_allelecs'); 
+   save('partialcorr_BOLD_Gamma_medium_allelecs','partialcorr_BOLD_Gamma_medium_allelecs');
+save('p_BOLD_Gamma_medium_allelecs','p_BOLD_Gamma_medium_allelecs'); 
   end
 
 elec_names=parcOut(:,1);

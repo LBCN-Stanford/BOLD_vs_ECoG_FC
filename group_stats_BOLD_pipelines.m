@@ -12,30 +12,30 @@ cd([globalECoGDir '/Rest/' Patient '/Run' runname '/BOLD_ECoG_figs']);
 fsDir=getFsurfSubDir();
 
 cd('GSR');
-load('partialcorr_BOLD_HFB_allelecs.mat');
+load('partialcorr_BOLD_HFB__medium_allelecs.mat');
 GSR_corr=partialcorr_BOLD_HFB_allelecs;
-load('p_BOLD_HFB_allelecs.mat');
+load('p_BOLD_HFB_medium_allelecs.mat');
 GSR_p=p_BOLD_HFB_allelecs;
 
 cd ..
 cd('NoGSR');
-load('partialcorr_BOLD_HFB_allelecs.mat');
+load('partialcorr_BOLD_HFB_medium_allelecs.mat');
 NoGSR_corr=partialcorr_BOLD_HFB_allelecs;
-load('p_BOLD_HFB_allelecs.mat');
+load('p_BOLD_HFB_medium_allelecs.mat');
 NoGSR_p=p_BOLD_HFB_allelecs;
 
 cd ..
 cd('AROMA');
-load('partialcorr_BOLD_HFB_allelecs.mat');
+load('partialcorr_BOLD_HFB_medium_allelecs.mat');
 AROMA_corr=partialcorr_BOLD_HFB_allelecs;
 load('p_BOLD_HFB_allelecs.mat');
 AROMA_p=p_BOLD_HFB_allelecs;
 
 cd ..
 cd('aCompCor');
-load('partialcorr_BOLD_HFB_allelecs.mat');
+load('partialcorr_BOLD_HFB_medium_allelecs.mat');
 aCompCor_corr=partialcorr_BOLD_HFB_allelecs;
-load('p_BOLD_HFB_allelecs.mat');
+load('p_BOLD_HFB_medium_allelecs.mat');
 aCompCor_p=p_BOLD_HFB_allelecs;
 
 pvals_GSR=GSR_p;

@@ -31,13 +31,13 @@ for sub=1:length(subjects)
     elec=elecs(sub)
 %% Load partial corr values for each freq
 cd([globalECoGDir '/Rest/' Patient '/Run' ecog_runname '/BOLD_ECoG_figs/GSR']);
-load('partialcorr_BOLD_Delta_allelecs.mat');
-load('partialcorr_BOLD_Theta_allelecs.mat');
-load('partialcorr_BOLD_alpha_allelecs.mat');
-load('partialcorr_BOLD_beta1_allelecs.mat');
-load('partialcorr_BOLD_beta2_allelecs.mat');
-load('partialcorr_BOLD_Gamma_allelecs.mat');
-load('partialcorr_BOLD_HFB_allelecs.mat');
+load('partialcorr_BOLD_Delta_medium_allelecs.mat');
+load('partialcorr_BOLD_Theta_medium_allelecs.mat');
+load('partialcorr_BOLD_alpha_medium_allelecs.mat');
+load('partialcorr_BOLD_beta1_medium_allelecs.mat');
+load('partialcorr_BOLD_beta2_medium_allelecs.mat');
+load('partialcorr_BOLD_Gamma_medium_allelecs.mat');
+load('partialcorr_BOLD_HFB_medium_allelecs.mat');
 
 corr_allseeds_allfreqs=[partialcorr_BOLD_Delta_allelecs partialcorr_BOLD_Theta_allelecs partialcorr_BOLD_alpha_allelecs ...
     partialcorr_BOLD_beta1_allelecs partialcorr_BOLD_beta2_allelecs partialcorr_BOLD_Gamma_allelecs partialcorr_BOLD_HFB_allelecs];
