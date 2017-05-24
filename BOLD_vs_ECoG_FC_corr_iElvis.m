@@ -1797,9 +1797,6 @@ Delta_partial=num2str(r);
 Gamma_partial=num2str(r);
 [r,p]=partialcorr(fisherz(HFB_scatter),fisherz(BOLD_scatter),distance_scatter);
 HFB_partial=num2str(r);
-[r,p]=partialcorr(fisherz(SCP_scatter),fisherz(BOLD_scatter),distance_scatter);
-SCP_partial=num2str(r);
-
 [r,p]=partialcorr(fisherz(alpha_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
 alpha_medium_partial=num2str(r);
 [r,p]=partialcorr(fisherz(beta1_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
@@ -1812,6 +1809,8 @@ Theta_medium_partial=num2str(r);
 Delta_medium_partial=num2str(r);
 [r,p]=partialcorr(fisherz(Gamma_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
 Gamma_medium_partial=num2str(r);
+[r,p]=partialcorr(fisherz(SCP_scatter),fisherz(BOLD_scatter),distance_scatter);
+SCP_partial=num2str(r);
 
 if depth==2
 [r p]=corr(DMN_medium_scatter,DMN_BOLD_scatter);
@@ -1890,12 +1889,12 @@ end
 pause; close;
 
 figure(3)
-scatter(fisherz(BOLD_scatter),fisherz(alpha_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 0 1]); 
+scatter(fisherz(BOLD_scatter),fisherz(alpha_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 0 1]); 
 h=lsline; set(h(1),'color',[0 0 1],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) alpha ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' alpha_vs_BOLD_r ' p = ' alpha_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' alpha_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' alpha_partial]; ...
+title({['Medium (0.1-1 Hz) alpha ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' alpha_medium_vs_BOLD_r ' p = ' alpha_medium_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' alpha_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' alpha_medium_partial]; ...
     ['Partial (HFB-corrected) r = ' alpha_HFB_medium_partial]} ,'Fontsize',12);
 xlabel('BOLD pair-wise FC');
 ylabel('Medium alpha pair-wise FC');
@@ -1912,12 +1911,12 @@ end
 pause; close;
 
 figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(beta1_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+scatter(fisherz(BOLD_scatter),fisherz(beta1_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
 h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) beta1 ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' beta1_vs_BOLD_r ' p = ' beta1_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' beta1_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' beta1_partial]; ...
+title({['Medium (0.1-1 Hz) beta1 ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' beta1_medium_vs_BOLD_r ' p = ' beta1_medium_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' beta1_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' beta1_medium_partial]; ...
     ['Partial (HFB-corrected) r = ' beta1_HFB_medium_partial]} ,'Fontsize',12);
 xlabel('BOLD pair-wise FC');
 ylabel('Medium beta1 pair-wise FC');
@@ -1934,12 +1933,12 @@ end
 pause; close;
 
 figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(beta2_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+scatter(fisherz(BOLD_scatter),fisherz(beta2_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
 h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) beta2 ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' beta2_vs_BOLD_r ' p = ' beta2_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' beta2_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' beta2_partial]; ...
+title({['Medium (0.1-1 Hz) beta2 ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' beta2_medium_vs_BOLD_r ' p = ' beta2_medium_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' beta2_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' beta2_medium_partial]; ...
     ['Partial (HFB-corrected) r = ' beta2_HFB_medium_partial]} ,'Fontsize',12);
 xlabel('BOLD pair-wise FC');
 ylabel('Medium beta2 pair-wise FC');
@@ -1956,12 +1955,12 @@ end
 pause; close;
 
 figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(Theta_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+scatter(fisherz(BOLD_scatter),fisherz(Theta_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
 h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) Theta ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Theta_vs_BOLD_r ' p = ' Theta_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' Theta_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Theta_partial]; ...
+title({['Medium (0.1-1 Hz) Theta ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Theta_medium_vs_BOLD_r ' p = ' Theta_medium_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' Theta_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Theta_medium_partial]; ...
     ['Partial (HFB-corrected) r = ' Theta_HFB_medium_partial]} ,'Fontsize',12);
 xlabel('BOLD pair-wise FC');
 ylabel('Medium Theta pair-wise FC');
@@ -1978,12 +1977,12 @@ end
 pause; close;
 
 figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(Delta_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+scatter(fisherz(BOLD_scatter),fisherz(Delta_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
 h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) Delta ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Delta_vs_BOLD_r ' p = ' Delta_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' Delta_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Delta_partial]; ...
+title({['Medium (0.1-1 Hz) Delta ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Delta_medium_vs_BOLD_r ' p = ' Delta_medium_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' Delta_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Delta_medium_partial]; ...
     ['Partial (HFB-corrected) r = ' Delta_HFB_medium_partial]} ,'Fontsize',12);
 xlabel('BOLD pair-wise FC');
 ylabel('Medium Delta pair-wise FC');
@@ -2000,12 +1999,12 @@ end
 pause; close;
 
 figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(Gamma_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+scatter(fisherz(BOLD_scatter),fisherz(Gamma_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
 h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) Gamma ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Gamma_vs_BOLD_r ' p = ' Gamma_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' Gamma_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Gamma_partial]; ...
+title({['Medium (0.1-1 Hz) Gamma ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Gamma_medium_vs_BOLD_r ' p = ' Gamma_medium_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' Gamma_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Gamma_medium_partial]; ...
     ['Partial (HFB-corrected) r = ' Gamma_HFB_medium_partial]} ,'Fontsize',12);
 xlabel('BOLD pair-wise FC');
 ylabel('Medium Gamma pair-wise FC');
@@ -2105,13 +2104,21 @@ for i=1:length(BOLD_mat);
     if sum(~isnan(BOLD_mat(:,i)))>0
     use_elec=1;
  curr_elec_BOLD=BOLD_mat(:,i);
- curr_elec_HFB=medium_mat(:,i);
+ curr_elec_HFB_medium=medium_mat(:,i);
+ curr_elec_alpha_medium=alpha_medium_mat(:,i);
+ curr_elec_beta1_medium=beta1_medium_mat(:,i);
+ curr_elec_beta2_medium=beta2_medium_mat(:,i);
+ curr_elec_Theta_medium=Theta_medium_mat(:,i);
+ curr_elec_Delta_medium=Delta_medium_mat(:,i);
+ curr_elec_Gamma_medium=Gamma_medium_mat(:,i);
+  curr_elec_HFB=medium_mat(:,i);
  curr_elec_alpha=alpha_mat(:,i);
  curr_elec_beta1=beta1_mat(:,i);
  curr_elec_beta2=beta2_mat(:,i);
  curr_elec_Theta=Theta_mat(:,i);
  curr_elec_Delta=Delta_mat(:,i);
  curr_elec_Gamma=Gamma_mat(:,i);
+ 
  curr_elec_SCP=SCP_mat(:,i);
  curr_elec_HFBslow=slow_mat(:,i);
  curr_elec_distance=distances_nan(:,i);
@@ -2123,6 +2130,13 @@ for i=1:length(BOLD_mat);
  curr_elec_Theta(isnan(curr_elec_Theta))=[];
  curr_elec_Delta(isnan(curr_elec_Delta))=[];
  curr_elec_Gamma(isnan(curr_elec_Gamma))=[];
+  curr_elec_HFB_medium(isnan(curr_elec_HFB_medium))=[];
+ curr_elec_alpha_medium(isnan(curr_elec_alpha_medium))=[];
+ curr_elec_beta1_medium(isnan(curr_elec_beta1_medium))=[];
+ curr_elec_beta2_medium(isnan(curr_elec_beta2_medium))=[];
+ curr_elec_Theta_medium(isnan(curr_elec_Theta_medium))=[];
+ curr_elec_Delta_medium(isnan(curr_elec_Delta_medium))=[];
+ curr_elec_Gamma_medium(isnan(curr_elec_Gamma_medium))=[];
  curr_elec_SCP(isnan(curr_elec_SCP))=[];
  curr_elec_HFBslow(isnan(curr_elec_HFBslow))=[];
  curr_elec_distance(isnan(curr_elec_distance))=[];
@@ -2135,6 +2149,13 @@ for i=1:length(BOLD_mat);
  curr_elec_Theta=fisherz(curr_elec_Theta);
  curr_elec_Delta=fisherz(curr_elec_Delta);
  curr_elec_Gamma=fisherz(curr_elec_Gamma);
+  curr_elec_HFB_medium=fisherz(curr_elec_HFB_medium);
+ curr_elec_alpha_medium=fisherz(curr_elec_alpha_medium);
+ curr_elec_beta1_medium=fisherz(curr_elec_beta1_medium);
+ curr_elec_beta2_medium=fisherz(curr_elec_beta2_medium);
+ curr_elec_Theta_medium=fisherz(curr_elec_Theta_medium);
+ curr_elec_Delta_medium=fisherz(curr_elec_Delta_medium);
+ curr_elec_Gamma_medium=fisherz(curr_elec_Gamma_medium);
  curr_elec_SCP=fisherz(curr_elec_SCP);
  
  curr_elec_HFBslow=fisherz(curr_elec_HFBslow);
@@ -2145,6 +2166,7 @@ for i=1:length(BOLD_mat);
  elec_BOLD_Theta_corr=corr(curr_elec_BOLD,curr_elec_Theta);
  elec_BOLD_Delta_corr=corr(curr_elec_BOLD,curr_elec_Delta);
  elec_BOLD_Gamma_corr=corr(curr_elec_BOLD,curr_elec_Gamma);
+ 
  elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP);
  elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow);
  [elec_BOLD_HFB_partialcorr,p_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
