@@ -18,7 +18,7 @@ depth=str2num(depth);
 BOLD_run='run1';
 tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 BOLD_pipeline=input('BOLD pipeline (1=GSR, 2=AROMA, 3=NoGSR, 4=aCompCor): ' ,'s'); % 1=GSR, 2=ICA-AROMA
-plotting=input('plot all (0) HFB 0.1-1Hz (1)  alpha (2) HFB <0.1Hz (3) beta1 (4) beta2 (5) Theta (6) Delta (7) Gamma (8) SCP (9)? ','s');
+plotting=input('plot all (0) HFB 0.1-1Hz (1)  alpha (2) HFB <0.1Hz (3) beta1 (4) beta2 (5) Theta (6) Delta (7) Gamma (8) SCP (9) HFB unfilered (a)? ','s');
 tdt=str2num(tdt);
 BOLD_pipeline=str2num(BOLD_pipeline);
 
@@ -1878,13 +1878,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 HFB_vs_BOLD_GSR.eps
+print -depsc2 HFB_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
-  print -depsc2 HFB_vs_BOLD_AROMA.eps  
+  print -depsc2 HFB_medium_vs_BOLD_AROMA.eps  
   elseif BOLD_pipeline==3  
-    print -depsc2 HFB_vs_BOLD_NoGSR.eps
+    print -depsc2 HFB_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 HFB_vs_BOLD_aCompCor.eps
+    print -depsc2 HFB_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1900,13 +1900,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium alpha pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 alpha_vs_BOLD_GSR.eps
+print -depsc2 alpha_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
-  print -depsc2 alpha_vs_BOLD_AROMA.eps  
+  print -depsc2 alpha_medium_vs_BOLD_AROMA.eps  
   elseif BOLD_pipeline==3  
-    print -depsc2 alpha_vs_BOLD_NoGSR.eps
+    print -depsc2 alpha_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 alpha_vs_BOLD_aCompCor.eps
+    print -depsc2 alpha_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1922,13 +1922,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium beta1 pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 beta1_vs_BOLD_GSR.eps
+print -depsc2 beta1_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 beta1_vs_BOLD_AROMA.eps
+ print -depsc2 beta1_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 beta1_vs_BOLD_NoGSR.eps
+    print -depsc2 beta1_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 beta1_vs_BOLD_aCompCor.eps
+    print -depsc2 beta1_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1944,13 +1944,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium beta2 pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 beta2_vs_BOLD_GSR.eps
+print -depsc2 beta2_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 beta2_vs_BOLD_AROMA.eps
+ print -depsc2 beta2_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 beta2_vs_BOLD_NoGSR.eps
+    print -depsc2 beta2_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 beta2_vs_BOLD_aCompCor.eps
+    print -depsc2 beta2_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1966,13 +1966,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium Theta pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 Theta_vs_BOLD_GSR.eps
+print -depsc2 Theta_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 Theta_vs_BOLD_AROMA.eps
+ print -depsc2 Theta_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 Theta_vs_BOLD_NoGSR.eps
+    print -depsc2 Theta_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 Theta_vs_BOLD_aCompCor.eps
+    print -depsc2 Theta_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1988,13 +1988,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium Delta pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 Delta_vs_BOLD_GSR.eps
+print -depsc2 Delta_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 Delta_vs_BOLD_AROMA.eps
+ print -depsc2 Delta_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 Delta_vs_BOLD_NoGSR.eps
+    print -depsc2 Delta_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 Delta_vs_BOLD_aCompCor.eps
+    print -depsc2 Delta_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -2010,13 +2010,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium Gamma pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 Gamma_vs_BOLD_GSR.eps
+print -depsc2 Gamma_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 Gamma_vs_BOLD_AROMA.eps
+ print -depsc2 Gamma_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 Gamma_vs_BOLD_NoGSR.eps
+    print -depsc2 Gamma_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 Gamma_vs_BOLD_aCompCor.eps
+    print -depsc2 Gamma_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -2061,7 +2061,7 @@ elseif BOLD_pipeline==3
 elseif BOLD_pipeline==4
     print -depsc2 HFB_longdist_vs_BOLD_aCompCor.eps
     end
-pause; close;
+close;
 
 figure(2)
 scatter(fisherz(BOLD_short),fisherz(medium_short),'MarkerEdgeColor','k','MarkerFaceColor',[1 0 0]); 
@@ -2083,7 +2083,50 @@ elseif BOLD_pipeline==4
     print -depsc2 HFB_shortdist_vs_BOLD_aCompCor.eps
 
 end
-pause; close;
+close;
+
+%% unfiltered ECoG plots
+figure(4)
+scatter(fisherz(BOLD_scatter),fisherz(HFB_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({['HFB (unfiltered) ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' HFB_vs_BOLD_r ' p = ' HFB_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' HFB_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' HFB_partial]},'Fontsize',12);
+xlabel('BOLD pair-wise FC');
+ylabel('HFB pair-wise FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print -depsc2 HFB_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+ print -depsc2 HFB_vs_BOLD_AROMA.eps
+ elseif BOLD_pipeline==3  
+    print -depsc2 HFB_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 HFB_vs_BOLD_aCompCor.eps
+end
+close;
+
+figure(4)
+scatter(fisherz(BOLD_scatter),fisherz(alpha_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({['alpha (unfiltered) ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' alpha_vs_BOLD_r ' p = ' alpha_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' alpha_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' alpha_partial]},'Fontsize',12);
+xlabel('BOLD pair-wise FC');
+ylabel('alpha pair-wise FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print -depsc2 alpha_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+ print -depsc2 alpha_vs_BOLD_AROMA.eps
+ elseif BOLD_pipeline==3  
+    print -depsc2 alpha_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 alpha_vs_BOLD_aCompCor.eps
+end
+close;
 
 if BOLD_pipeline==1
     mkdir('GSR'); cd('GSR');
@@ -2094,7 +2137,8 @@ elseif BOLD_pipeline==2
        elseif BOLD_pipeline==4
     mkdir('aCompCor'); cd('aCompCor');
 end
-    
+ 
+
 %% Plot ECoG vs BOLD for each seed electrode
 distances_nan=distances;
 distances_nan(find(distances_nan==0))=NaN;
@@ -2111,7 +2155,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Theta_medium=Theta_medium_mat(:,i);
  curr_elec_Delta_medium=Delta_medium_mat(:,i);
  curr_elec_Gamma_medium=Gamma_medium_mat(:,i);
-  curr_elec_HFB=medium_mat(:,i);
+  curr_elec_HFB=HFB_mat(:,i);
  curr_elec_alpha=alpha_mat(:,i);
  curr_elec_beta1=beta1_mat(:,i);
  curr_elec_beta2=beta2_mat(:,i);
@@ -2175,7 +2219,7 @@ for i=1:length(BOLD_mat);
  elec_BOLD_Gamma_medium_corr=corr(curr_elec_BOLD,curr_elec_Gamma_medium);
  elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP);
  elec_BOLD_HFB_slow_corr=corr(curr_elec_BOLD,curr_elec_HFB_slow);
- [elec_BOLD_HFB_partialcorr,p_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
+ [elec_BOLD_HFB_partialcorr,p_HFB_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
  [elec_BOLD_HFB_slow_partialcorr,p_slow_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB_slow,curr_elec_distance);
  [elec_BOLD_alpha_partialcorr,p_alpha_partial]=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
  [elec_BOLD_beta1_partialcorr,p_beta1_partial]=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
@@ -2505,7 +2549,40 @@ close;
   partialcorr_BOLD_SCP_allelecs(i,:)=NaN; 
    p_BOLD_SCP_allelecs(i,:)=NaN;
  end
-  end
+    end
+  
+   if plotting=='a' || plotting=='0'
+    figure(3)
+scatter(curr_elec_BOLD,curr_elec_HFB,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_name ': BOLD FC vs HFB (unfiltered) FC']; ...
+    ['r = ' num2str(elec_BOLD_HFB_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_partialcorr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('HFB (0.1-1Hz) FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_GSR']));
+elseif BOLD_pipeline==2
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_AROMA']));
+elseif BOLD_pipeline==3
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_NoGSR']));
+elseif BOLD_pipeline==4
+    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_aCompCor']));   
+end
+close;
+ if use_elec==1
+ partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
+ p_BOLD_HFB_allelecs(i,:)=p_HFB_partial;
+   else
+  partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
+   p_BOLD_HFB_allelecs(i,:)=NaN;
+ end
+  end   
+    
+    
     end
 end
 
