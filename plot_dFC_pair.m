@@ -590,14 +590,102 @@ all_windows_Delta_medium_fisher=all_windows_Delta_medium_fisher';
   end  
 all_windows_Gamma_medium_corr=all_windows_Gamma_medium_corr';
 all_windows_Gamma_medium_fisher=all_windows_Gamma_medium_fisher';
-
-
-
-
 end
 
+if frequency=='p'
 
+      all_windows_HFB_corr=[]; all_windows_HFB_fisher=[];
+  for i=1:iEEG_step:length(roi1_HFB_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_HFB_ts(i:a);
+    roi2_window_ts=roi2_HFB_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_HFB_corr=[all_windows_HFB_corr window_corr];   
+   all_windows_HFB_fisher=[all_windows_HFB_fisher window_fisher];
+  end  
+all_windows_HFB_corr=all_windows_HFB_corr';
+all_windows_HFB_fisher=all_windows_HFB_fisher';
 
+       all_windows_Alpha_corr=[]; all_windows_Alpha_fisher=[];
+  for i=1:iEEG_step:length(roi1_Alpha_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Alpha_ts(i:a);
+    roi2_window_ts=roi2_Alpha_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Alpha_corr=[all_windows_Alpha_corr window_corr];   
+   all_windows_Alpha_fisher=[all_windows_Alpha_fisher window_fisher];
+  end  
+all_windows_Alpha_corr=all_windows_Alpha_corr';
+all_windows_Alpha_fisher=all_windows_Alpha_fisher';
+
+       all_windows_Beta1_corr=[]; all_windows_Beta1_fisher=[];
+  for i=1:iEEG_step:length(roi1_Beta1_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Beta1_ts(i:a);
+    roi2_window_ts=roi2_Beta1_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Beta1_corr=[all_windows_Beta1_corr window_corr];   
+   all_windows_Beta1_fisher=[all_windows_Beta1_fisher window_fisher];
+  end  
+all_windows_Beta1_corr=all_windows_Beta1_corr';
+all_windows_Beta1_fisher=all_windows_Beta1_fisher';
+
+       all_windows_Beta2_corr=[]; all_windows_Beta2_fisher=[];
+  for i=1:iEEG_step:length(roi1_Beta2_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Beta2_ts(i:a);
+    roi2_window_ts=roi2_Beta2_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Beta2_corr=[all_windows_Beta2_corr window_corr];   
+   all_windows_Beta2_fisher=[all_windows_Beta2_fisher window_fisher];
+  end  
+all_windows_Beta2_corr=all_windows_Beta2_corr';
+all_windows_Beta2_fisher=all_windows_Beta2_fisher';
+
+       all_windows_Theta_corr=[]; all_windows_Theta_fisher=[];
+  for i=1:iEEG_step:length(roi1_Theta_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Theta_ts(i:a);
+    roi2_window_ts=roi2_Theta_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Theta_corr=[all_windows_Theta_corr window_corr];   
+   all_windows_Theta_fisher=[all_windows_Theta_fisher window_fisher];
+  end  
+all_windows_Theta_corr=all_windows_Theta_corr';
+all_windows_Theta_fisher=all_windows_Theta_fisher';
+
+       all_windows_Delta_corr=[]; all_windows_Delta_fisher=[];
+  for i=1:iEEG_step:length(roi1_Delta_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Delta_ts(i:a);
+    roi2_window_ts=roi2_Delta_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Delta_corr=[all_windows_Delta_corr window_corr];   
+   all_windows_Delta_fisher=[all_windows_Delta_fisher window_fisher];
+  end  
+all_windows_Delta_corr=all_windows_Delta_corr';
+all_windows_Delta_fisher=all_windows_Delta_fisher';
+
+       all_windows_Gamma_corr=[]; all_windows_Gamma_fisher=[];
+  for i=1:iEEG_step:length(roi1_Gamma_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    roi1_window_ts=roi1_Gamma_ts(i:a);
+    roi2_window_ts=roi2_Gamma_ts(i:a);
+    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_Gamma_corr=[all_windows_Gamma_corr window_corr];   
+   all_windows_Gamma_fisher=[all_windows_Gamma_fisher window_fisher];
+  end  
+all_windows_Gamma_corr=all_windows_Gamma_corr';
+all_windows_Gamma_fisher=all_windows_Gamma_fisher';   
+    
+end
 end
 
 %% Normalize time series
@@ -626,6 +714,21 @@ roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
         roi2_Theta_medium_ts_norm=(roi2_Theta_medium_ts-mean(roi2_Theta_medium_ts))/std(roi2_Theta_medium_ts);
         roi2_Delta_medium_ts_norm=(roi2_Delta_medium_ts-mean(roi2_Delta_medium_ts))/std(roi2_Delta_medium_ts);
         roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);  
+    elseif frequency=='p'
+        roi1_HFB_ts_norm=(roi1_HFB_ts-mean(roi1_HFB_ts))/std(roi1_HFB_ts);
+        roi1_Alpha_ts_norm=(roi1_Alpha_ts-mean(roi1_Alpha_ts))/std(roi1_Alpha_ts);
+        roi1_Beta1_ts_norm=(roi1_Beta1_ts-mean(roi1_Beta1_ts))/std(roi1_Beta1_ts);
+        roi1_Beta2_ts_norm=(roi1_Beta2_ts-mean(roi1_Beta2_ts))/std(roi1_Beta2_ts);
+        roi1_Theta_ts_norm=(roi1_Theta_ts-mean(roi1_Theta_ts))/std(roi1_Theta_ts);
+        roi1_Delta_ts_norm=(roi1_Delta_ts-mean(roi1_Delta_ts))/std(roi1_Delta_ts);
+        roi1_Gamma_ts_norm=(roi1_Gamma_ts-mean(roi1_Gamma_ts))/std(roi1_Gamma_ts);
+        roi2_HFB_ts_norm=(roi2_HFB_ts-mean(roi2_HFB_ts))/std(roi2_HFB_ts);
+        roi2_Alpha_ts_norm=(roi2_Alpha_ts-mean(roi2_Alpha_ts))/std(roi2_Alpha_ts);
+        roi2_Beta1_ts_norm=(roi2_Beta1_ts-mean(roi2_Beta1_ts))/std(roi2_Beta1_ts);
+        roi2_Beta2_ts_norm=(roi2_Beta2_ts-mean(roi2_Beta2_ts))/std(roi2_Beta2_ts);
+        roi2_Theta_ts_norm=(roi2_Theta_ts-mean(roi2_Theta_ts))/std(roi2_Theta_ts);
+        roi2_Delta_ts_norm=(roi2_Delta_ts-mean(roi2_Delta_ts))/std(roi2_Delta_ts);
+        roi2_Gamma_ts_norm=(roi2_Gamma_ts-mean(roi2_Gamma_ts))/std(roi2_Gamma_ts); 
     end
 end
 
@@ -705,7 +808,7 @@ plot(1:length(all_windows_HFB_medium_fisher),all_windows_HFB_medium_fisher,...
     1:length(all_windows_Theta_medium_fisher),all_windows_Theta_medium_fisher,...   
     1:length(all_windows_Gamma_medium_fisher),all_windows_Gamma_medium_fisher,...
     'LineWidth',2);
-title({['Dynamic FC: ' roi1 ' vs ' roi2]; ...
+title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
@@ -727,7 +830,41 @@ set(h,'fontsize',16);
 set(get(h,'title'),'string','r');
 set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
 set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
-title(['Dynamic FC cross-correlation of frequencies'])
+title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
+end
+
+if frequency=='p'
+plot(1:length(all_windows_HFB_fisher),all_windows_HFB_fisher,...
+    1:length(all_windows_Alpha_fisher),all_windows_Alpha_fisher,...
+    1:length(all_windows_Beta1_fisher),all_windows_Beta1_fisher,...
+    1:length(all_windows_Beta2_fisher),all_windows_Beta2_fisher,...
+    1:length(all_windows_Delta_fisher),all_windows_Delta_fisher,...
+    1:length(all_windows_Theta_fisher),all_windows_Theta_fisher,...   
+    1:length(all_windows_Gamma_fisher),all_windows_Gamma_fisher,...
+    'LineWidth',2);
+title({['Dynamic FC (unfiltered): ' roi1 ' vs ' roi2]; ...
+    ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
+xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+legend('HFB','α','β1','β2','δ','θ','γ','Location','southeast')
+pause; close;
+
+% dFC cross-correlation of frequencies
+all_windows_allfreqs=[all_windows_Delta_fisher all_windows_Theta_fisher all_windows_Alpha_fisher ...
+    all_windows_Beta1_fisher all_windows_Beta2_fisher all_windows_Gamma_fisher all_windows_HFB_fisher];
+
+xcorr_allfreqs=corrcoef(all_windows_allfreqs);
+
+FigHandle = figure(1);
+set(FigHandle,'Position',[50, 50, 700, 600]);
+set(gcf,'color','w');
+imagesc(xcorr_allfreqs,[-1 1]); h=colorbar('vert'); colormap jet
+set(h,'fontsize',16);
+set(get(h,'title'),'string','r');
+set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
+set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
+title(['Dynamic FC (unfiltered) cross-correlation of frequencies'])
 
 end
 
