@@ -11,7 +11,7 @@ if BOLD=='2'
    frequency=input('all unfiltered (p), HFB (9), alpha (b), beta1 (c), beta2 (d), Theta (e), Delta(f), Gamma (g)','s');
     end
     if filter=='3'
-       frequency=input('HFB (1)'); 
+       frequency=input('HFB (1)','s'); 
     end
 else
     frequency=' ';
@@ -90,7 +90,7 @@ end
 if BOLD=='iEEG'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
 
-if ~isempty(dir('pHFB*'))
+if ~isempty(dir('pHFB*'))   
     if frequency=='1' || frequency=='0'
 iEEG_data=spm_eeg_load(['slowpHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
 if frequency=='0'
@@ -281,10 +281,10 @@ if frequency=='g' || frequency=='p'
         Gamma=iEEG_data; iEEG_data=[];
     end
 end 
-
 end
 
-if frequency ~='0' || frequency~='p'
+
+if frequency ~='0' && frequency~='p'
 for iEEG_chan=1:size(iEEG_data,1)
     iEEG_ts(:,iEEG_chan)=iEEG_data(iEEG_chan,:)';      
 end
@@ -338,6 +338,7 @@ end
 end       
 end
 end
+
 
 
 %% Convert ROI names to numbers (iElvis space)
