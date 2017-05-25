@@ -2561,7 +2561,7 @@ title({[elec_name ': BOLD FC vs HFB (unfiltered) FC']; ...
     ['r = ' num2str(elec_BOLD_HFB_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_corr)]; ...
     ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
-ylabel('HFB (0.1-1Hz) FC');
+ylabel('HFB (unfiltered) FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_GSR']));

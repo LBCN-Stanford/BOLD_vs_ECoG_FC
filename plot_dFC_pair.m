@@ -3,7 +3,16 @@
 Patient=input('Patient: ','s');
 BOLD=input('BOLD (1) or iEEG (2): ','s');
 if BOLD=='2'
-   frequency=input('all (0), HFB <0.1 Hz (1), HFB 0.1-1 Hz (2), alpha 0.1-1 (3), beta1 0.1-1 (4), beta2 0.1-1 (5), Theta 0.1-1 (6), Delta 0.1-1 (7), Gamma 0.1-1 (8) HFB no filter (9): ','s'); 
+    filter=input('filter range: unfiltered (1) 0.1-1 Hz (2) <0.1 Hz (3) ','s');
+    if filter=='2'
+   frequency=input('all 0.1-1Hz (0), HFB (2), alpha (3), beta1 (4), beta2 (5), Theta (6), Delta(7), Gamma (8)','s'); 
+    end
+    if filter=='1'
+   frequency=input('all unfiltered (p), HFB (9), alpha (b), beta1 (c), beta2 (d), Theta (e), Delta(f), Gamma (g)','s');
+    end
+    if filter=='3'
+       frequency=input('HFB (1)'); 
+    end
 else
     frequency=' ';
 end
@@ -131,10 +140,50 @@ if frequency=='0'
 end
     end
     
-    if frequency=='9'
+    if frequency=='9' || frequency=='p'
 iEEG_data=spm_eeg_load(['pHFB' Mfile]); freq=['HFB'];
+if frequency=='p'
+    HFB=iEEG_data; iEEG_data=[];
+end
     end    
     
+    if frequency=='b' || frequency=='p'
+       iEEG_data=spm_eeg_load(['pAlpha' Mfile]); freq=['Alpha'];
+       if frequency=='p'
+    Alpha=iEEG_data; iEEG_data=[];
+end
+    end
+    
+    if frequency=='c' || frequency=='p'
+       iEEG_data=spm_eeg_load(['pBeta1' Mfile]); freq=['Beta1'];
+       if frequency=='p'
+    Beta1=iEEG_data; iEEG_data=[];
+end
+    end
+        if frequency=='d' || frequency=='p'
+       iEEG_data=spm_eeg_load(['pBeta2' Mfile]); freq=['Beta2'];
+              if frequency=='p'
+    Beta2=iEEG_data; iEEG_data=[];
+end
+        end
+     if frequency=='e' || frequency=='p'
+       iEEG_data=spm_eeg_load(['pTheta' Mfile]); freq=['Theta'];
+              if frequency=='p'
+    Theta=iEEG_data; iEEG_data=[];
+end
+    end
+         if frequency=='f' || frequency=='p'
+       iEEG_data=spm_eeg_load(['pDelta' Mfile]); freq=['Delta'];
+                     if frequency=='p'
+    Delta=iEEG_data; iEEG_data=[];
+end
+         end
+             if frequency=='g' || frequency=='p'
+       iEEG_data=spm_eeg_load(['pGamma' Mfile]); freq=['Gamma'];
+                            if frequency=='p'
+    Gamma=iEEG_data; iEEG_data=[];
+end
+         end
 else
 if frequency=='1' || frequency=='0'
 iEEG_data=spm_eeg_load(['slowHFB' Mfile]);
@@ -184,12 +233,58 @@ if frequency=='8' || frequency=='0'
     Gamma_medium=iEEG_data; iEEG_data=[];
 end
 end
-if frequency=='9'
-    iEEG_data=spm_eeg_load(['HFB' Mfile]); freq=['HFB']
-end
+if frequency=='9' || frequency=='p'
+    iEEG_data=spm_eeg_load(['HFB' Mfile]); freq=['HFB'];
+    if frequency=='p'
+        HFB=iEEG_data; iEEG_data=[];
+    end
 end
 
-if frequency ~='0'
+ if frequency=='b' || frequency=='p'
+    iEEG_data=spm_eeg_load(['Alpha' Mfile]); freq=['Alpha'];
+    if frequency=='p'
+        Alpha=iEEG_data; iEEG_data=[];
+    end
+ end  
+
+if frequency=='c' || frequency=='p'
+    iEEG_data=spm_eeg_load(['Beta1' Mfile]); freq=['Beta1'];
+    if frequency=='p'
+        Beta1=iEEG_data; iEEG_data=[];
+    end
+end 
+ 
+if frequency=='d' || frequency=='p'
+    iEEG_data=spm_eeg_load(['Beta2' Mfile]); freq=['Beta2'];
+    if frequency=='p'
+        Beta2=iEEG_data; iEEG_data=[];
+    end
+end 
+
+if frequency=='e' || frequency=='p'
+    iEEG_data=spm_eeg_load(['Theta' Mfile]); freq=['Theta'];
+    if frequency=='p'
+        Theta=iEEG_data; iEEG_data=[];
+    end
+end 
+
+if frequency=='f' || frequency=='p'
+    iEEG_data=spm_eeg_load(['Delta' Mfile]); freq=['Delta'];
+    if frequency=='p'
+        Delta=iEEG_data; iEEG_data=[];
+    end
+end 
+
+if frequency=='g' || frequency=='p'
+    iEEG_data=spm_eeg_load(['Gamma' Mfile]); freq=['Gamma'];
+    if frequency=='p'
+        Gamma=iEEG_data; iEEG_data=[];
+    end
+end 
+
+end
+
+if frequency ~='0' || frequency~='p'
 for iEEG_chan=1:size(iEEG_data,1)
     iEEG_ts(:,iEEG_chan)=iEEG_data(iEEG_chan,:)';      
 end
@@ -219,7 +314,29 @@ end
 end
 end
 
-
+if frequency =='p'
+     for iEEG_chan=1:size(HFB,1)
+    HFB_ts(:,iEEG_chan)=HFB(iEEG_chan,:)';      
+    end
+     for iEEG_chan=1:size(HFB,1)
+    Alpha_ts(:,iEEG_chan)=Alpha(iEEG_chan,:)';      
+     end   
+    for iEEG_chan=1:size(HFB,1)
+    Beta1_ts(:,iEEG_chan)=Beta1(iEEG_chan,:)';      
+end
+      for iEEG_chan=1:size(HFB,1)
+    Beta2_ts(:,iEEG_chan)=Beta2(iEEG_chan,:)';      
+      end
+    for iEEG_chan=1:size(HFB,1)
+    Theta_ts(:,iEEG_chan)=Theta(iEEG_chan,:)';      
+end
+       for iEEG_chan=1:size(HFB,1)
+    Delta_ts(:,iEEG_chan)=Delta(iEEG_chan,:)';      
+       end
+    for iEEG_chan=1:size(HFB,1)
+    Gamma_ts(:,iEEG_chan)=Gamma(iEEG_chan,:)';      
+end       
+end
 end
 
 
@@ -242,7 +359,7 @@ end
 
 %% Transform time series from iEEG to iElvis order
 if BOLD=='iEEG'
-    if frequency~='0'
+    if frequency~='0' && frequency~='p'
 iEEG_ts_iElvis=NaN(size(iEEG_ts,1),length(chanlabels));
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
@@ -271,6 +388,26 @@ for i=1:length(chanlabels);
     Gamma_medium_ts_iElvis(:,new_ind)=Gamma_medium_ts(:,curr_iEEG_chan);
 end
 
+    elseif frequency=='p'
+HFB_ts_iElvis=NaN(size(HFB_ts,1),length(chanlabels));  
+Alpha_ts_iElvis=NaN(size(Alpha_ts,1),length(chanlabels));
+Beta1_ts_iElvis=NaN(size(Beta1_ts,1),length(chanlabels));
+Beta2_ts_iElvis=NaN(size(Beta2_ts,1),length(chanlabels));
+Theta_ts_iElvis=NaN(size(Theta_ts,1),length(chanlabels));
+Delta_ts_iElvis=NaN(size(Delta_ts,1),length(chanlabels));
+Gamma_ts_iElvis=NaN(size(Gamma_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    HFB_ts_iElvis(:,new_ind)=HFB_ts(:,curr_iEEG_chan);
+    Alpha_ts_iElvis(:,new_ind)=Alpha_ts(:,curr_iEEG_chan);
+    Beta1_ts_iElvis(:,new_ind)=Beta1_ts(:,curr_iEEG_chan);
+    Beta2_ts_iElvis(:,new_ind)=Beta2_ts(:,curr_iEEG_chan);
+    Theta_ts_iElvis(:,new_ind)=Theta_ts(:,curr_iEEG_chan);
+    Delta_ts_iElvis(:,new_ind)=Delta_ts(:,curr_iEEG_chan);
+    Gamma_ts_iElvis(:,new_ind)=Gamma_ts(:,curr_iEEG_chan);
+end
     end  
 end
 
@@ -286,7 +423,7 @@ if BOLD=='iEEG'
     roi1_iEEG_num=iElvis_to_iEEG_chanlabel(roi1_num);
     roi2_iEEG_num=iElvis_to_iEEG_chanlabel(roi2_num);
 
-    if frequency ~='0'
+    if frequency ~='0' && frequency ~='p'
     roi1_ts=iEEG_ts(:,roi1_iEEG_num);   
     roi2_ts=iEEG_ts(:,roi2_iEEG_num);   
      elseif frequency=='0'
@@ -304,6 +441,22 @@ if BOLD=='iEEG'
          roi2_Theta_medium_ts=Theta_medium_ts(:,roi2_iEEG_num);
          roi2_Delta_medium_ts=Delta_medium_ts(:,roi2_iEEG_num);
          roi2_Gamma_medium_ts=Gamma_medium_ts(:,roi2_iEEG_num);
+        
+    elseif frequency=='p'
+            roi1_HFB_ts=HFB_ts(:,roi1_iEEG_num);
+         roi1_Alpha_ts=Alpha_ts(:,roi1_iEEG_num);
+         roi1_Beta1_ts=Beta1_ts(:,roi1_iEEG_num);
+         roi1_Beta2_ts=Beta2_ts(:,roi1_iEEG_num);
+         roi1_Theta_ts=Theta_ts(:,roi1_iEEG_num);
+         roi1_Delta_ts=Delta_ts(:,roi1_iEEG_num);
+         roi1_Gamma_ts=Gamma_ts(:,roi1_iEEG_num);
+         roi2_HFB_ts=HFB_ts(:,roi2_iEEG_num);
+         roi2_Alpha_ts=Alpha_ts(:,roi2_iEEG_num);
+         roi2_Beta1_ts=Beta1_ts(:,roi2_iEEG_num);
+         roi2_Beta2_ts=Beta2_ts(:,roi2_iEEG_num);
+         roi2_Theta_ts=Theta_ts(:,roi2_iEEG_num);
+         roi2_Delta_ts=Delta_ts(:,roi2_iEEG_num);
+         roi2_Gamma_ts=Gamma_ts(:,roi2_iEEG_num);          
 end
 end
 
@@ -312,7 +465,7 @@ if BOLD=='BOLD'
 static_fc=corr(roi1_ts,roi2_ts);
 end
 if BOLD=='iEEG'
-    if frequency~='0'
+    if frequency~='0' && frequency~='p'
    static_fc=corr(roi1_ts,roi2_ts); 
     end
 end
@@ -331,7 +484,7 @@ end
 end
 
 if BOLD=='iEEG'
-    if frequency~='0'
+    if frequency~='0' && frequency ~='p'
     all_windows_corr=[]; all_windows_fisher=[];
   %for i=1:iEEG_step:floor(length(roi1_ts)/iEEG_step);
   for i=1:iEEG_step:length(roi1_ts)-iEEG_window_size;
@@ -347,97 +500,104 @@ all_windows_corr=all_windows_corr';
 all_windows_fisher=all_windows_fisher';
     end
 if frequency=='0'
-     all_windows_HFB_corr=[]; all_windows_HFB_fisher=[];
+     all_windows_HFB_medium_corr=[]; all_windows_HFB_medium_fisher=[];
   for i=1:iEEG_step:length(roi1_HFB_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_HFB_medium_ts(i:a);
     roi2_window_ts=roi2_HFB_medium_ts(i:a);
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
-    all_windows_HFB_corr=[all_windows_HFB_corr window_corr];   
-   all_windows_HFB_fisher=[all_windows_HFB_fisher window_fisher];
+    all_windows_HFB_medium_corr=[all_windows_HFB_medium_corr window_corr];   
+   all_windows_HFB_medium_fisher=[all_windows_HFB_medium_fisher window_fisher];
   end  
-all_windows_HFB_corr=all_windows_HFB_corr';
-all_windows_HFB_fisher=all_windows_HFB_fisher';
+all_windows_HFB_medium_corr=all_windows_HFB_medium_corr';
+all_windows_HFB_medium_fisher=all_windows_HFB_medium_fisher';
 
-       all_windows_Alpha_corr=[]; all_windows_Alpha_fisher=[];
+       all_windows_Alpha_medium_corr=[]; all_windows_Alpha_medium_fisher=[];
   for i=1:iEEG_step:length(roi1_Alpha_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Alpha_medium_ts(i:a);
     roi2_window_ts=roi2_Alpha_medium_ts(i:a);
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
-    all_windows_Alpha_corr=[all_windows_Alpha_corr window_corr];   
-   all_windows_Alpha_fisher=[all_windows_Alpha_fisher window_fisher];
+    all_windows_Alpha_medium_corr=[all_windows_Alpha_medium_corr window_corr];   
+   all_windows_Alpha_medium_fisher=[all_windows_Alpha_medium_fisher window_fisher];
   end  
-all_windows_Alpha_corr=all_windows_Alpha_corr';
-all_windows_Alpha_fisher=all_windows_Alpha_fisher';
+all_windows_Alpha_medium_corr=all_windows_Alpha_medium_corr';
+all_windows_Alpha_medium_fisher=all_windows_Alpha_medium_fisher';
 
-       all_windows_Beta1_corr=[]; all_windows_Beta1_fisher=[];
+       all_windows_Beta1_medium_corr=[]; all_windows_Beta1_medium_fisher=[];
   for i=1:iEEG_step:length(roi1_Beta1_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Beta1_medium_ts(i:a);
     roi2_window_ts=roi2_Beta1_medium_ts(i:a);
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
-    all_windows_Beta1_corr=[all_windows_Beta1_corr window_corr];   
-   all_windows_Beta1_fisher=[all_windows_Beta1_fisher window_fisher];
+    all_windows_Beta1_medium_corr=[all_windows_Beta1_medium_corr window_corr];   
+   all_windows_Beta1_medium_fisher=[all_windows_Beta1_medium_fisher window_fisher];
   end  
-all_windows_Beta1_corr=all_windows_Beta1_corr';
-all_windows_Beta1_fisher=all_windows_Beta1_fisher';
+all_windows_Beta1_medium_corr=all_windows_Beta1_medium_corr';
+all_windows_Beta1_medium_fisher=all_windows_Beta1_medium_fisher';
 
-       all_windows_Beta2_corr=[]; all_windows_Beta2_fisher=[];
+       all_windows_Beta2_medium_corr=[]; all_windows_Beta2_medium_fisher=[];
   for i=1:iEEG_step:length(roi1_Beta2_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Beta2_medium_ts(i:a);
     roi2_window_ts=roi2_Beta2_medium_ts(i:a);
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
-    all_windows_Beta2_corr=[all_windows_Beta2_corr window_corr];   
-   all_windows_Beta2_fisher=[all_windows_Beta2_fisher window_fisher];
+    all_windows_Beta2_medium_corr=[all_windows_Beta2_medium_corr window_corr];   
+   all_windows_Beta2_medium_fisher=[all_windows_Beta2_medium_fisher window_fisher];
   end  
-all_windows_Beta2_corr=all_windows_Beta2_corr';
-all_windows_Beta2_fisher=all_windows_Beta2_fisher';
+all_windows_Beta2_medium_corr=all_windows_Beta2_medium_corr';
+all_windows_Beta2_medium_fisher=all_windows_Beta2_medium_fisher';
 
-       all_windows_Theta_corr=[]; all_windows_Theta_fisher=[];
+       all_windows_Theta_medium_corr=[]; all_windows_Theta_medium_fisher=[];
   for i=1:iEEG_step:length(roi1_Theta_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Theta_medium_ts(i:a);
     roi2_window_ts=roi2_Theta_medium_ts(i:a);
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
-    all_windows_Theta_corr=[all_windows_Theta_corr window_corr];   
-   all_windows_Theta_fisher=[all_windows_Theta_fisher window_fisher];
+    all_windows_Theta_medium_corr=[all_windows_Theta_medium_corr window_corr];   
+   all_windows_Theta_medium_fisher=[all_windows_Theta_medium_fisher window_fisher];
   end  
-all_windows_Theta_corr=all_windows_Theta_corr';
-all_windows_Theta_fisher=all_windows_Theta_fisher';
+all_windows_Theta_medium_corr=all_windows_Theta_medium_corr';
+all_windows_Theta_medium_fisher=all_windows_Theta_medium_fisher';
 
-       all_windows_Delta_corr=[]; all_windows_Delta_fisher=[];
+       all_windows_Delta_medium_corr=[]; all_windows_Delta_medium_fisher=[];
   for i=1:iEEG_step:length(roi1_Delta_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Delta_medium_ts(i:a);
     roi2_window_ts=roi2_Delta_medium_ts(i:a);
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
-    all_windows_Delta_corr=[all_windows_Delta_corr window_corr];   
-   all_windows_Delta_fisher=[all_windows_Delta_fisher window_fisher];
+    all_windows_Delta_medium_corr=[all_windows_Delta_medium_corr window_corr];   
+   all_windows_Delta_medium_fisher=[all_windows_Delta_medium_fisher window_fisher];
   end  
-all_windows_Delta_corr=all_windows_Delta_corr';
-all_windows_Delta_fisher=all_windows_Delta_fisher';
+all_windows_Delta_medium_corr=all_windows_Delta_medium_corr';
+all_windows_Delta_medium_fisher=all_windows_Delta_medium_fisher';
 
-       all_windows_Gamma_corr=[]; all_windows_Gamma_fisher=[];
+       all_windows_Gamma_medium_corr=[]; all_windows_Gamma_medium_fisher=[];
   for i=1:iEEG_step:length(roi1_Gamma_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Gamma_medium_ts(i:a);
     roi2_window_ts=roi2_Gamma_medium_ts(i:a);
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
-    all_windows_Gamma_corr=[all_windows_Gamma_corr window_corr];   
-   all_windows_Gamma_fisher=[all_windows_Gamma_fisher window_fisher];
+    all_windows_Gamma_medium_corr=[all_windows_Gamma_medium_corr window_corr];   
+   all_windows_Gamma_medium_fisher=[all_windows_Gamma_medium_fisher window_fisher];
   end  
-all_windows_Gamma_corr=all_windows_Gamma_corr';
-all_windows_Gamma_fisher=all_windows_Gamma_fisher';
+all_windows_Gamma_medium_corr=all_windows_Gamma_medium_corr';
+all_windows_Gamma_medium_fisher=all_windows_Gamma_medium_fisher';
+
+
+
+
 end
+
+
+
 end
 
 %% Normalize time series
@@ -447,7 +607,7 @@ roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
 end
 
 if BOLD=='iEEG'
-    if frequency~='0'
+    if frequency~='0' && frequency ~='p'
    roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
 
@@ -509,7 +669,7 @@ pause; close;
 end
 
 if BOLD=='iEEG'
-if frequency~='0'
+if frequency~='0' && frequency~='p'
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 subplot(2,1,1);
@@ -537,25 +697,25 @@ end
 
 % dFC for all frequencies on one plot
 if frequency=='0'
-plot(1:length(all_windows_HFB_fisher),all_windows_HFB_fisher,...
-    1:length(all_windows_Alpha_fisher),all_windows_Alpha_fisher,...
-    1:length(all_windows_Beta1_fisher),all_windows_Beta1_fisher,...
-    1:length(all_windows_Beta2_fisher),all_windows_Beta2_fisher,...
-    1:length(all_windows_Theta_fisher),all_windows_Theta_fisher,...
-    1:length(all_windows_Delta_fisher),all_windows_Delta_fisher,...
-    1:length(all_windows_Gamma_fisher),all_windows_Gamma_fisher,...
+plot(1:length(all_windows_HFB_medium_fisher),all_windows_HFB_medium_fisher,...
+    1:length(all_windows_Alpha_medium_fisher),all_windows_Alpha_medium_fisher,...
+    1:length(all_windows_Beta1_medium_fisher),all_windows_Beta1_medium_fisher,...
+    1:length(all_windows_Beta2_medium_fisher),all_windows_Beta2_medium_fisher,...
+    1:length(all_windows_Delta_medium_fisher),all_windows_Delta_medium_fisher,...
+    1:length(all_windows_Theta_medium_fisher),all_windows_Theta_medium_fisher,...   
+    1:length(all_windows_Gamma_medium_fisher),all_windows_Gamma_medium_fisher,...
     'LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
-legend('HFB','α','β1','β2','θ','δ','γ','Location','southeast')
+legend('HFB','α','β1','β2','δ','θ','γ','Location','southeast')
 pause; close;
 
 % dFC cross-correlation of frequencies
-all_windows_allfreqs=[all_windows_Delta_fisher all_windows_Theta_fisher all_windows_Alpha_fisher ...
-    all_windows_Beta1_fisher all_windows_Beta2_fisher all_windows_Gamma_fisher all_windows_HFB_fisher];
+all_windows_allfreqs=[all_windows_Delta_medium_fisher all_windows_Theta_medium_fisher all_windows_Alpha_medium_fisher ...
+    all_windows_Beta1_medium_fisher all_windows_Beta2_medium_fisher all_windows_Gamma_medium_fisher all_windows_HFB_medium_fisher];
 
 xcorr_allfreqs=corrcoef(all_windows_allfreqs);
 
@@ -565,8 +725,8 @@ set(gcf,'color','w');
 imagesc(xcorr_allfreqs,[-1 1]); h=colorbar('vert'); colormap jet
 set(h,'fontsize',16);
 set(get(h,'title'),'string','r');
-set(gca,'XTickLabel',{'θ', 'δ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
-set(gca,'YTickLabel',{'θ', 'δ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
+set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
+set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
 title(['Dynamic FC cross-correlation of frequencies'])
 
 end

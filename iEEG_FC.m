@@ -118,6 +118,7 @@ end
 %% Remove bad channels
 
 %% Transform time series from iEEG to iElvis order
+HFB_iElvis=NaN(size(HFB_ts,1),length(chanlabels));
 HFB_medium_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));
 alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
 SCP_medium_iElvis=NaN(size(SCP_medium_ts,1),length(chanlabels));
@@ -126,6 +127,7 @@ HFB_slow_iElvis=NaN(size(HFB_slow_ts,1),length(chanlabels));
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
+    HFB_iElvis(:,new_ind)=HFB_ts(:,curr_iEEG_chan);
     HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
     alpha_medium_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
     SCP_medium_iElvis(:,new_ind)=SCP_medium_ts(:,curr_iEEG_chan);
@@ -133,10 +135,12 @@ for i=1:length(chanlabels);
 end
 
 %% Make FC matrix
+HFB_corr=corrcoef(HFB_iElvis);
 HFB_medium_corr=corrcoef(HFB_medium_iElvis);
 alpha_medium_corr=corrcoef(alpha_medium_iElvis);
 SCP_medium_corr=corrcoef(SCP_medium_iElvis);
 HFB_slow_corr=corrcoef(HFB_slow_iElvis);
+save('HFB_corr','HFB_corr');
 save('HFB_medium_corr','HFB_medium_corr');
 save('alpha_medium_corr','alpha_medium_corr');
 save('SCP_medium_corr','SCP_medium_corr');
