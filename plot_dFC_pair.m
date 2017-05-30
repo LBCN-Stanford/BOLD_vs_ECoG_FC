@@ -19,6 +19,7 @@ end
 runs=input('run (e.g. 1): ','s');
 roi1=input('ROI 1 (e.g. AFS9): ','s');
 roi2=input('ROI 2 (e.g. PIHS4): ','s');
+depth=input('depth (1) or subdural (0)? ','s');
 
 runnum=['run' runs];
 fsDir=getFsurfSubDir();
@@ -39,10 +40,10 @@ BOLD_window_duration=TR*BOLD_window_size;
 
 %% iEEG defaults
 iEEG_sampling=1000;
-iEEG_step=2000;
-iEEG_window_size=30000;
+iEEG_step=1000;
+iEEG_window_size=1000;
 iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-depth='0';
+%depth='0';
 
 
 %% Get hemisphere and file base name for iEEG
@@ -85,6 +86,16 @@ for chan=3:length(chan_names)
 end
 fs_chanlabels=fs_chanlabels(3:end);
 end
+
+depth_chanlabels={};
+if depth=='1'
+    for i=1:length(fs_chanlabels)
+    curr_elec=fs_chanlabels{i};
+    depth_chanlabels{i,1}=curr_elec(2:end);
+    end
+    fs_chanlabels=depth_chanlabels;
+end
+
 
 %% Load iEEG data
 if BOLD=='iEEG'
