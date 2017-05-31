@@ -17,8 +17,10 @@ else
     frequency=' ';
 end
 runs=input('run (e.g. 1): ','s');
+rest=input('Rest(1) or Sleep(0)? ','s');
 roi1=input('ROI 1 (e.g. AFS9): ','s');
 roi2=input('ROI 2 (e.g. PIHS4): ','s');
+seed=input('seed (ROI1) to all else (1)? ','s');
 depth=input('depth (1) or subdural (0)? ','s');
 
 runnum=['run' runs];
@@ -40,20 +42,30 @@ BOLD_window_duration=TR*BOLD_window_size;
 
 %% iEEG defaults
 iEEG_sampling=1000;
-iEEG_step=1000;
-iEEG_window_size=1000;
+iEEG_step=2000;
+iEEG_window_size=30000;
 iEEG_window_duration=iEEG_window_size/iEEG_sampling;
 %depth='0';
 
 
 %% Get hemisphere and file base name for iEEG
 if BOLD=='iEEG'
-cd ([globalECoGDir '/Rest/' Patient]);
+    if rest=='1'
+cd([globalECoGDir '/Rest/' Patient]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient]);
+end
+    
 if depth=='0'
 hemi=importdata(['hemi.txt']); 
 hemi=char(hemi);
 end
+    if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runs]);
+    end
+
 Mfile=dir('btf_aMpfff*');
 if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
@@ -99,7 +111,11 @@ end
 
 %% Load iEEG data
 if BOLD=='iEEG'
+        if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runs]);
+        end
 
 if ~isempty(dir('pHFB*'))   
     if frequency=='1' || frequency=='0'
@@ -423,7 +439,7 @@ end
     end  
 end
 
-%% Load ROI time series
+%% Load time series for ROI pair
 if BOLD=='BOLD'
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
@@ -436,8 +452,8 @@ if BOLD=='iEEG'
     roi2_iEEG_num=iElvis_to_iEEG_chanlabel(roi2_num);
 
     if frequency ~='0' && frequency ~='p'
-    roi1_ts=iEEG_ts(:,roi1_iEEG_num);   
-    roi2_ts=iEEG_ts(:,roi2_iEEG_num);   
+    roi1_ts=iEEG_ts_iElvis(:,roi1_num);   
+    roi2_ts=iEEG_ts(:,roi2_num);   
      elseif frequency=='0'
          roi1_HFB_medium_ts=HFB_medium_ts(:,roi1_iEEG_num);
          roi1_Alpha_medium_ts=Alpha_medium_ts(:,roi1_iEEG_num);
@@ -482,7 +498,23 @@ if BOLD=='iEEG'
     end
 end
 
-%% Sliding windows
+%% Sliding windows for seed to all regions
+if seed=='1'
+seed_allwindows_fisher=[];
+  for i=1:iEEG_step:length(roi1_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    ALL_window_ts=iEEG_ts_iElvis(i:a,:);
+    ALL_window_corr=corrcoef(ALL_window_ts);
+    ALL_window_fisher=fisherz(ALL_window_corr);
+    seed_window_fisher=ALL_window_fisher(:,roi1_num);
+    seed_allwindows_fisher=[seed_allwindows_fisher seed_window_fisher];
+  end  
+  if iEEG_window_size/iEEG_step==2
+      save([roi1 '_30sec_windows'],'seed_allwindows_fisher');
+  end
+end
+
+%% Sliding windows for ROI pair
 if BOLD=='BOLD'
 for i=1:BOLD_step:length(roi1_ts)-BOLD_window_size;
     a=i+BOLD_window_size;
