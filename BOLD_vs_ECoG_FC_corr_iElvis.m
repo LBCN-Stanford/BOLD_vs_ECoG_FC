@@ -9,6 +9,7 @@ Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
 %hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
+rest=input('Rest(1) or Sleep(0)? ','s');
 distance_exclusion=input('exclude short-distance pairs (1)? ','s');
 if distance_exclusion=='1'
 dist_thr=input('How short (mm)? ','s');
@@ -34,12 +35,23 @@ end
 
 %% Get hemisphere file base name
 getECoGSubDir; global globalECoGDir;
-cd ([globalECoGDir '/Rest/' Patient]);
+
+if rest=='1'
+cd([globalECoGDir '/Rest/' Patient]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient]);
+end
+
 if depth=='0'
 hemi=importdata(['hemi.txt']); 
 hemi=char(hemi);
 end
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
+
 Mfile=dir('btf_aMpfff*');
 SCPfile=dir('SCP_*');
 SCPfile=SCPfile(2,1).name;
@@ -231,7 +243,12 @@ Yeo_VAN_names=strread(num2str(1:length(Yeo_VAN_coords)),'%s');
 end
 
 %% Load preprocessed iEEG data 
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
+
 SCP=spm_eeg_load([SCPfile]);
 
 if ~isempty(dir('pHFB*'))
@@ -319,7 +336,11 @@ end
 
 total_bold=size(BOLD_ts,2);
 
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
     
 % create iElvis to iEEG chanlabel transformation vector
 if depth==2

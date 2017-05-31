@@ -9,13 +9,18 @@ Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
 hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
+rest=input('Rest(1) or Sleep(0)? ','s');
 depth=str2num(depth);
 % tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 % tdt=str2num(tdt);
 
 %% Get file base name
 getECoGSubDir; global globalECoGDir;
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
 Mfile=dir('btf_aMpfff*');
 if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
@@ -27,8 +32,12 @@ SCPfile=dir('SCP_*');
 SCPfile=SCPfile(2,1).name;
 SCP=spm_eeg_load([SCPfile]);
 
-%% Load preprocessed iEEG data 
+%% Load preprocessed iEEG data
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
 if ~isempty(dir('pHFB*'))
 HFB=spm_eeg_load(['pHFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
@@ -79,7 +88,11 @@ end
 fs_chanlabels=fs_chanlabels(3:end);
 
 % Calculate iEEG FC
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
 
     for i=1:length(chanlabels)
 iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));

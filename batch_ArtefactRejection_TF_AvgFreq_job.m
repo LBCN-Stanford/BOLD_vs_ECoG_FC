@@ -4,7 +4,7 @@
 % cfg_basicio BasicIO - Unknown
 %-----------------------------------------------------------------------
 matlabbatch{1}.spm.meeg.preproc.artefact.D = '<UNDEFINED>';
-matlabbatch{1}.spm.meeg.preproc.artefact.mode = 'mark';
+matlabbatch{1}.spm.meeg.preproc.artefact.mode = 'reject';
 matlabbatch{1}.spm.meeg.preproc.artefact.badchanthresh = 0.5;
 matlabbatch{1}.spm.meeg.preproc.artefact.append = true;
 matlabbatch{1}.spm.meeg.preproc.artefact.methods.channels{1}.all = 'all';

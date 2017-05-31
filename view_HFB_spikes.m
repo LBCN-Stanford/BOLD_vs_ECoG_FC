@@ -3,6 +3,7 @@ run_num=input('run (e.g. 1): ','s');
 depth=input('depth (1) or subdural (0) ','s');
 if depth=='0'
 hemi=input('hemi (R or L): ','s');
+rest=input('Rest(1) or Sleep(0)? ','s');
 end
 tdt=0; % tdt=1, edf=0
 
@@ -10,7 +11,12 @@ runname=['Run' run_num];
 globalECoGDir=getECoGSubDir;
 fsDir=getFsurfSubDir();
 
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/' runname]);
+end
+
 mkdir(['HFB_plots']);
 
 % Load HFB data (no temporal filter)
@@ -57,7 +63,12 @@ for i=1:length(chanlabels)
 end
 
 %% Make plots
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/' runname]);
+end
+
 for i=1:length(chanlabels)
     HFB_z=[];
     HFB_z=(HFB(i,:)-mean(HFB(i,:)))/std(HFB(i,:));

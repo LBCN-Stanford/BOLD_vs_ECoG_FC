@@ -2,6 +2,7 @@
 
 Patient=input('Patient: ','s');
 bold_runname=input('BOLD Run (e.g. 2): ','s');
+rest=input('Rest(1) or Sleep(0)? ','s');
 ecog_runname=input('ECoG Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2): ','s');
@@ -11,9 +12,19 @@ depth=str2num(depth);
 bold_run_num=['run' bold_runname];
 ecog_run_num=['run' ecog_runname];
 
+if rest=='1'
+    Rest='Rest';
+elseif rest=='0'
+    Rest='Sleep';
+end
 %% Load correlation matrix
 globalECoGDir=getECoGSubDir;
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' ecog_runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' ecog_runname]);
+end
+
 load('HFB_corr.mat');
 load('HFB_medium_corr.mat');
 load('alpha_medium_corr.mat');
@@ -70,7 +81,7 @@ cfg.elecColorScale='minmax';
 % cfg.elecShape='sphere';
 % cfg.elecSize=2;
 cfgOut=plotPialSurf(Patient,cfg);
-  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,'iEEG_FC_',elec_name,'_run' ecog_runname]));
+  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'iEEG_FC_',elec_name,'_run' ecog_runname]));
   close;
   
 elseif iEEG=='2'    
@@ -112,15 +123,15 @@ cfg.olayUnits='z';
 % cfg.elecSize=2;
 cfgOut=plotPialSurf(Patient,cfg);
 if freq=='1'
-  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB_medium',filesep,'HFB_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
+  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB_medium',filesep,[Rest '_'],'HFB_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='2'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_alpha_medium',filesep,'alpha_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_alpha_medium',filesep,[Rest '_'],'alpha_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='3'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB_slow',filesep,'HFB_slow_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB_slow',filesep,[Rest '_'],'HFB_slow_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='4'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_SCP',filesep,'SCP_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_SCP',filesep,[Rest '_'],'SCP_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='5'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB',filesep,'HFB_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB',filesep,[Rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname]));
 end
     close;
   
