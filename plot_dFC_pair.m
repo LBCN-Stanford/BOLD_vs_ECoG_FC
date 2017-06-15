@@ -453,7 +453,7 @@ if BOLD=='iEEG'
 
     if frequency ~='0' && frequency ~='p'
     roi1_ts=iEEG_ts_iElvis(:,roi1_num);   
-    roi2_ts=iEEG_ts(:,roi2_num);   
+    roi2_ts=iEEG_ts_iElvis(:,roi2_num);   
      elseif frequency=='0'
          roi1_HFB_medium_ts=HFB_medium_ts(:,roi1_iEEG_num);
          roi1_Alpha_medium_ts=Alpha_medium_ts(:,roi1_iEEG_num);

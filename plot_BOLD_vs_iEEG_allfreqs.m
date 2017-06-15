@@ -39,8 +39,8 @@ load('partialcorr_BOLD_beta2_medium_allelecs.mat');
 load('partialcorr_BOLD_Gamma_medium_allelecs.mat');
 load('partialcorr_BOLD_HFB_medium_allelecs.mat');
 
-corr_allseeds_allfreqs=[partialcorr_BOLD_Delta_allelecs partialcorr_BOLD_Theta_allelecs partialcorr_BOLD_alpha_allelecs ...
-    partialcorr_BOLD_beta1_allelecs partialcorr_BOLD_beta2_allelecs partialcorr_BOLD_Gamma_allelecs partialcorr_BOLD_HFB_allelecs];
+corr_allseeds_allfreqs=[partialcorr_BOLD_Delta_medium_allelecs partialcorr_BOLD_Theta_medium_allelecs partialcorr_BOLD_alpha_medium_allelecs ...
+    partialcorr_BOLD_beta1_medium_allelecs partialcorr_BOLD_beta2_medium_allelecs partialcorr_BOLD_Gamma_medium_allelecs partialcorr_BOLD_HFB_medium_allelecs];
 
 fsDir=getFsurfSubDir();
 parcOut=elec2Parc_v2([Patient],'DK',0);
@@ -55,11 +55,15 @@ end
 cd([globalECoGDir '/Rest/Figs/DMN_Core']);
 
 %     if corr_allseeds_allfreqs(i,:)~=0
-%     elec_name=char(elecNames(i));
+elec_name=char(elecNames(i));
  
     plot(1:length(allsubs_seedcorr_allfreqs),allsubs_seedcorr_allfreqs','k.-', ...
         'LineWidth',2,'Color',[.8 .8 .8],'MarkerSize',20,'MarkerEdgeColor',[.6 .6 .6]);
-    
+    ylim([0 1]);
+       set(gca,'Xtick',0:1:8)
+ set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
+ set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+  
     hold on
    set(gca,'box','off'); 
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
@@ -67,11 +71,11 @@ set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
   ylim([0 1]);
    set(gca,'Xtick',0:1:8)
- set(gca,'XTickLabel',{'', 'θ', 'δ', 'α','β1','β2','γ','HFB'})
+ set(gca,'XTickLabel',{'', 'δ','θ', 'α','β1','β2','γ','HFB'})
 ylabel('BOLD-ECoG partial correlation (r)'); 
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_allfreqs']));
 close;
-%     end
+%end
 
 
 

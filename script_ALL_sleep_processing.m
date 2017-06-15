@@ -36,7 +36,11 @@ fname=spm_select;
 [D,DC]=LBCN_convert_NKnew(fname);
 
 elseif TDT=='1'
+    if sampling_rate>1000
     [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],1); % downsample to 1000 Hz   
+    else
+    [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],0);
+    end
 end
 fname_spm = fullfile(D.path,D.fname);
 run_length=(D.nsamples/D.fsample)/60;
