@@ -1,8 +1,8 @@
 function exclude_spectral_bursts_func(Patient,runname)
 
-getECoGSubDir;
-global globalECoGDir;
-cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+%getECoGSubDir;
+%global globalECoGDir;
+%cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
 %% Exclude spectral bursts (after TF averaging and edge cropping)
 
@@ -15,10 +15,6 @@ cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 %iqr_dev=5;
 %% set absolute z threshold
 z_dev=8;
-
-getECoGSubDir;
-global globalECoGDir;
-cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 
 %% Load HFB
 pHFB_fname=dir('bptf_mediumpHFBbtf*');

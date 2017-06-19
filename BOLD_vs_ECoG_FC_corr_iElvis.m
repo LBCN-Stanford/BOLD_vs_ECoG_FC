@@ -1865,6 +1865,21 @@ histogram(distance_scatter);
 title(['Euclidean distances among all electrodes']);
 pause; close;
 
+%% Plot correlations with all frequencies
+corr_allfreqs=[str2num(Delta_vs_BOLD_r) str2num(Theta_vs_BOLD_r) str2num(alpha_vs_BOLD_r) str2num(beta1_vs_BOLD_r) str2num(beta2_vs_BOLD_r) str2num(Gamma_vs_BOLD_r) str2num(medium_vs_BOLD_r)]
+
+    plot(1:length(corr_allfreqs),corr_allfreqs','k.--', ...
+        'LineWidth',2,'Color',[.7 .7 .7],'MarkerSize',25,'MarkerEdgeColor',[.5 .5 .5]);
+    ylim([0 0.8]);
+       set(gca,'Xtick',0:1:8)
+ set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
+ set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+   set(gca,'box','off'); 
+set(gcf,'color','w');
+ylabel('BOLD-ECoG FC correlation (r)'); 
+
+pause; close;
+
 %% Slow vs medium vs BOLD
 figure(1)
 scatter(fisherz(BOLD_scatter),fisherz(slow_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 0 1]); 
@@ -2316,9 +2331,11 @@ elseif BOLD_pipeline==4
 end
  close;
  if use_elec==1
+     corr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_partialcorr;
  partialcorr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_partialcorr;
  p_BOLD_HFB_medium_allelecs(i,:)=p_medium_partial;
-   else
+ else
+       corr_BOLD_HFB_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_HFB_medium_allelecs(i,:)=NaN; 
    p_BOLD_HFB_medium_allelecs(i,:)=NaN;
  end
@@ -2347,9 +2364,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_alpha_medium_allelecs(i,:)=elec_BOLD_alpha_medium_corr;
  partialcorr_BOLD_alpha_medium_allelecs(i,:)=elec_BOLD_alpha_medium_partialcorr;
  p_BOLD_alpha_medium_allelecs(i,:)=p_alpha_medium_partial;
-   else
+ else
+       corr_BOLD_alpha_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_alpha_medium_allelecs(i,:)=NaN; 
    p_BOLD_alpha_medium_allelecs(i,:)=NaN;
  end
@@ -2378,9 +2397,11 @@ elseif BOLD_pipeline==4
 end
  close;
  if use_elec==1
+     corr_BOLD_HFB_slow_allelecs(i,:)=elec_BOLD_HFB_slow_corr;
  partialcorr_BOLD_HFB_slow_allelecs(i,:)=elec_BOLD_HFB_slow_partialcorr;
  p_BOLD_HFB_slow_allelecs(i,:)=p_slow_partial;
-   else
+ else
+       corr_BOLD_HFB_slow_allelecs(i,:)=NaN;
   partialcorr_BOLD_HFB_slow_allelecs(i,:)=NaN; 
    p_BOLD_HFB_slow_allelecs(i,:)=NaN;
  end
@@ -2409,9 +2430,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_beta1_medium_allelecs(i,:)=elec_BOLD_beta1_medium_corr;
  partialcorr_BOLD_beta1_medium_allelecs(i,:)=elec_BOLD_beta1_medium_partialcorr;
  p_BOLD_beta1_medium_allelecs(i,:)=p_beta1_medium_partial;
-   else
+ else
+       corr_BOLD_beta1_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_beta1_medium_allelecs(i,:)=NaN; 
    p_BOLD_beta1_medium_allelecs(i,:)=NaN;
  end
@@ -2440,9 +2463,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_beta2_medium_allelecs(i,:)=elec_BOLD_beta2_medium_corr;
  partialcorr_BOLD_beta2_medium_allelecs(i,:)=elec_BOLD_beta2_medium_partialcorr;
  p_BOLD_beta2_medium_allelecs(i,:)=p_beta2_medium_partial;
-   else
+ else
+       corr_BOLD_beta2_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_beta2_medium_allelecs(i,:)=NaN; 
    p_BOLD_beta2_medium_allelecs(i,:)=NaN;
  end
@@ -2471,9 +2496,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_Theta_medium_allelecs(i,:)=elec_BOLD_Theta_medium_corr;
  partialcorr_BOLD_Theta_medium_allelecs(i,:)=elec_BOLD_Theta_medium_partialcorr;
  p_BOLD_Theta_medium_allelecs(i,:)=p_Theta_medium_partial;
-   else
+ else
+       corr_BOLD_Theta_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_Theta_medium_allelecs(i,:)=NaN; 
    p_BOLD_Theta_medium_allelecs(i,:)=NaN;
  end
@@ -2502,9 +2529,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_Delta_medium_allelecs(i,:)=elec_BOLD_Delta_medium_corr;
  partialcorr_BOLD_Delta_medium_allelecs(i,:)=elec_BOLD_Delta_medium_partialcorr;
  p_BOLD_Delta_medium_allelecs(i,:)=p_Delta_medium_partial;
-   else
+ else
+       corr_BOLD_Delta_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_Delta_medium_allelecs(i,:)=NaN; 
    p_BOLD_Delta_medium_allelecs(i,:)=NaN;
  end
@@ -2533,9 +2562,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_Gamma_medium_allelecs(i,:)=elec_BOLD_Gamma_medium_corr;
  partialcorr_BOLD_Gamma_medium_allelecs(i,:)=elec_BOLD_Gamma_medium_partialcorr;
  p_BOLD_Gamma_medium_allelecs(i,:)=p_Gamma_medium_partial;
-   else
+ else
+     corr_BOLD_Gamma_medium_allelecs(i,:)=NaN;  
   partialcorr_BOLD_Gamma_medium_allelecs(i,:)=NaN; 
    p_BOLD_Gamma_medium_allelecs(i,:)=NaN;
  end
@@ -2564,9 +2595,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_corr;
  partialcorr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_partialcorr;
  p_BOLD_SCP_allelecs(i,:)=p_SCP_partial;
-   else
+ else
+       corr_BOLD_SCP_allelecs(i,:)=NaN;
   partialcorr_BOLD_SCP_allelecs(i,:)=NaN; 
    p_BOLD_SCP_allelecs(i,:)=NaN;
  end
@@ -2595,9 +2628,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_corr;
  partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
  p_BOLD_HFB_allelecs(i,:)=p_HFB_partial;
-   else
+ else
+       corr_BOLD_HFB_allelecs(i,:)=NaN;
   partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
    p_BOLD_HFB_allelecs(i,:)=NaN;
  end
@@ -2609,34 +2644,42 @@ end
 
 %% save correlations
 if plotting=='1' || plotting=='0'
+  save('corr_BOLD_HFB_medium_allelecs','corr_BOLD_HFB_medium_allelecs');  
 save('partialcorr_BOLD_HFB_medium_allelecs','partialcorr_BOLD_HFB_medium_allelecs');
 save('p_BOLD_HFB_medium_allelecs','p_BOLD_HFB_medium_allelecs');
 end
 if plotting=='2' || plotting=='0'
+    save('corr_BOLD_alpha_medium_allelecs','corr_BOLD_alpha_medium_allelecs');
    save('partialcorr_BOLD_alpha_medium_allelecs','partialcorr_BOLD_alpha_medium_allelecs');
 save('p_BOLD_alpha_medium_allelecs','p_BOLD_alpha_medium_allelecs'); 
 end
   if plotting=='3' || plotting=='0'
+      save('corr_BOLD_HFB_slow_allelecs','corr_BOLD_HFB_slow_allelecs');
    save('partialcorr_BOLD_HFB_slow_allelecs','partialcorr_BOLD_HFB_slow_allelecs');
 save('p_BOLD_HFB_slow_allelecs','p_BOLD_HFB_slow_allelecs'); 
   end
   if plotting=='4' || plotting=='0'
+      save('corr_BOLD_beta1_medium_allelecs','corr_BOLD_beta1_medium_allelecs');
    save('partialcorr_BOLD_beta1_medium_allelecs','partialcorr_BOLD_beta1_medium_allelecs');
 save('p_BOLD_beta1_medium_allelecs','p_BOLD_beta1_medium_allelecs'); 
   end
   if plotting=='5' || plotting=='0'
+      save('corr_BOLD_beta2_medium_allelecs','corr_BOLD_beta2_medium_allelecs');
    save('partialcorr_BOLD_beta2_medium_allelecs','partialcorr_BOLD_beta2_medium_allelecs');
 save('p_BOLD_beta2_medium_allelecs','p_BOLD_beta2_medium_allelecs'); 
   end
   if plotting=='6' || plotting=='0'
+      save('corr_BOLD_Theta_medium_allelecs','corr_BOLD_Theta_medium_allelecs');
    save('partialcorr_BOLD_Theta_medium_allelecs','partialcorr_BOLD_Theta_medium_allelecs');
 save('p_BOLD_Theta_medium_allelecs','p_BOLD_Theta_medium_allelecs');
   end
   if plotting=='7' || plotting=='0'
+      save('corr_BOLD_Delta_medium_allelecs','corr_BOLD_Delta_medium_allelecs');
    save('partialcorr_BOLD_Delta_medium_allelecs','partialcorr_BOLD_Delta_medium_allelecs');
 save('p_BOLD_Delta_medium_allelecs','p_BOLD_Delta_medium_allelecs'); 
   end
   if plotting=='8' || plotting=='0'
+      save('corr_BOLD_Gamma_medium_allelecs','corr_BOLD_Gamma_medium_allelecs');
    save('partialcorr_BOLD_Gamma_medium_allelecs','partialcorr_BOLD_Gamma_medium_allelecs');
 save('p_BOLD_Gamma_medium_allelecs','p_BOLD_Gamma_medium_allelecs'); 
   end

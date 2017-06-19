@@ -9,6 +9,7 @@ Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
 %hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
+rest=input('Rest(1) or Sleep(0)? ','s');
 distance_exclusion=input('exclude short-distance pairs (1)? ','s');
 if distance_exclusion=='1'
 dist_thr=input('How short (mm)? ','s');
@@ -18,7 +19,7 @@ depth=str2num(depth);
 BOLD_run='run1';
 tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 BOLD_pipeline=input('BOLD pipeline (1=GSR, 2=AROMA, 3=NoGSR, 4=aCompCor): ' ,'s'); % 1=GSR, 2=ICA-AROMA
-plotting=input('plot all (0) HFB 0.1-1Hz (1)  alpha (2) HFB <0.1Hz (3) beta1 (4) beta2 (5) Theta (6) Delta (7) Gamma (8) SCP (9)? ','s');
+plotting=input('plot all (0) HFB 0.1-1Hz (1)  alpha (2) HFB <0.1Hz (3) beta1 (4) beta2 (5) Theta (6) Delta (7) Gamma (8) SCP (9) HFB unfilered (a)? ','s');
 tdt=str2num(tdt);
 BOLD_pipeline=str2num(BOLD_pipeline);
 
@@ -34,12 +35,23 @@ end
 
 %% Get hemisphere file base name
 getECoGSubDir; global globalECoGDir;
-cd ([globalECoGDir '/Rest/' Patient]);
+
+if rest=='1'
+cd([globalECoGDir '/Rest/' Patient]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient]);
+end
+
 if depth=='0'
 hemi=importdata(['hemi.txt']); 
 hemi=char(hemi);
 end
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
+
 Mfile=dir('btf_aMpfff*');
 SCPfile=dir('SCP_*');
 SCPfile=SCPfile(2,1).name;
@@ -231,7 +243,12 @@ Yeo_VAN_names=strread(num2str(1:length(Yeo_VAN_coords)),'%s');
 end
 
 %% Load preprocessed iEEG data 
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
+
 SCP=spm_eeg_load([SCPfile]);
 
 if ~isempty(dir('pHFB*'))
@@ -319,7 +336,11 @@ end
 
 total_bold=size(BOLD_ts,2);
 
+if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+end
     
 % create iElvis to iEEG chanlabel transformation vector
 if depth==2
@@ -1844,6 +1865,21 @@ histogram(distance_scatter);
 title(['Euclidean distances among all electrodes']);
 pause; close;
 
+%% Plot correlations with all frequencies
+corr_allfreqs=[str2num(Delta_vs_BOLD_r) str2num(Theta_vs_BOLD_r) str2num(alpha_vs_BOLD_r) str2num(beta1_vs_BOLD_r) str2num(beta2_vs_BOLD_r) str2num(Gamma_vs_BOLD_r) str2num(medium_vs_BOLD_r)]
+
+    plot(1:length(corr_allfreqs),corr_allfreqs','k.--', ...
+        'LineWidth',2,'Color',[.7 .7 .7],'MarkerSize',25,'MarkerEdgeColor',[.5 .5 .5]);
+    ylim([0 0.8]);
+       set(gca,'Xtick',0:1:8)
+ set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
+ set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+   set(gca,'box','off'); 
+set(gcf,'color','w');
+ylabel('BOLD-ECoG FC correlation (r)'); 
+
+pause; close;
+
 %% Slow vs medium vs BOLD
 figure(1)
 scatter(fisherz(BOLD_scatter),fisherz(slow_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 0 1]); 
@@ -1878,13 +1914,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 HFB_vs_BOLD_GSR.eps
+print -depsc2 HFB_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
-  print -depsc2 HFB_vs_BOLD_AROMA.eps  
+  print -depsc2 HFB_medium_vs_BOLD_AROMA.eps  
   elseif BOLD_pipeline==3  
-    print -depsc2 HFB_vs_BOLD_NoGSR.eps
+    print -depsc2 HFB_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 HFB_vs_BOLD_aCompCor.eps
+    print -depsc2 HFB_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1900,13 +1936,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium alpha pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 alpha_vs_BOLD_GSR.eps
+print -depsc2 alpha_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
-  print -depsc2 alpha_vs_BOLD_AROMA.eps  
+  print -depsc2 alpha_medium_vs_BOLD_AROMA.eps  
   elseif BOLD_pipeline==3  
-    print -depsc2 alpha_vs_BOLD_NoGSR.eps
+    print -depsc2 alpha_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 alpha_vs_BOLD_aCompCor.eps
+    print -depsc2 alpha_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1922,13 +1958,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium beta1 pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 beta1_vs_BOLD_GSR.eps
+print -depsc2 beta1_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 beta1_vs_BOLD_AROMA.eps
+ print -depsc2 beta1_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 beta1_vs_BOLD_NoGSR.eps
+    print -depsc2 beta1_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 beta1_vs_BOLD_aCompCor.eps
+    print -depsc2 beta1_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1944,13 +1980,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium beta2 pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 beta2_vs_BOLD_GSR.eps
+print -depsc2 beta2_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 beta2_vs_BOLD_AROMA.eps
+ print -depsc2 beta2_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 beta2_vs_BOLD_NoGSR.eps
+    print -depsc2 beta2_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 beta2_vs_BOLD_aCompCor.eps
+    print -depsc2 beta2_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1966,13 +2002,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium Theta pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 Theta_vs_BOLD_GSR.eps
+print -depsc2 Theta_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 Theta_vs_BOLD_AROMA.eps
+ print -depsc2 Theta_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 Theta_vs_BOLD_NoGSR.eps
+    print -depsc2 Theta_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 Theta_vs_BOLD_aCompCor.eps
+    print -depsc2 Theta_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -1988,13 +2024,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium Delta pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 Delta_vs_BOLD_GSR.eps
+print -depsc2 Delta_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 Delta_vs_BOLD_AROMA.eps
+ print -depsc2 Delta_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 Delta_vs_BOLD_NoGSR.eps
+    print -depsc2 Delta_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 Delta_vs_BOLD_aCompCor.eps
+    print -depsc2 Delta_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -2010,13 +2046,13 @@ xlabel('BOLD pair-wise FC');
 ylabel('Medium Gamma pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
-print -depsc2 Gamma_vs_BOLD_GSR.eps
+print -depsc2 Gamma_medium_vs_BOLD_GSR.eps
 elseif BOLD_pipeline==2
- print -depsc2 Gamma_vs_BOLD_AROMA.eps
+ print -depsc2 Gamma_medium_vs_BOLD_AROMA.eps
  elseif BOLD_pipeline==3  
-    print -depsc2 Gamma_vs_BOLD_NoGSR.eps
+    print -depsc2 Gamma_medium_vs_BOLD_NoGSR.eps
 elseif BOLD_pipeline==4
-    print -depsc2 Gamma_vs_BOLD_aCompCor.eps
+    print -depsc2 Gamma_medium_vs_BOLD_aCompCor.eps
 end
 pause; close;
 
@@ -2061,7 +2097,7 @@ elseif BOLD_pipeline==3
 elseif BOLD_pipeline==4
     print -depsc2 HFB_longdist_vs_BOLD_aCompCor.eps
     end
-pause; close;
+close;
 
 figure(2)
 scatter(fisherz(BOLD_short),fisherz(medium_short),'MarkerEdgeColor','k','MarkerFaceColor',[1 0 0]); 
@@ -2083,7 +2119,50 @@ elseif BOLD_pipeline==4
     print -depsc2 HFB_shortdist_vs_BOLD_aCompCor.eps
 
 end
-pause; close;
+close;
+
+%% unfiltered ECoG plots
+figure(4)
+scatter(fisherz(BOLD_scatter),fisherz(HFB_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({['HFB (unfiltered) ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' HFB_vs_BOLD_r ' p = ' HFB_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' HFB_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' HFB_partial]},'Fontsize',12);
+xlabel('BOLD pair-wise FC');
+ylabel('HFB pair-wise FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print -depsc2 HFB_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+ print -depsc2 HFB_vs_BOLD_AROMA.eps
+ elseif BOLD_pipeline==3  
+    print -depsc2 HFB_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 HFB_vs_BOLD_aCompCor.eps
+end
+close;
+
+figure(4)
+scatter(fisherz(BOLD_scatter),fisherz(alpha_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({['alpha (unfiltered) ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' alpha_vs_BOLD_r ' p = ' alpha_vs_BOLD_p ]; ...
+    ['Spearman ρ = ' alpha_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' alpha_partial]},'Fontsize',12);
+xlabel('BOLD pair-wise FC');
+ylabel('alpha pair-wise FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print -depsc2 alpha_vs_BOLD_GSR.eps
+elseif BOLD_pipeline==2
+ print -depsc2 alpha_vs_BOLD_AROMA.eps
+ elseif BOLD_pipeline==3  
+    print -depsc2 alpha_vs_BOLD_NoGSR.eps
+elseif BOLD_pipeline==4
+    print -depsc2 alpha_vs_BOLD_aCompCor.eps
+end
+close;
 
 if BOLD_pipeline==1
     mkdir('GSR'); cd('GSR');
@@ -2094,7 +2173,8 @@ elseif BOLD_pipeline==2
        elseif BOLD_pipeline==4
     mkdir('aCompCor'); cd('aCompCor');
 end
-    
+ 
+
 %% Plot ECoG vs BOLD for each seed electrode
 distances_nan=distances;
 distances_nan(find(distances_nan==0))=NaN;
@@ -2105,14 +2185,13 @@ for i=1:length(BOLD_mat);
     use_elec=1;
  curr_elec_BOLD=BOLD_mat(:,i);
  curr_elec_HFB_medium=medium_mat(:,i);
- curr_elec_HFB_slow=slow_mat(:,i);
  curr_elec_alpha_medium=alpha_medium_mat(:,i);
  curr_elec_beta1_medium=beta1_medium_mat(:,i);
  curr_elec_beta2_medium=beta2_medium_mat(:,i);
  curr_elec_Theta_medium=Theta_medium_mat(:,i);
  curr_elec_Delta_medium=Delta_medium_mat(:,i);
  curr_elec_Gamma_medium=Gamma_medium_mat(:,i);
-  curr_elec_HFB=medium_mat(:,i);
+  curr_elec_HFB=HFB_mat(:,i);
  curr_elec_alpha=alpha_mat(:,i);
  curr_elec_beta1=beta1_mat(:,i);
  curr_elec_beta2=beta2_mat(:,i);
@@ -2121,7 +2200,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Gamma=Gamma_mat(:,i);
  
  curr_elec_SCP=SCP_mat(:,i);
- curr_elec_HFBslow=slow_mat(:,i);
+ curr_elec_HFB_slow=slow_mat(:,i);
  curr_elec_distance=distances_nan(:,i);
  curr_elec_BOLD(isnan(curr_elec_BOLD))=[];
  curr_elec_HFB(isnan(curr_elec_HFB))=[];
@@ -2139,7 +2218,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Delta_medium(isnan(curr_elec_Delta_medium))=[];
  curr_elec_Gamma_medium(isnan(curr_elec_Gamma_medium))=[];
  curr_elec_SCP(isnan(curr_elec_SCP))=[];
- curr_elec_HFBslow(isnan(curr_elec_HFBslow))=[];
+ curr_elec_HFB_slow(isnan(curr_elec_HFB_slow))=[];
  curr_elec_distance(isnan(curr_elec_distance))=[];
  
  curr_elec_BOLD=fisherz(curr_elec_BOLD);
@@ -2159,7 +2238,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Gamma_medium=fisherz(curr_elec_Gamma_medium);
  curr_elec_SCP=fisherz(curr_elec_SCP);
  
- curr_elec_HFBslow=fisherz(curr_elec_HFBslow);
+ curr_elec_HFB_slow=fisherz(curr_elec_HFB_slow);
  elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB);
  elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha);
  elec_BOLD_beta1_corr=corr(curr_elec_BOLD,curr_elec_beta1);
@@ -2175,9 +2254,9 @@ for i=1:length(BOLD_mat);
  elec_BOLD_Delta_medium_corr=corr(curr_elec_BOLD,curr_elec_Delta_medium);
  elec_BOLD_Gamma_medium_corr=corr(curr_elec_BOLD,curr_elec_Gamma_medium);
  elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP);
- elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow);
- [elec_BOLD_HFB_partialcorr,p_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
- [elec_BOLD_HFBslow_partialcorr,p_slow_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFBslow,curr_elec_distance);
+ elec_BOLD_HFB_slow_corr=corr(curr_elec_BOLD,curr_elec_HFB_slow);
+ [elec_BOLD_HFB_partialcorr,p_HFB_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
+ [elec_BOLD_HFB_slow_partialcorr,p_slow_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB_slow,curr_elec_distance);
  [elec_BOLD_alpha_partialcorr,p_alpha_partial]=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance);
  [elec_BOLD_beta1_partialcorr,p_beta1_partial]=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance);
  [elec_BOLD_beta2_partialcorr,p_beta2_partial]=partialcorr(curr_elec_BOLD,curr_elec_beta2,curr_elec_distance);
@@ -2208,12 +2287,12 @@ for i=1:length(BOLD_mat);
   rho_elec_BOLD_Delta_medium_corr=corr(curr_elec_BOLD,curr_elec_Delta_medium,'type','Spearman');
    rho_elec_BOLD_Gamma_medium_corr=corr(curr_elec_BOLD,curr_elec_Gamma_medium,'type','Spearman');  
    rho_elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP,'type','Spearman');
- rho_elec_BOLD_HFBslow_corr=corr(curr_elec_BOLD,curr_elec_HFBslow,'type','Spearman');
+ rho_elec_BOLD_HFB_slow_corr=corr(curr_elec_BOLD,curr_elec_HFB_slow,'type','Spearman');
  
  rho_elec_BOLD_HFB_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_alpha_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_beta1_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1,curr_elec_distance,'type','Spearman');
- rho_elec_BOLD_HFBslow_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFBslow,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_HFB_slow_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB_slow,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_beta2_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta2,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Theta_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Theta,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Delta_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Delta,curr_elec_distance,'type','Spearman');
@@ -2221,7 +2300,7 @@ for i=1:length(BOLD_mat);
   rho_elec_BOLD_HFB_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB_medium,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_alpha_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_alpha_medium,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_beta1_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta1_medium,curr_elec_distance,'type','Spearman');
- rho_elec_BOLD_HFBslow_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFBslow_medium,curr_elec_distance,'type','Spearman');
+ rho_elec_BOLD_HFB_slow_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB_slow,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_beta2_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_beta2_medium,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Theta_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Theta_medium,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Delta_medium_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Delta_medium,curr_elec_distance,'type','Spearman');
@@ -2252,9 +2331,11 @@ elseif BOLD_pipeline==4
 end
  close;
  if use_elec==1
+     corr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_partialcorr;
  partialcorr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_partialcorr;
  p_BOLD_HFB_medium_allelecs(i,:)=p_medium_partial;
-   else
+ else
+       corr_BOLD_HFB_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_HFB_medium_allelecs(i,:)=NaN; 
    p_BOLD_HFB_medium_allelecs(i,:)=NaN;
  end
@@ -2283,9 +2364,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_alpha_medium_allelecs(i,:)=elec_BOLD_alpha_medium_corr;
  partialcorr_BOLD_alpha_medium_allelecs(i,:)=elec_BOLD_alpha_medium_partialcorr;
  p_BOLD_alpha_medium_allelecs(i,:)=p_alpha_medium_partial;
-   else
+ else
+       corr_BOLD_alpha_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_alpha_medium_allelecs(i,:)=NaN; 
    p_BOLD_alpha_medium_allelecs(i,:)=NaN;
  end
@@ -2293,13 +2376,13 @@ close;
 
 if plotting=='3' || plotting=='0'
     figure(3)
-scatter(curr_elec_BOLD,curr_elec_HFBslow,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+scatter(curr_elec_BOLD,curr_elec_HFB_slow,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs HFB (<0.1) FC']; ...
-    ['r = ' num2str(elec_BOLD_HFBslow_corr) '; rho = ' num2str(rho_elec_BOLD_HFBslow_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_HFBslow_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFBslow_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(elec_BOLD_HFB_slow_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_slow_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFB_slow_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_slow_partialcorr)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('HFB (<0.1) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2314,11 +2397,13 @@ elseif BOLD_pipeline==4
 end
  close;
  if use_elec==1
- partialcorr_BOLD_HFBslow_allelecs(i,:)=elec_BOLD_HFBslow_partialcorr;
- p_BOLD_HFBslow_allelecs(i,:)=p_slow_partial;
-   else
-  partialcorr_BOLD_HFBslow_allelecs(i,:)=NaN; 
-   p_BOLD_HFBslow_allelecs(i,:)=NaN;
+     corr_BOLD_HFB_slow_allelecs(i,:)=elec_BOLD_HFB_slow_corr;
+ partialcorr_BOLD_HFB_slow_allelecs(i,:)=elec_BOLD_HFB_slow_partialcorr;
+ p_BOLD_HFB_slow_allelecs(i,:)=p_slow_partial;
+ else
+       corr_BOLD_HFB_slow_allelecs(i,:)=NaN;
+  partialcorr_BOLD_HFB_slow_allelecs(i,:)=NaN; 
+   p_BOLD_HFB_slow_allelecs(i,:)=NaN;
  end
 end
 
@@ -2345,9 +2430,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_beta1_medium_allelecs(i,:)=elec_BOLD_beta1_medium_corr;
  partialcorr_BOLD_beta1_medium_allelecs(i,:)=elec_BOLD_beta1_medium_partialcorr;
  p_BOLD_beta1_medium_allelecs(i,:)=p_beta1_medium_partial;
-   else
+ else
+       corr_BOLD_beta1_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_beta1_medium_allelecs(i,:)=NaN; 
    p_BOLD_beta1_medium_allelecs(i,:)=NaN;
  end
@@ -2376,9 +2463,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_beta2_medium_allelecs(i,:)=elec_BOLD_beta2_medium_corr;
  partialcorr_BOLD_beta2_medium_allelecs(i,:)=elec_BOLD_beta2_medium_partialcorr;
  p_BOLD_beta2_medium_allelecs(i,:)=p_beta2_medium_partial;
-   else
+ else
+       corr_BOLD_beta2_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_beta2_medium_allelecs(i,:)=NaN; 
    p_BOLD_beta2_medium_allelecs(i,:)=NaN;
  end
@@ -2407,9 +2496,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_Theta_medium_allelecs(i,:)=elec_BOLD_Theta_medium_corr;
  partialcorr_BOLD_Theta_medium_allelecs(i,:)=elec_BOLD_Theta_medium_partialcorr;
  p_BOLD_Theta_medium_allelecs(i,:)=p_Theta_medium_partial;
-   else
+ else
+       corr_BOLD_Theta_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_Theta_medium_allelecs(i,:)=NaN; 
    p_BOLD_Theta_medium_allelecs(i,:)=NaN;
  end
@@ -2438,9 +2529,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_Delta_medium_allelecs(i,:)=elec_BOLD_Delta_medium_corr;
  partialcorr_BOLD_Delta_medium_allelecs(i,:)=elec_BOLD_Delta_medium_partialcorr;
  p_BOLD_Delta_medium_allelecs(i,:)=p_Delta_medium_partial;
-   else
+ else
+       corr_BOLD_Delta_medium_allelecs(i,:)=NaN;
   partialcorr_BOLD_Delta_medium_allelecs(i,:)=NaN; 
    p_BOLD_Delta_medium_allelecs(i,:)=NaN;
  end
@@ -2469,9 +2562,11 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_Gamma_medium_allelecs(i,:)=elec_BOLD_Gamma_medium_corr;
  partialcorr_BOLD_Gamma_medium_allelecs(i,:)=elec_BOLD_Gamma_medium_partialcorr;
  p_BOLD_Gamma_medium_allelecs(i,:)=p_Gamma_medium_partial;
-   else
+ else
+     corr_BOLD_Gamma_medium_allelecs(i,:)=NaN;  
   partialcorr_BOLD_Gamma_medium_allelecs(i,:)=NaN; 
    p_BOLD_Gamma_medium_allelecs(i,:)=NaN;
  end
@@ -2500,30 +2595,71 @@ elseif BOLD_pipeline==4
 end
 close;
  if use_elec==1
+     corr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_corr;
  partialcorr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_partialcorr;
  p_BOLD_SCP_allelecs(i,:)=p_SCP_partial;
-   else
+ else
+       corr_BOLD_SCP_allelecs(i,:)=NaN;
   partialcorr_BOLD_SCP_allelecs(i,:)=NaN; 
    p_BOLD_SCP_allelecs(i,:)=NaN;
  end
-  end
+    end
+  
+   if plotting=='a' || plotting=='0'
+    figure(3)
+scatter(curr_elec_BOLD,curr_elec_HFB,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_name ': BOLD FC vs HFB (unfiltered) FC']; ...
+    ['r = ' num2str(elec_BOLD_HFB_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_corr)]; ...
+    ['distance-corrected r = ' num2str(elec_BOLD_HFB_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_partialcorr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('HFB (unfiltered) FC');
+set(gcf,'PaperPositionMode','auto');
+if BOLD_pipeline==1
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_GSR']));
+elseif BOLD_pipeline==2
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_AROMA']));
+elseif BOLD_pipeline==3
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_NoGSR']));
+elseif BOLD_pipeline==4
+    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_aCompCor']));   
+end
+close;
+ if use_elec==1
+     corr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_corr;
+ partialcorr_BOLD_HFB_allelecs(i,:)=elec_BOLD_HFB_partialcorr;
+ p_BOLD_HFB_allelecs(i,:)=p_HFB_partial;
+ else
+       corr_BOLD_HFB_allelecs(i,:)=NaN;
+  partialcorr_BOLD_HFB_allelecs(i,:)=NaN; 
+   p_BOLD_HFB_allelecs(i,:)=NaN;
+ end
+  end   
+    
+    
     end
 end
 
 %% save correlations
 if plotting=='1' || plotting=='0'
+  save('corr_BOLD_HFB_medium_allelecs','corr_BOLD_HFB_medium_allelecs');  
 save('partialcorr_BOLD_HFB_medium_allelecs','partialcorr_BOLD_HFB_medium_allelecs');
 save('p_BOLD_HFB_medium_allelecs','p_BOLD_HFB_medium_allelecs');
 end
 if plotting=='2' || plotting=='0'
+    save('corr_BOLD_alpha_medium_allelecs','corr_BOLD_alpha_medium_allelecs');
    save('partialcorr_BOLD_alpha_medium_allelecs','partialcorr_BOLD_alpha_medium_allelecs');
 save('p_BOLD_alpha_medium_allelecs','p_BOLD_alpha_medium_allelecs'); 
 end
   if plotting=='3' || plotting=='0'
-   save('partialcorr_BOLD_HFBslow_allelecs','partialcorr_BOLD_HFBslow_allelecs');
-save('p_BOLD_HFBslow_allelecs','p_BOLD_HFBslow_allelecs'); 
+      save('corr_BOLD_HFB_slow_allelecs','corr_BOLD_HFB_slow_allelecs');
+   save('partialcorr_BOLD_HFB_slow_allelecs','partialcorr_BOLD_HFB_slow_allelecs');
+save('p_BOLD_HFB_slow_allelecs','p_BOLD_HFB_slow_allelecs'); 
   end
   if plotting=='4' || plotting=='0'
+      save('partialcorr_BOLD_beta1_medium_allelecs','partialcorr_BOLD_beta1_medium_allelecs');
    save('partialcorr_BOLD_beta1_medium_allelecs','partialcorr_BOLD_beta1_medium_allelecs');
 save('p_BOLD_beta1_medium_allelecs','p_BOLD_beta1_medium_allelecs'); 
   end
