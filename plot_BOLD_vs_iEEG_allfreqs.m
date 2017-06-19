@@ -16,10 +16,11 @@ ecog_run_num=['run' ecog_runname];
 globalECoGDir=getECoGSubDir;
 cd([globalECoGDir '/Rest']);
 mkdir('Figs');
-mkdir('DMN_Core');
+cd Figs;
+mkdir('DMN_Core'); cd ..
 
 %% Load DMN Core subject and electrode list
-sublist=importdata('DMN_Core_list.txt',' ');
+sublist=importdata('DMN_Core_list2.txt',' ');
 subjects=sublist.textdata;
 elecs=sublist.data;
 
@@ -38,43 +39,56 @@ load('partialcorr_BOLD_beta1_medium_allelecs.mat');
 load('partialcorr_BOLD_beta2_medium_allelecs.mat');
 load('partialcorr_BOLD_Gamma_medium_allelecs.mat');
 load('partialcorr_BOLD_HFB_medium_allelecs.mat');
+load('corr_BOLD_Delta_medium_allelecs.mat');
+load('corr_BOLD_Theta_medium_allelecs.mat');
+load('corr_BOLD_alpha_medium_allelecs.mat');
+load('corr_BOLD_beta1_medium_allelecs.mat');
+load('corr_BOLD_beta2_medium_allelecs.mat');
+load('corr_BOLD_Gamma_medium_allelecs.mat');
+load('corr_BOLD_HFB_medium_allelecs.mat');
 
-corr_allseeds_allfreqs=[partialcorr_BOLD_Delta_medium_allelecs partialcorr_BOLD_Theta_medium_allelecs partialcorr_BOLD_alpha_medium_allelecs ...
+partialcorr_allseeds_allfreqs=[partialcorr_BOLD_Delta_medium_allelecs partialcorr_BOLD_Theta_medium_allelecs partialcorr_BOLD_alpha_medium_allelecs ...
     partialcorr_BOLD_beta1_medium_allelecs partialcorr_BOLD_beta2_medium_allelecs partialcorr_BOLD_Gamma_medium_allelecs partialcorr_BOLD_HFB_medium_allelecs];
+
+corr_allseeds_allfreqs=[corr_BOLD_Delta_medium_allelecs corr_BOLD_Theta_medium_allelecs corr_BOLD_alpha_medium_allelecs ...
+    corr_BOLD_beta1_medium_allelecs corr_BOLD_beta2_medium_allelecs corr_BOLD_Gamma_medium_allelecs corr_BOLD_HFB_medium_allelecs];
 
 fsDir=getFsurfSubDir();
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
 
+partialcorr_seed_allfreqs=partialcorr_allseeds_allfreqs(elec,:);
 corr_seed_allfreqs=corr_allseeds_allfreqs(elec,:);
 
 allsubs_seedcorr_allfreqs(sub,:)=corr_seed_allfreqs;
+allsubs_seedpartialcorr_allfreqs(sub,:)=partialcorr_seed_allfreqs;
 end
 
 %% Make plots
 cd([globalECoGDir '/Rest/Figs/DMN_Core']);
 
 %     if corr_allseeds_allfreqs(i,:)~=0
-elec_name=char(elecNames(i));
+%elec_name=char(elecNames(i));
  
-    plot(1:length(allsubs_seedcorr_allfreqs),allsubs_seedcorr_allfreqs','k.-', ...
-        'LineWidth',2,'Color',[.8 .8 .8],'MarkerSize',20,'MarkerEdgeColor',[.6 .6 .6]);
-    ylim([0 1]);
+    plot(1:length(allsubs_seedcorr_allfreqs),allsubs_seedcorr_allfreqs','k.--', ...
+        'LineWidth',2,'Color',[.6 .6 .6],'MarkerSize',25,'MarkerEdgeColor',[.3 .3 .3]);      
+    ylim([0 0.8]);
        set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
  set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+  ylabel('BOLD-ECoG FC correlation (r)'); 
   
     hold on
    set(gca,'box','off'); 
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
-  ylim([0 1]);
+%title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
+  ylim([0 0.8]);
    set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'', 'δ','θ', 'α','β1','β2','γ','HFB'})
-ylabel('BOLD-ECoG partial correlation (r)'); 
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_allfreqs']));
-close;
+ylabel('BOLD-iEEG correlation (r)'); 
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,region '_allfreqs']));
+pause; close;
 %end
 
 

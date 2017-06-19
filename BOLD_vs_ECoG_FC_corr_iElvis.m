@@ -1876,7 +1876,7 @@ corr_allfreqs=[str2num(Delta_vs_BOLD_r) str2num(Theta_vs_BOLD_r) str2num(alpha_v
  set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
    set(gca,'box','off'); 
 set(gcf,'color','w');
-ylabel('BOLD-ECoG FC correlation (r)'); 
+ylabel('BOLD-iEEG FC correlation (r)'); 
 
 pause; close;
 
@@ -2331,7 +2331,7 @@ elseif BOLD_pipeline==4
 end
  close;
  if use_elec==1
-     corr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_partialcorr;
+     corr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_corr;
  partialcorr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_partialcorr;
  p_BOLD_HFB_medium_allelecs(i,:)=p_medium_partial;
  else
