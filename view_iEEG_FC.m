@@ -37,11 +37,11 @@ coords=dlmread([Patient '.PIALVOX'],' ',2,0);
 cd electrode_spheres;
 mkdir('SBCA/figs');
 mkdir('SBCA/figs/iEEG');
-mkdir('SBCA/figs/iEEG/iEEG_BOLD_HFB');
-mkdir('SBCA/figs/iEEG_BOLD_HFB_medium');
-mkdir('SBCA/figs/iEEG_BOLD_alpha_medium');
-mkdir('SBCA/figs/iEEG_BOLD_SCP');
-mkdir('SBCA/figs/iEEG_BOLD_HFB_slow');
+mkdir(['SBCA/figs/iEEG/iEEG_BOLD_HFB_' Rest]);
+mkdir(['SBCA/figs/iEEG_BOLD_HFB_medium_' Rest]);
+mkdir(['SBCA/figs/iEEG_BOLD_alpha_medium_' Rest]);
+mkdir(['SBCA/figs/iEEG_BOLD_SCP_' Rest]);
+mkdir(['SBCA/figs/iEEG_BOLD_HFB_slow_' Rest]);
 
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
@@ -101,7 +101,7 @@ cfg.showLabels='n';
 cfg.elecNames=curr_elecNames;
 if freq=='1'
 cfg.elecColors=elecColors_HFB_medium;
-cfg.elecColorScale=[-0.4 0.4];
+cfg.elecColorScale=[-0.1 0.4];
 elseif freq=='2'
    cfg.elecColors=elecColors_alpha_medium; 
    cfg.elecColorScale=[-0.4 0.4];
@@ -123,7 +123,7 @@ cfg.olayUnits='z';
 % cfg.elecSize=2;
 cfgOut=plotPialSurf(Patient,cfg);
 if freq=='1'
-  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB_medium',filesep,[Rest '_'],'HFB_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
+  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,['iEEG_BOLD_HFB_medium_' Rest],filesep,'HFB_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='2'
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_alpha_medium',filesep,[Rest '_'],'alpha_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='3'

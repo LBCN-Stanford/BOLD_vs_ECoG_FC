@@ -11,14 +11,17 @@ if BOLD=='2'
    frequency=input('all unfiltered (p), HFB (9), alpha (b), beta1 (c), beta2 (d), Theta (e), Delta(f), Gamma (g)','s');
     end
     if filter=='3'
-       frequency=input('HFB (1)'); 
+       frequency=input('HFB (1)','s'); 
     end
 else
     frequency=' ';
 end
 runs=input('run (e.g. 1): ','s');
+rest=input('Rest(1) or Sleep(0)? ','s');
 roi1=input('ROI 1 (e.g. AFS9): ','s');
 roi2=input('ROI 2 (e.g. PIHS4): ','s');
+seed=input('seed (ROI1) to all else (1)? ','s');
+depth=input('depth (1) or subdural (0)? ','s');
 
 runnum=['run' runs];
 fsDir=getFsurfSubDir();
@@ -42,17 +45,27 @@ iEEG_sampling=1000;
 iEEG_step=2000;
 iEEG_window_size=30000;
 iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-depth='0';
+%depth='0';
 
 
 %% Get hemisphere and file base name for iEEG
 if BOLD=='iEEG'
-cd ([globalECoGDir '/Rest/' Patient]);
+    if rest=='1'
+cd([globalECoGDir '/Rest/' Patient]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient]);
+end
+    
 if depth=='0'
 hemi=importdata(['hemi.txt']); 
 hemi=char(hemi);
 end
+    if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runs]);
+    end
+
 Mfile=dir('btf_aMpfff*');
 if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
@@ -86,11 +99,25 @@ end
 fs_chanlabels=fs_chanlabels(3:end);
 end
 
+depth_chanlabels={};
+if depth=='1'
+    for i=1:length(fs_chanlabels)
+    curr_elec=fs_chanlabels{i};
+    depth_chanlabels{i,1}=curr_elec(2:end);
+    end
+    fs_chanlabels=depth_chanlabels;
+end
+
+
 %% Load iEEG data
 if BOLD=='iEEG'
+        if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient '/Run' runs]);
+        end
 
-if ~isempty(dir('pHFB*'))
+if ~isempty(dir('pHFB*'))   
     if frequency=='1' || frequency=='0'
 iEEG_data=spm_eeg_load(['slowpHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
 if frequency=='0'
@@ -190,7 +217,7 @@ iEEG_data=spm_eeg_load(['slowHFB' Mfile]);
 if frequency=='0'
     HFB_slow=iEEG_data; iEEG_data=[];
 end
-
+end
 if frequency=='2' || frequency=='0'
 iEEG_data=spm_eeg_load(['bptf_mediumHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
 if frequency=='0'
@@ -337,6 +364,7 @@ end
     Gamma_ts(:,iEEG_chan)=Gamma(iEEG_chan,:)';      
 end       
 end
+end
 
 
 
@@ -411,7 +439,7 @@ end
     end  
 end
 
-%% Load ROI time series
+%% Load time series for ROI pair
 if BOLD=='BOLD'
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
@@ -424,8 +452,8 @@ if BOLD=='iEEG'
     roi2_iEEG_num=iElvis_to_iEEG_chanlabel(roi2_num);
 
     if frequency ~='0' && frequency ~='p'
-    roi1_ts=iEEG_ts(:,roi1_iEEG_num);   
-    roi2_ts=iEEG_ts(:,roi2_iEEG_num);   
+    roi1_ts=iEEG_ts_iElvis(:,roi1_num);   
+    roi2_ts=iEEG_ts_iElvis(:,roi2_num);   
      elseif frequency=='0'
          roi1_HFB_medium_ts=HFB_medium_ts(:,roi1_iEEG_num);
          roi1_Alpha_medium_ts=Alpha_medium_ts(:,roi1_iEEG_num);
@@ -470,7 +498,23 @@ if BOLD=='iEEG'
     end
 end
 
-%% Sliding windows
+%% Sliding windows for seed to all regions
+if seed=='1'
+seed_allwindows_fisher=[];
+  for i=1:iEEG_step:length(roi1_ts)-iEEG_window_size;
+    a=i+iEEG_window_size;
+    ALL_window_ts=iEEG_ts_iElvis(i:a,:);
+    ALL_window_corr=corrcoef(ALL_window_ts);
+    ALL_window_fisher=fisherz(ALL_window_corr);
+    seed_window_fisher=ALL_window_fisher(:,roi1_num);
+    seed_allwindows_fisher=[seed_allwindows_fisher seed_window_fisher];
+  end  
+  if iEEG_window_size/iEEG_step==2
+      save([roi1 '_30sec_windows'],'seed_allwindows_fisher');
+  end
+end
+
+%% Sliding windows for ROI pair
 if BOLD=='BOLD'
 for i=1:BOLD_step:length(roi1_ts)-BOLD_window_size;
     a=i+BOLD_window_size;
@@ -688,16 +732,21 @@ all_windows_Gamma_fisher=all_windows_Gamma_fisher';
 end
 end
 
-%% Normalize time series
+%% Normalize time series and calculate lag correlations
 if BOLD=='BOLD'
 roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
+[lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,30); % 30 lags (~60 sec)
+lag_times=lag_times*TR;
+
 end
 
 if BOLD=='iEEG'
     if frequency~='0' && frequency ~='p'
    roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
+[lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60000); % 60000 lags (~60 sec)
+lag_times=lag_times/iEEG_sampling;
 
     elseif frequency=='0'
         roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(roi1_HFB_medium_ts))/std(roi1_HFB_medium_ts);
@@ -754,7 +803,7 @@ title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fon
 xlabel(['Time']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(1:length(roi1_ts),roi1_ts_norm,1:length(roi2_ts),roi2_ts_norm,'LineWidth',2);
+plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b','LineWidth',2);
 xlim([0,length(roi1_ts)]);
 legend([roi1],[roi2]);
 hold on;
@@ -763,13 +812,22 @@ hold on;
 subplot(2,1,2);
 %set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 %hold on;
-plot(1:length(all_windows_fisher),all_windows_fisher,'LineWidth',2);
+plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
 end
+
+% Plot lag correlation
+FigHandle = figure('Position', [200, 600, 700, ]);
+plot(lag_times,lag_corr,'r','LineWidth',2);
+title({['iEEG ' freq ': ' roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+xlabel(['Lag (sec)']); ylabel(['Correlation']);
+xlim([lag_times(1),lag_times(end)]);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+pause; close;
 
 if BOLD=='iEEG'
 if frequency~='0' && frequency~='p'
@@ -780,7 +838,8 @@ title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fon
 xlabel(['Time']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(1:length(roi1_ts),roi1_ts_norm,1:length(roi2_ts),roi2_ts_norm,'LineWidth',2);
+%plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b')
+plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b','LineWidth',2);
 xlim([0,length(roi1_ts)]);
 legend([roi1],[roi2]);
 hold on;
@@ -789,8 +848,8 @@ hold on;
 subplot(2,1,2);
 %set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 %hold on;
-plot(1:length(all_windows_fisher),all_windows_fisher,'LineWidth',2);
-title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ...
+plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
+title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ['Mean = ' num2str(mean(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');

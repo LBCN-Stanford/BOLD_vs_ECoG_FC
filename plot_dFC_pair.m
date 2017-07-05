@@ -732,16 +732,21 @@ all_windows_Gamma_fisher=all_windows_Gamma_fisher';
 end
 end
 
-%% Normalize time series
+%% Normalize time series and calculate lag correlations
 if BOLD=='BOLD'
 roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
+[lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,30); % 30 lags (~60 sec)
+lag_times=lag_times*TR;
+
 end
 
 if BOLD=='iEEG'
     if frequency~='0' && frequency ~='p'
    roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
+[lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60000); % 60000 lags (~60 sec)
+lag_times=lag_times/iEEG_sampling;
 
     elseif frequency=='0'
         roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(roi1_HFB_medium_ts))/std(roi1_HFB_medium_ts);
@@ -798,7 +803,7 @@ title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fon
 xlabel(['Time']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(1:length(roi1_ts),roi1_ts_norm,1:length(roi2_ts),roi2_ts_norm,'LineWidth',2);
+plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b','LineWidth',2);
 xlim([0,length(roi1_ts)]);
 legend([roi1],[roi2]);
 hold on;
@@ -807,13 +812,23 @@ hold on;
 subplot(2,1,2);
 %set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 %hold on;
-plot(1:length(all_windows_fisher),all_windows_fisher,'LineWidth',2);
+plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
+
+% Plot BOLD lag correlation
+plot(lag_times,lag_corr,'r','LineWidth',2);
+title({['BOLD (<0.1 Hz):'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+xlabel(['Lag (sec)']); ylabel(['Correlation']);
+xlim([lag_times(1),lag_times(end)]);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+pause; close;
 end
+
+
 
 if BOLD=='iEEG'
 if frequency~='0' && frequency~='p'
@@ -824,7 +839,8 @@ title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fon
 xlabel(['Time']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(1:length(roi1_ts),roi1_ts_norm,1:length(roi2_ts),roi2_ts_norm,'LineWidth',2);
+%plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b')
+plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b','LineWidth',2);
 xlim([0,length(roi1_ts)]);
 legend([roi1],[roi2]);
 hold on;
@@ -833,12 +849,21 @@ hold on;
 subplot(2,1,2);
 %set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 %hold on;
-plot(1:length(all_windows_fisher),all_windows_fisher,'LineWidth',2);
-title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ...
+plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
+title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ['Mean = ' num2str(mean(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
-pause; close;    
+pause; close; 
+
+% Plot iEEG lag correlation
+plot(lag_times,lag_corr,'r','LineWidth',2);
+title({['iEEG ' freq ':'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+xlabel(['Lag (sec)']); ylabel(['Correlation']);
+xlim([lag_times(1),lag_times(end)]);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+pause; close;
+
 end 
 end
 
