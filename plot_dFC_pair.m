@@ -736,7 +736,7 @@ end
 if BOLD=='BOLD'
 roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
-[lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,30); % 30 lags (~60 sec)
+[lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,(60/TR)); % 60 sec lags
 lag_times=lag_times*TR;
 
 end
@@ -745,7 +745,7 @@ if BOLD=='iEEG'
     if frequency~='0' && frequency ~='p'
    roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
-[lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60000); % 60000 lags (~60 sec)
+[lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60*iEEG_sampling); % 60 sec lags
 lag_times=lag_times/iEEG_sampling;
 
     elseif frequency=='0'
@@ -762,7 +762,17 @@ lag_times=lag_times/iEEG_sampling;
         roi2_Beta2_medium_ts_norm=(roi2_Beta2_medium_ts-mean(roi2_Beta2_medium_ts))/std(roi2_Beta2_medium_ts);
         roi2_Theta_medium_ts_norm=(roi2_Theta_medium_ts-mean(roi2_Theta_medium_ts))/std(roi2_Theta_medium_ts);
         roi2_Delta_medium_ts_norm=(roi2_Delta_medium_ts-mean(roi2_Delta_medium_ts))/std(roi2_Delta_medium_ts);
-        roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);  
+        roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);
+        
+        [lag_corr_HFB_medium,lag_times]=crosscorr(roi1_HFB_medium_ts,roi2_HFB_medium_ts_norm,60*iEEG_sampling);
+        [lag_corr_Alpha_medium,lag_times]=crosscorr(roi1_Alpha_medium_ts,roi2_Alpha_medium_ts_norm,60*iEEG_sampling);
+        [lag_corr_Beta1_medium,lag_times]=crosscorr(roi1_Beta1_medium_ts,roi2_Beta1_medium_ts_norm,60*iEEG_sampling);
+        [lag_corr_Beta2_medium,lag_times]=crosscorr(roi1_Beta2_medium_ts,roi2_Beta2_medium_ts_norm,60*iEEG_sampling);
+        [lag_corr_Theta_medium,lag_times]=crosscorr(roi1_Theta_medium_ts,roi2_Theta_medium_ts_norm,60*iEEG_sampling);
+        [lag_corr_Delta_medium,lag_times]=crosscorr(roi1_Delta_medium_ts,roi2_Delta_medium_ts_norm,60*iEEG_sampling);
+        [lag_corr_Gamma_medium,lag_times]=crosscorr(roi1_Gamma_medium_ts,roi2_Gamma_medium_ts_norm,60*iEEG_sampling);
+        lag_times=lag_times/iEEG_sampling;
+        
     elseif frequency=='p'
         roi1_HFB_ts_norm=(roi1_HFB_ts-mean(roi1_HFB_ts))/std(roi1_HFB_ts);
         roi1_Alpha_ts_norm=(roi1_Alpha_ts-mean(roi1_Alpha_ts))/std(roi1_Alpha_ts);
@@ -778,6 +788,15 @@ lag_times=lag_times/iEEG_sampling;
         roi2_Theta_ts_norm=(roi2_Theta_ts-mean(roi2_Theta_ts))/std(roi2_Theta_ts);
         roi2_Delta_ts_norm=(roi2_Delta_ts-mean(roi2_Delta_ts))/std(roi2_Delta_ts);
         roi2_Gamma_ts_norm=(roi2_Gamma_ts-mean(roi2_Gamma_ts))/std(roi2_Gamma_ts); 
+        
+         [lag_corr_HFB,lag_times]=crosscorr(roi1_HFB_ts,roi2_HFB_ts_norm,60*iEEG_sampling);
+        [lag_corr_Alpha,lag_times]=crosscorr(roi1_Alpha_ts,roi2_Alpha_ts_norm,60*iEEG_sampling);
+        [lag_corr_Beta1,lag_times]=crosscorr(roi1_Beta1_ts,roi2_Beta1_ts_norm,60*iEEG_sampling);
+        [lag_corr_Beta2,lag_times]=crosscorr(roi1_Beta2_ts,roi2_Beta2_ts_norm,60*iEEG_sampling);
+        [lag_corr_Theta,lag_times]=crosscorr(roi1_Theta_ts,roi2_Theta_ts_norm,60*iEEG_sampling);
+        [lag_corr_Delta,lag_times]=crosscorr(roi1_Delta_ts,roi2_Delta_ts_norm,60*iEEG_sampling);
+        [lag_corr_Gamma,lag_times]=crosscorr(roi1_Gamma_ts,roi2_Gamma_ts_norm,60*iEEG_sampling);
+        
     end
 end
 
@@ -900,6 +919,25 @@ set(get(h,'title'),'string','r');
 set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
 set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
 title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
+pause; close
+
+% lag correlations for all frequencies on one plot
+FigHandle = figure('Position', [200, 600, 1200, 500]);
+plot(lag_times,lag_corr_HFB_medium, ...
+    lag_times, lag_corr_Alpha_medium, ...
+    lag_times, lag_corr_Beta1_medium,...
+    lag_times, lag_corr_Beta2_medium,...
+    lag_times, lag_corr_Delta_medium,...
+    lag_times, lag_corr_Theta_medium,...
+    lag_times, lag_corr_Gamma_medium,...
+    'LineWidth',1);
+title({['iEEG (0.1-1 Hz) all frequencies'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+xlabel(['Lag (sec)']); ylabel(['Correlation']);
+xlim([lag_times(1),lag_times(end)]);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+legend('HFB','α','β1','β2','δ','θ','γ','Location','northeast')
+pause; close;
 end
 
 if frequency=='p'

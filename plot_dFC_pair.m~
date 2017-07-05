@@ -762,7 +762,9 @@ lag_times=lag_times/iEEG_sampling;
         roi2_Beta2_medium_ts_norm=(roi2_Beta2_medium_ts-mean(roi2_Beta2_medium_ts))/std(roi2_Beta2_medium_ts);
         roi2_Theta_medium_ts_norm=(roi2_Theta_medium_ts-mean(roi2_Theta_medium_ts))/std(roi2_Theta_medium_ts);
         roi2_Delta_medium_ts_norm=(roi2_Delta_medium_ts-mean(roi2_Delta_medium_ts))/std(roi2_Delta_medium_ts);
-        roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);  
+        roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);
+        
+        [lag_corr_HFB_medium,lag_times]=roi1_HFB_medium_ts
     elseif frequency=='p'
         roi1_HFB_ts_norm=(roi1_HFB_ts-mean(roi1_HFB_ts))/std(roi1_HFB_ts);
         roi1_Alpha_ts_norm=(roi1_Alpha_ts-mean(roi1_Alpha_ts))/std(roi1_Alpha_ts);
@@ -818,16 +820,17 @@ title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fish
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
-end
 
-% Plot lag correlation
-FigHandle = figure('Position', [200, 600, 700, ]);
+% Plot BOLD lag correlation
 plot(lag_times,lag_corr,'r','LineWidth',2);
-title({['iEEG ' freq ': ' roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+title({['BOLD (<0.1 Hz):'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
 xlim([lag_times(1),lag_times(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
+end
+
+
 
 if BOLD=='iEEG'
 if frequency~='0' && frequency~='p'
@@ -853,7 +856,16 @@ title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fish
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
-pause; close;    
+pause; close; 
+
+% Plot iEEG lag correlation
+plot(lag_times,lag_corr,'r','LineWidth',2);
+title({['iEEG ' freq ':'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+xlabel(['Lag (sec)']); ylabel(['Correlation']);
+xlim([lag_times(1),lag_times(end)]);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+pause; close;
+
 end 
 end
 
