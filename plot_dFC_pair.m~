@@ -45,6 +45,7 @@ iEEG_sampling=1000;
 iEEG_step=2000;
 iEEG_window_size=30000;
 iEEG_window_duration=iEEG_window_size/iEEG_sampling;
+iEEG_window_plot=[95]; % window to plot time series; set to zero to turn off
 %depth='0';
 
 
@@ -549,6 +550,10 @@ if frequency=='0'
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_HFB_medium_ts(i:a);
     roi2_window_ts=roi2_HFB_medium_ts(i:a);
+        if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+        HFB_roi1_window_ts_plot=roi1_window_ts;
+        HFB_roi2_window_ts_plot=roi2_window_ts;
+    end
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
     all_windows_HFB_medium_corr=[all_windows_HFB_medium_corr window_corr];   
@@ -562,6 +567,10 @@ all_windows_HFB_medium_fisher=all_windows_HFB_medium_fisher';
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Alpha_medium_ts(i:a);
     roi2_window_ts=roi2_Alpha_medium_ts(i:a);
+            if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+        Alpha_roi1_window_ts_plot=roi1_window_ts;
+        Alpha_roi2_window_ts_plot=roi2_window_ts;
+    end
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
     all_windows_Alpha_medium_corr=[all_windows_Alpha_medium_corr window_corr];   
@@ -575,6 +584,10 @@ all_windows_Alpha_medium_fisher=all_windows_Alpha_medium_fisher';
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Beta1_medium_ts(i:a);
     roi2_window_ts=roi2_Beta1_medium_ts(i:a);
+            if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+        Beta1_roi1_window_ts_plot=roi1_window_ts;
+        Beta1_roi2_window_ts_plot=roi2_window_ts;
+    end
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
     all_windows_Beta1_medium_corr=[all_windows_Beta1_medium_corr window_corr];   
@@ -588,6 +601,10 @@ all_windows_Beta1_medium_fisher=all_windows_Beta1_medium_fisher';
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Beta2_medium_ts(i:a);
     roi2_window_ts=roi2_Beta2_medium_ts(i:a);
+            if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+        Beta2_roi1_window_ts_plot=roi1_window_ts;
+        Beta2_roi2_window_ts_plot=roi2_window_ts;
+    end
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
     all_windows_Beta2_medium_corr=[all_windows_Beta2_medium_corr window_corr];   
@@ -601,6 +618,10 @@ all_windows_Beta2_medium_fisher=all_windows_Beta2_medium_fisher';
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Theta_medium_ts(i:a);
     roi2_window_ts=roi2_Theta_medium_ts(i:a);
+            if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+        Theta_roi1_window_ts_plot=roi1_window_ts;
+        Theta_roi2_window_ts_plot=roi2_window_ts;
+    end
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
     all_windows_Theta_medium_corr=[all_windows_Theta_medium_corr window_corr];   
@@ -614,6 +635,10 @@ all_windows_Theta_medium_fisher=all_windows_Theta_medium_fisher';
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Delta_medium_ts(i:a);
     roi2_window_ts=roi2_Delta_medium_ts(i:a);
+            if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+        Delta_roi1_window_ts_plot=roi1_window_ts;
+        Delta_roi2_window_ts_plot=roi2_window_ts;
+    end
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
     all_windows_Delta_medium_corr=[all_windows_Delta_medium_corr window_corr];   
@@ -627,6 +652,10 @@ all_windows_Delta_medium_fisher=all_windows_Delta_medium_fisher';
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_Gamma_medium_ts(i:a);
     roi2_window_ts=roi2_Gamma_medium_ts(i:a);
+            if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+        Gamma_roi1_window_ts_plot=roi1_window_ts;
+        Gamma_roi2_window_ts_plot=roi2_window_ts;
+    end
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
     all_windows_Gamma_medium_corr=[all_windows_Gamma_medium_corr window_corr];   
@@ -909,13 +938,14 @@ figure(1)
 subplot(2,1,1)
 plot(10*log10(pspec_roi1),'r','LineWidth',2);
 title({['iEEG ' freq ': ' roi1 ' power spectrum']},'Fontsize',10);
-
+set(gca,'Xscale','log');
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
 
 subplot(2,1,2)
 plot(10*log10(pspec_roi2),'r','LineWidth',2);
 title({['iEEG ' freq ': ' roi2 ' power spectrum']},'Fontsize',10);
+set(gca,'Xscale','log');
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
 pause; close;
@@ -1001,6 +1031,32 @@ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 set(gcf,'color','w');
 legend('HFB','α','β1','β2','δ','θ','γ','Location','northeast')
 pause; close;
+
+% plot time series for window of interest
+time=
+
+for i=1:length(freq_window_plot)
+    freq_name=[];
+if freq_window_plot(i)==1
+    freq_name='HFB';
+    roi1_window_ts_plot=HFB_roi1_window_ts_plot; roi2_window_ts_plot=HFB_roi2_window_ts_plot;
+elseif freq_window_plot(i)==2
+    freq_name='Gamma';
+    roi1_window_ts_plot=Gamma_roi1_window_ts_plot; roi2_window_ts_plot=Gamma_roi2_window_ts_plot;
+end        
+window_corr=num2str(corr(roi1_window_ts_plot,roi2_window_ts_plot));
+FigHandle = figure('Position', [200, 600, 1000, 400]);
+plot(1:length(roi1_window_ts_plot),roi1_window_ts_plot,'r',...
+    1:length(roi2_window_ts_plot),roi2_window_ts_plot,'b',...
+    'LineWidth',2);
+title({[freq_name ' (0.1-1 Hz): ' roi1 ' vs ' roi2];...
+    ['Window ' num2str(iEEG_window_plot) ':  r = ' window_corr]} ,'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['Signal']);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+xlim([0,length(roi1_window_ts_plot)]);
+legend([roi1],[roi2]);
+pause; close
+end
 end
 
 if frequency=='p'
