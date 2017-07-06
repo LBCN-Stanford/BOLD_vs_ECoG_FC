@@ -732,10 +732,12 @@ all_windows_Gamma_fisher=all_windows_Gamma_fisher';
 end
 end
 
-%% Normalize time series and calculate lag correlations
+%% Normalize time series 
 if BOLD=='BOLD'
 roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
+
+%% calculate lag correlations
 [lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,(60/TR)); % 60 sec lags
 lag_times=lag_times*TR;
 
@@ -745,8 +747,15 @@ if BOLD=='iEEG'
     if frequency~='0' && frequency ~='p'
    roi1_ts_norm=(roi1_ts-mean(roi1_ts))/std(roi1_ts);
 roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
+
+%% Calculate power spectra
+pspec_roi1=pwelch(roi1_ts_norm,iEEG_sampling,0,1:170,iEEG_sampling,'power');
+pspec_roi2=pwelch(roi2_ts_norm,iEEG_sampling,0,1:170,iEEG_sampling,'power');
+
+%% calculate lag correlations
 [lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60*iEEG_sampling); % 60 sec lags
 lag_times=lag_times/iEEG_sampling;
+
 
     elseif frequency=='0'
         roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(roi1_HFB_medium_ts))/std(roi1_HFB_medium_ts);
@@ -894,6 +903,23 @@ xlim([lag_times(1),lag_times(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
 
+%% Plot power spectum for each region
+FigHandle = figure('Position', [200, 600, 1200, 800]);
+figure(1)
+subplot(2,1,1)
+plot(10*log10(pspec_roi1),'r','LineWidth',2);
+title({['iEEG ' freq ': ' roi1 ' power spectrum']},'Fontsize',10);
+set(gca,'Xscale','log');
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+
+subplot(2,1,2)
+plot(10*log10(pspec_roi2),'r','LineWidth',2);
+title({['iEEG ' freq ': ' roi2 ' power spectrum']},'Fontsize',10);
+set(gca,'Xscale','log');
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+pause; close;
 end 
 end
 
