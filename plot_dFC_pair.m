@@ -43,9 +43,10 @@ BOLD_window_duration=TR*BOLD_window_size;
 %% iEEG defaults
 iEEG_sampling=1000;
 iEEG_step=2000;
-iEEG_window_size=30000;
+iEEG_window_size=10000;
 iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-iEEG_window_plot=[95]; % window to plot time series; set to zero to turn off
+iEEG_window_plot=[60]; % window to plot time series; set to zero to turn off
+freq_window_plot=[1 2]; % 1=HFB, 2=Gamma
 %depth='0';
 
 
@@ -769,6 +770,7 @@ roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
 %% calculate lag correlations
 [lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,(60/TR)); % 60 sec lags
 lag_times=lag_times*TR;
+lag_peak=lag_times(find(lag_corr==max(lag_corr)));
 
 end
 
@@ -784,7 +786,7 @@ pspec_roi2=pwelch(roi2_ts_norm,iEEG_sampling,0,1:170,iEEG_sampling,'power');
 %% calculate lag correlations
 [lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60*iEEG_sampling); % 60 sec lags
 lag_times=lag_times/iEEG_sampling;
-
+lag_peak=lag_times(find(lag_corr==max(lag_corr)));
 
     elseif frequency=='0'
         roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(roi1_HFB_medium_ts))/std(roi1_HFB_medium_ts);
@@ -889,8 +891,9 @@ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 pause; close;
 
 % Plot BOLD lag correlation
+
 plot(lag_times,lag_corr,'r','LineWidth',2);
-title({['BOLD (<0.1 Hz):'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Peak = ' num2str(lag_peak)]},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
 xlim([lag_times(1),lag_times(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
@@ -926,7 +929,7 @@ pause; close;
 
 % Plot iEEG lag correlation
 plot(lag_times,lag_corr,'r','LineWidth',2);
-title({['iEEG ' freq ':'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Peak = ' num2str(lag_peak)]},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
 xlim([lag_times(1),lag_times(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
