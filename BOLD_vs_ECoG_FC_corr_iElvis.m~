@@ -1876,7 +1876,7 @@ corr_allfreqs=[str2num(Delta_vs_BOLD_r) str2num(Theta_vs_BOLD_r) str2num(alpha_v
  set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
    set(gca,'box','off'); 
 set(gcf,'color','w');
-ylabel('BOLD-ECoG FC correlation (r)'); 
+ylabel('BOLD-iEEG FC correlation (r)'); 
 
 pause; close;
 
@@ -2174,6 +2174,17 @@ elseif BOLD_pipeline==2
     mkdir('aCompCor'); cd('aCompCor');
 end
  
+%% Save FC matrices
+HFB_medium_mat=medium_mat;
+save('BOLD_mat','BOLD_mat');
+save('Delta_medium_mat','Delta_medium_mat');
+save('Theta_medium_mat','Theta_medium_mat');
+save('alpha_medium_mat','alpha_medium_mat');
+save('beta1_medium_mat','beta1_medium_mat');
+save('beta2_medium_mat','beta2_medium_mat');
+save('Gamma_medium_mat','Gamma_medium_mat');
+save('HFB_medium_mat','HFB_medium_ma
+
 
 %% Plot ECoG vs BOLD for each seed electrode
 distances_nan=distances;
@@ -2331,7 +2342,7 @@ elseif BOLD_pipeline==4
 end
  close;
  if use_elec==1
-     corr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_particorr;
+     corr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_corr;
  partialcorr_BOLD_HFB_medium_allelecs(i,:)=elec_BOLD_HFB_medium_partialcorr;
  p_BOLD_HFB_medium_allelecs(i,:)=p_medium_partial;
  else

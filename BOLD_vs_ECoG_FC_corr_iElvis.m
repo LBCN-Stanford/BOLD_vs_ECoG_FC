@@ -2174,6 +2174,17 @@ elseif BOLD_pipeline==2
     mkdir('aCompCor'); cd('aCompCor');
 end
  
+%% Save FC matrices
+HFB_medium_mat=medium_mat;
+save('BOLD_mat','BOLD_mat');
+save('Delta_medium_mat','Delta_medium_mat');
+save('Theta_medium_mat','Theta_medium_mat');
+save('alpha_medium_mat','alpha_medium_mat');
+save('beta1_medium_mat','beta1_medium_mat');
+save('beta2_medium_mat','beta2_medium_mat');
+save('Gamma_medium_mat','Gamma_medium_mat');
+save('HFB_medium_mat','HFB_medium_mat');
+
 
 %% Plot ECoG vs BOLD for each seed electrode
 distances_nan=distances;
