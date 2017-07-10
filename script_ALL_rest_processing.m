@@ -104,7 +104,7 @@ fname_Beta1=['pBeta1btf_aMpfff' D.fname];
 fname_Beta2=['pBeta2btf_aMpfff' D.fname];
 fname_Gamma=['pGammabtf_aMpfff' D.fname];
 
-%% Temporal filtering: 0.1-1Hz, <0.1Hz
+%% Temporal filtering: 0.1-1Hz, <0.1Hz, >1Hz
 batch_bandpass_medium(fname_HFB);
 batch_bandpass_medium(fname_Alpha);
 batch_bandpass_medium(fname_Delta);
@@ -120,6 +120,14 @@ batch_lowpass_slow(fname_Theta);
 batch_lowpass_slow(fname_Beta1);
 batch_lowpass_slow(fname_Beta2);
 batch_lowpass_slow(fname_Gamma);
+
+batch_highpass_fast(fname_HFB);
+batch_highpass_fast(fname_Alpha);
+batch_highpass_fast(fname_Delta);
+batch_highpass_fast(fname_Theta);
+batch_highpass_fast(fname_Beta1);
+batch_highpass_fast(fname_Beta2);
+batch_highpass_fast(fname_Gamma);
 
 %% Label channels with HFB (0.1-1 Hz) spectral bursts as bad
 exclude_spectral_bursts_func(Patient,runname);
