@@ -45,9 +45,9 @@ HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
 Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
 Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
 Beta2_medium=spm_eeg_load(['bptf_mediumpBeta2' Mfile]);
-Gamma_medium=spm_eeg_load(['bptf_mediumpGamma1' Mfile]);
-Theta_medium=spm_eeg_load(['bptf_mediumpTheta1' Mfile]);
-Delta_medium=spm_eeg_load(['bptf_mediumpDelta1' Mfile]);
+Gamma_medium=spm_eeg_load(['bptf_mediumpGamma' Mfile]);
+Theta_medium=spm_eeg_load(['bptf_mediumpTheta' Mfile]);
+Delta_medium=spm_eeg_load(['bptf_mediumpDelta' Mfile]);
 else
 HFB=spm_eeg_load(['HFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowHFB' Mfile]);

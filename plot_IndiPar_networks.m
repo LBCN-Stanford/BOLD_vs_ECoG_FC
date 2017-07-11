@@ -2,6 +2,7 @@ Patient=input('Patient: ','s');
 hemi=input('l or r: ','s');
 run_num=input('run (e.g. 1): ','s');
 viewpoint=input('medial (m), lateral (l), inferior (i), omni (o): ','s');
+plotElecs=input('Plot electrodes (1) or not (0)? ','s');
 condition=input('Rst or OBJ or RFg or ARN or VRN: ','s');
 networks=input('plot all (0) or just 4 networks (1)? ','s');
 runname=['run' run_num];
@@ -21,7 +22,7 @@ elseif condition=='RFg'
     end
 %annot=[fsdir '/label/' hemi 'h.Yeo2011_17Networks_N1000.annot'];
 
-plotElecs=1;
+plotElecs=str2num(plotElecs);
 
 
 cd([fsdir '/elec_recon'])
