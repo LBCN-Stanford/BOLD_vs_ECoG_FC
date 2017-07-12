@@ -45,7 +45,7 @@ iEEG_sampling=1000;
 iEEG_step=2000;
 iEEG_window_size=10000;
 iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-iEEG_window_plot=[60]; % window to plot time series; set to zero to turn off
+iEEG_window_plot=[117]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Gamma
 %depth='0';
 
@@ -537,6 +537,10 @@ if BOLD=='iEEG'
     a=i+iEEG_window_size;
     roi1_window_ts=roi1_ts(i:a);
     roi2_window_ts=roi2_ts(i:a);
+            if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+        roi1_window_ts_plot=roi1_window_ts;
+        roi2_window_ts_plot=roi2_window_ts;
+            end
     window_corr=corr(roi1_window_ts,roi2_window_ts);
     window_fisher=fisherz(window_corr);
     all_windows_corr=[all_windows_corr window_corr];   
@@ -664,6 +668,20 @@ all_windows_Delta_medium_fisher=all_windows_Delta_medium_fisher';
   end  
 all_windows_Gamma_medium_corr=all_windows_Gamma_medium_corr';
 all_windows_Gamma_medium_fisher=all_windows_Gamma_medium_fisher';
+
+% normalize frequency window correlations
+norm_all_windows_HFB_medium_fisher=(all_windows_HFB_medium_fisher-mean(all_windows_HFB_medium_fisher))/std(all_windows_HFB_medium_fisher);
+norm_all_windows_Alpha_medium_fisher=(all_windows_Alpha_medium_fisher-mean(all_windows_Alpha_medium_fisher))/std(all_windows_Alpha_medium_fisher);
+norm_all_windows_Beta1_medium_fisher=(all_windows_Beta1_medium_fisher-mean(all_windows_Beta1_medium_fisher))/std(all_windows_Beta1_medium_fisher);
+norm_all_windows_Beta2_medium_fisher=(all_windows_Beta2_medium_fisher-mean(all_windows_Beta2_medium_fisher))/std(all_windows_Beta2_medium_fisher);
+norm_all_windows_Gamma_medium_fisher=(all_windows_Gamma_medium_fisher-mean(all_windows_Gamma_medium_fisher))/std(all_windows_Gamma_medium_fisher);
+norm_all_windows_Delta_medium_fisher=(all_windows_Delta_medium_fisher-mean(all_windows_Delta_medium_fisher))/std(all_windows_Delta_medium_fisher);
+norm_all_windows_Theta_medium_fisher=(all_windows_Theta_medium_fisher-mean(all_windows_Theta_medium_fisher))/std(all_windows_Theta_medium_fisher);
+
+% lag correlations between coupling in different frequencies
+[lag_corr,lag_times]=crosscorr(all_windows_HFB_medium_fisher,all_windows_Alpha_medium_fisher,60); % 60 windows
+HFB_alpha_lag_corr=lag_corr; HFB_alpha_lag_times=lag_times;
+
 end
 
 if frequency=='p'
@@ -758,7 +776,6 @@ all_windows_Delta_fisher=all_windows_Delta_fisher';
   end  
 all_windows_Gamma_corr=all_windows_Gamma_corr';
 all_windows_Gamma_fisher=all_windows_Gamma_fisher';   
-    
 end
 end
 
@@ -935,6 +952,21 @@ xlim([lag_times(1),lag_times(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
 
+% Plot a zoom-in of selected window
+time=1:length(roi1_window_ts_plot); time=time/iEEG_sampling;
+window_corr=num2str(corr(roi1_window_ts_plot,roi2_window_ts_plot));
+FigHandle = figure('Position', [200, 600, 1000, 400]);
+plot(time,roi1_window_ts_plot,'r',...
+    time,roi2_window_ts_plot,'b',...
+    'LineWidth',2);
+title({['(0.1-1 Hz): ' roi1 ' vs ' roi2];...
+    ['Window ' num2str(iEEG_window_plot) ':  r = ' window_corr]} ,'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['Signal']);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+xlim([0,time(end)]);
+legend([roi1],[roi2]);
+pause; close
+
 %% Plot power spectum for each region
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
@@ -955,19 +987,19 @@ pause; close;
 end 
 end
 
-% dFC for all frequencies on one plot
+% dFC for all frequencies (normalized within-frequency) on one plot
 if frequency=='0'
-plot(1:length(all_windows_HFB_medium_fisher),all_windows_HFB_medium_fisher,...
-    1:length(all_windows_Alpha_medium_fisher),all_windows_Alpha_medium_fisher,...
-    1:length(all_windows_Beta1_medium_fisher),all_windows_Beta1_medium_fisher,...
-    1:length(all_windows_Beta2_medium_fisher),all_windows_Beta2_medium_fisher,...
-    1:length(all_windows_Delta_medium_fisher),all_windows_Delta_medium_fisher,...
-    1:length(all_windows_Theta_medium_fisher),all_windows_Theta_medium_fisher,...   
-    1:length(all_windows_Gamma_medium_fisher),all_windows_Gamma_medium_fisher,...
+plot(1:length(all_windows_HFB_medium_fisher),norm_all_windows_HFB_medium_fisher,...
+    1:length(all_windows_Alpha_medium_fisher),norm_all_windows_Alpha_medium_fisher,...
+    1:length(all_windows_Beta1_medium_fisher),norm_all_windows_Beta1_medium_fisher,...
+    1:length(all_windows_Beta2_medium_fisher),norm_all_windows_Beta2_medium_fisher,...
+    1:length(all_windows_Delta_medium_fisher),norm_all_windows_Delta_medium_fisher,...
+    1:length(all_windows_Theta_medium_fisher),norm_all_windows_Theta_medium_fisher,...   
+    1:length(all_windows_Gamma_medium_fisher),norm_all_windows_Gamma_medium_fisher,...
     'LineWidth',2);
 title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
-xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
+xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
 legend('HFB','α','β1','β2','δ','θ','γ','Location','southeast')
@@ -1036,8 +1068,6 @@ legend('HFB','α','β1','β2','δ','θ','γ','Location','northeast')
 pause; close;
 
 % plot time series for window of interest
-time=1
-
 for i=1:length(freq_window_plot)
     freq_name=[];
 if freq_window_plot(i)==1
