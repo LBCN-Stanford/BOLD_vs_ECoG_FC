@@ -884,15 +884,16 @@ end
 
 % Static FC
 if BOLD=='BOLD'
+    time=(1:length(roi1_ts))*TR;
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 subplot(2,1,1);
 title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
-xlabel(['Time']); ylabel(['Signal']);
+xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b','LineWidth',2);
-xlim([0,length(roi1_ts)]);
+plot(time,roi1_ts_norm,'r',time,roi2_ts_norm,'b','LineWidth',2);
+xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
 
@@ -922,14 +923,15 @@ if BOLD=='iEEG'
 if frequency~='0' && frequency~='p'
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
+time=(1:length(roi1_ts))/iEEG_sampling;
 subplot(2,1,1);
 title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
-xlabel(['Time']); ylabel(['Signal']);
+xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
 %plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b')
-plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b','LineWidth',2);
-xlim([0,length(roi1_ts)]);
+plot(time,roi1_ts_norm,'r',time,roi2_ts_norm,'b','LineWidth',2);
+xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
 
@@ -1008,8 +1010,9 @@ pause; close;
 % dFC cross-correlation of frequencies
 all_windows_allfreqs=[all_windows_Delta_medium_fisher all_windows_Theta_medium_fisher all_windows_Alpha_medium_fisher ...
     all_windows_Beta1_medium_fisher all_windows_Beta2_medium_fisher all_windows_Gamma_medium_fisher all_windows_HFB_medium_fisher];
-
 xcorr_allfreqs=corrcoef(all_windows_allfreqs);
+xcorr_allfreqs_column=nonzeros(triu(xcorr_allfreqs)');
+xcorr_allfreqs_column(find(xcorr_allfreqs_column==1))=[];
 
 FigHandle = figure(1);
 set(FigHandle,'Position',[50, 50, 700, 600]);
