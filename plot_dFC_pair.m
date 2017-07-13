@@ -789,6 +789,10 @@ roi2_ts_norm=(roi2_ts-mean(roi2_ts))/std(roi2_ts);
 lag_times=lag_times*TR;
 lag_peak=lag_times(find(lag_corr==max(lag_corr)));
 
+%% calculate dynamic conditional correlations
+[H,R,Theta,X]=DCC_X([roi1_ts_norm roi2_ts_norm],0,0);
+dcc=squeeze(R(1,2,:));
+
 end
 
 if BOLD=='iEEG'
@@ -804,6 +808,10 @@ pspec_roi2=pwelch(roi2_ts_norm,iEEG_sampling,0,1:170,iEEG_sampling,'power');
 [lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60*iEEG_sampling); % 60 sec lags
 lag_times=lag_times/iEEG_sampling;
 lag_peak=lag_times(find(lag_corr==max(lag_corr)));
+
+%% calculate dynamic conditional correlations
+[H,R,Theta,X]=DCC_X([roi1_ts_norm roi2_ts_norm],0,0);
+dcc=squeeze(R(1,2,:));
 
     elseif frequency=='0'
         roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(roi1_HFB_medium_ts))/std(roi1_HFB_medium_ts);
@@ -887,7 +895,7 @@ if BOLD=='BOLD'
     time=(1:length(roi1_ts))*TR;
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
-subplot(2,1,1);
+subplot(3,1,1);
 title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
@@ -897,16 +905,23 @@ xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
 
-% Dynamic FC
-subplot(2,1,2);
-%set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
-%hold on;
+% BOLD dynamic conditional correlations
+subplot(3,1,2);
+plot(time,dcc,'k','LineWidth',2);
+title({['Dynamic Conditional Correlation: ' roi1 ' vs ' roi2]; ['Var = ' num2str(var(dcc))]},'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['DCC']);
+xlim([0,time(end)]);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+hold on;
+
+% BOLD Sliding-window correlations
+subplot(3,1,3);
 plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
-pause; close;
+pause;close
 
 % Plot BOLD lag correlation
 
@@ -924,21 +939,27 @@ if frequency~='0' && frequency~='p'
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 time=(1:length(roi1_ts))/iEEG_sampling;
-subplot(2,1,1);
+subplot(3,1,1);
 title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-%plot(1:length(roi1_ts),roi1_ts_norm,'r',1:length(roi2_ts),roi2_ts_norm,'b')
 plot(time,roi1_ts_norm,'r',time,roi2_ts_norm,'b','LineWidth',2);
 xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
 
-% Dynamic FC
-subplot(2,1,2);
-%set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
-%hold on;
+% iEEG dynamic conditional correlations
+subplot(3,1,2);
+plot(time,dcc,'k','LineWidth',2);
+title({['Dynamic Conditional Correlation: ' roi1 ' vs ' roi2]; ['Var = ' num2str(var(dcc))]},'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['DCC']);
+xlim([0,time(end)]);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+hold on;
+
+% iEEG sliding-window correlation
+subplot(3,1,3);
 plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ['Mean = ' num2str(mean(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
