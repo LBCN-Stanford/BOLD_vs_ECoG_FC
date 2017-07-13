@@ -708,9 +708,11 @@ for i=1:length(overlap_elec)
     %vox_iEEG_space(overlap_elec(i),:)=NaN;
 end
 
+more_bad=[];
 % Change any remaining NaNs in BOLD to NaNs in iEEG
 for i=1:length(BOLD_ts_iEEG_space(1,:))
     if isnan(BOLD_ts_iEEG_space(1,i))==1
+        more_bad=[more_bad i];
          Alpha_ts(:,i)=NaN;
          Beta1_ts(:,i)=NaN;
          Beta2_ts(:,i)=NaN;
@@ -741,6 +743,8 @@ for i=1:length(BOLD_ts_iEEG_space(1,:))
      %vox_iEEG_space(i,:)=NaN;              
     end
 end
+all_bad_indices=more_bad;
+save('all_bad_indices','all_bad_indices');
 
 %% Transform iEEG and BOLD to iElvis order
 BOLD_iElvis=NaN(size(BOLD_ts,1),length(chanlabels));
