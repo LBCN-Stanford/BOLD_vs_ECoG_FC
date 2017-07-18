@@ -167,12 +167,26 @@ end
 %% Label bad BOLD ROIs as NaN
 iElvis_bad_indices=find(isnan(HFB_medium_iElvis(1,:))==1);
 BOLD_ts(:,iElvis_bad_indices)=NaN;
+roi_numbers=1:size(BOLD_ts,2);
+roi_numbers(iElvis_bad_indices)=NaN;
 
 %% normalize time series
+BOLD_ts_norm=NaN(size(BOLD_ts,1),length(chanlabels));
 for i=1:size(BOLD_ts,2)
-test=BOLD_ts(:,12:14);
-BOLD_ts(:,1)
-
+    BOLD_ts_norm(:,i)=(BOLD_ts(:,i)-mean(BOLD_ts(:,i)))/std(BOLD_ts(:,i));
 end
 
+HFB_medium_iElvis_norm=NaN(size(HFB_medium_iElvis,1),length(chanlabels));
+for i=1:size(HFB_medium_iElvis_norm,2)
+    HFB_medium_iElvis_norm(:,i)=(HFB_medium_iElvis(:,i)-mean(HFB_medium_iElvis(:,i)))/std(HFB_medium_iElvis(:,i));
+end
+
+%% Remove NaN columns
+NaNCols=any(isnan(BOLD_ts_norm));
+BOLD_ts_norm=BOLD_ts_norm(:,~NaNCols);
+HFB_medium_iElvis_norm=HFB_medium_iElvis_norm(:,~NaNCols);
+roi_numbers(find(isnan(roi_numbers)==1))=[];
+
+%% DCC all pairs
+for 
 

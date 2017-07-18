@@ -2,7 +2,7 @@
 
 Patient=input('Patient: ','s');
 bold_runname=input('BOLD Run (e.g. 2): ','s');
-rest=input('Rest(1) or Sleep(0)? ','s');
+rest=input('Rest(1) Sleep(0) 7heaven (2)? ','s');
 ecog_runname=input('ECoG Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2): ','s');
@@ -16,6 +16,8 @@ if rest=='1'
     Rest='Rest';
 elseif rest=='0'
     Rest='Sleep';
+elseif rest=='2'
+    Rest='7heaven';
 end
 %% Load correlation matrix
 globalECoGDir=getECoGSubDir;
@@ -23,6 +25,8 @@ if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' ecog_runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/Run' ecog_runname]);
+elseif rest=='2'
+    cd([globalECoGDir '/7heaven/' Patient '/Run' ecog_runname]);
 end
 
 load('HFB_corr.mat');

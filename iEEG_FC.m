@@ -9,7 +9,7 @@ Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
 hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
-rest=input('Rest(1) or Sleep(0)? ','s');
+rest=input('Rest(1) Sleep(0) 7heaven (2)? ','s');
 depth=str2num(depth);
 % tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 % tdt=str2num(tdt);
@@ -20,6 +20,8 @@ if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+elseif rest=='2'
+    cd([globalECoGDir '/7heaven/' Patient '/Run' runname]);
 end
 Mfile=dir('btf_aMpfff*');
 if ~isempty(Mfile)
@@ -37,6 +39,8 @@ if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+elseif rest=='2'
+    cd([globalECoGDir '/7heaven/' Patient '/Run' runname]);
 end
 if ~isempty(dir('pHFB*'))
 HFB=spm_eeg_load(['pHFB' Mfile]);
@@ -99,6 +103,8 @@ if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
+elseif rest=='2'
+    cd([globalECoGDir '/7heaven/' Patient '/Run' runname]);
 end
 
     for i=1:length(chanlabels)

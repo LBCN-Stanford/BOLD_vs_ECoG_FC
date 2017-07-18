@@ -8,6 +8,7 @@
 % Needed: manually created channel name-number mapping file (.xls format)
 Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
+roi1=input('Seed electrode name (e.g. AFS9): ','s');
 hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
 rest=input('Rest(1) or Sleep(0)? ','s');
@@ -15,6 +16,7 @@ depth=str2num(depth);
 
 BOLD_run='run1';
 
+parcOut=elec2Parc_v2([Patient],'DK',0);
 %% Get file base name
 fsDir=getFsurfSubDir();
 getECoGSubDir; global globalECoGDir;
@@ -99,6 +101,9 @@ for i=1:length(chanlabels)
     iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
 end
 
+%% Convert seed ROI name to numbers (iElvis space)
+roi1_num=strmatch(roi1,parcOut(:,1),'exact');
+
 %% Load time series of all channels (in iEEG order) 
 for HFB_chan=1:size(HFB,1)
     HFB_ts(:,HFB_chan)=HFB(HFB_chan,:)';    
@@ -167,6 +172,8 @@ end
 %% Label bad BOLD ROIs as NaN
 iElvis_bad_indices=find(isnan(HFB_medium_iElvis(1,:))==1);
 BOLD_ts(:,iElvis_bad_indices)=NaN;
+roi_numbers=1:size(BOLD_ts,2);
+roi_numbers(iElvis_bad_indices)=NaN;
 
 %% normalize time series
 BOLD_ts_norm=NaN(size(BOLD_ts,1),length(chanlabels));
@@ -178,3 +185,26 @@ HFB_medium_iElvis_norm=NaN(size(HFB_medium_iElvis,1),length(chanlabels));
 for i=1:size(HFB_medium_iElvis_norm,2)
     HFB_medium_iElvis_norm(:,i)=(HFB_medium_iElvis(:,i)-mean(HFB_medium_iElvis(:,i)))/std(HFB_medium_iElvis(:,i));
 end
+
+%% Remove NaN columns
+NaNCols=any(isnan(BOLD_ts_norm));
+BOLD_ts_norm=BOLD_ts_norm(:,~NaNCols);
+HFB_medium_iElvis_norm=HFB_medium_iElvis_norm(:,~NaNCols);
+roi_numbers(find(isnan(roi_numbers)==1))=[];
+
+%% DCC seed to all others
+seed_ind=find(roi_numbers==roi1_num);
+
+BOLD_iElvis=NaN(size(BOLD_ts,1),length(chanlabels));
+
+dcc_mat=NaN(length(BOLD_ts_norm),size(BOLD_ts_norm,2));
+for i=1:size(BOLD_ts_norm,2)
+    if i~=seed_ind
+    ROI_pair=[BOLD_ts_norm(:,seed_ind) BOLD_ts_norm(:,i)];
+   R=DCC(ROI_pair);
+   dcc=squeeze(R(1,2,:));
+   dcc_mat(:,i)=dcc;
+    end
+    end
+
+

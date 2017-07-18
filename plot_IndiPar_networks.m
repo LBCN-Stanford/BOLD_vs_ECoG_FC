@@ -32,7 +32,7 @@ nElec=size(coords.data,1);
 whiteElecs=ones(nElec,3)*1;
 end
 
-pullOut=8;
+pullOut=10;
 %title={['Depth electrodes on resting state networks'];['DMN = yellow, olive, dark blue']...
     %;['DAN = green, dark green'];['Salience = pink, magenta'];['FPN = orange, maroon, dark red'];['Visual: bright red, purple'] };
 %title={['RS-fMRI Networks & Electrode Locations']; ...
