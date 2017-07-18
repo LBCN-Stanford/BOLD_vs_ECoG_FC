@@ -197,14 +197,25 @@ seed_ind=find(roi_numbers==roi1_num);
 
 BOLD_iElvis=NaN(size(BOLD_ts,1),length(chanlabels));
 
-dcc_mat=NaN(length(BOLD_ts_norm),size(BOLD_ts_norm,2));
+display(['Doing BOLD DCCs']);
+BOLD_dcc_mat=NaN(length(BOLD_ts_norm),size(BOLD_ts_norm,2));
 for i=1:size(BOLD_ts_norm,2)
     if i~=seed_ind
     ROI_pair=[BOLD_ts_norm(:,seed_ind) BOLD_ts_norm(:,i)];
    R=DCC(ROI_pair);
-   dcc=squeeze(R(1,2,:));
-   dcc_mat(:,i)=dcc;
+   BOLD_dcc=squeeze(R(1,2,:));
+   BOLD_dcc_mat(:,i)=BOLD_dcc;
+    end
+end
+
+display(['Doing iEEG HFB (0.1-1 Hz) DCCs']);
+HFB_medium_dcc_mat=NaN(length(HFB_medium_iElvis_norm),size(HFB_medium_iElvis_norm,2));
+for i=1:size(HFB_medium_iElvis_norm,2)
+    if i~=seed_ind
+    ROI_pair=[HFB_medium_iElvis_norm(:,seed_ind) HFB_medium_iElvis_norm(:,i)];
+   R=DCC(ROI_pair);
+   HFB_medium_dcc=squeeze(R(1,2,:));
+   HFB_medium_dcc_mat(:,i)=HFB_medium_dcc;
     end
     end
-
-
+    
