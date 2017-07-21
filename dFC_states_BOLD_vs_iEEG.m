@@ -34,9 +34,36 @@ BOLD_low=find(target_BOLD_sw_ts<prctile(target_BOLD_sw_ts,33.3));
  
 target_iEEG_sw_ts=iEEG.seed_allwindows_fisher(roi2_num,:);
 iEEG_high=find(target_iEEG_sw_ts>prctile(target_iEEG_sw_ts,66.6));
-iEEG_low=find(target_iEEG_sw_ts>prctile(target_iEEG_sw_ts,33.3));
+iEEG_low=find(target_iEEG_sw_ts<prctile(target_iEEG_sw_ts,33.3));
 
 %% Get average FC for all targets within high and within low states
+BOLD_high_avg_roi2=mean(target_BOLD_sw_ts(BOLD_high))
+BOLD_low_avg_roi2=mean(target_BOLD_sw_ts(BOLD_low))
+iEEG_high_avg_roi2=mean(target_iEEG_sw_ts(iEEG_high))
+iEEG_low_avg_roi2=mean(target_iEEG_sw_ts(iEEG_low))
+
+BOLD_high_windows=BOLD.seed_allwindows_fisher(:,BOLD_high);
+BOLD_low_windows=BOLD.seed_allwindows_fisher(:,BOLD_low);
+iEEG_high_windows=iEEG.seed_allwindows_fisher(:,iEEG_high);
+iEEG_low_windows=iEEG.seed_allwindows_fisher(:,iEEG_low);
+
+mean_BOLD_high_windows=mean(BOLD_high_windows,2);
+mean_BOLD_low_windows=mean(BOLD_low_windows,2);
+mean_iEEG_high_windows=mean(iEEG_high_windows,2);
+mean_iEEG_low_windows=mean(iEEG_low_windows,2);
+
+%% Remove bad indices
+
+
+
+%% Correlate BOLD vs iEEG (high and low FC states)
+
+
+
+
+
+
+
 
 
 
