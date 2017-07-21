@@ -52,13 +52,49 @@ mean_BOLD_low_windows=mean(BOLD_low_windows,2);
 mean_iEEG_high_windows=mean(iEEG_high_windows,2);
 mean_iEEG_low_windows=mean(iEEG_low_windows,2);
 
-%% Remove bad indices
+%% Remove bad indices (convert from iEEG to iElvis order)
+load('all_bad_indices.mat');
 
+% Load channel name-number mapping
+cd([fsDir '/' Patient '/elec_recon']);
+[channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
 
+% Load channel names (in freesurfer/elec recon order)
+chan_names=importdata([Patient '.electrodeNames'],' ');
+fs_chanlabels={};
+
+for chan=3:length(chan_names)
+    chan_name=chan_names(chan); chan_name=char(chan_name);
+    [a b]=strtok(chan_name); 
+    bsize=size(strfind(b,' '),2);
+    if bsize==2
+    [c d]=strtok(b); 
+    fs_chanlabels{chan,1}=[d(2) a];
+    elseif bsize==3
+    [c d]=strtok(b); [e f]=strtok(d);
+    fs_chanlabels{chan,1}=[f(2) a c];
+    end
+end
+fs_chanlabels=fs_chanlabels(3:end);
+
+% create iEEG to iElvis chanlabel transformation vector
+for i=1:length(chanlabels)
+    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
+end
+    for i=1:length(chanlabels)
+iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
+    end
+
+    % EDIT FROM HERE (July 21/2017)
+% convert bad indices to iElvis
 
 %% Correlate BOLD vs iEEG (high and low FC states)
 
-
+%nans_to_remove=find(isnan(mean_BOLD_high_windows)==1);
+%mean_BOLD_high_windows(nans_to_remove)=[];
+%mean_iEEG_high_windows(nans_to_remove)=[];
+%mean_BOLD_low_windows(nans_to_remove)=[];
+%mean_iEEG_low_windows(nans_to_remove)=[];
 
 
 
