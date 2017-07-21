@@ -51,7 +51,7 @@ cfg.onlyShow={elec_name};
 %cfg.elecColors= color_matrix(:,1:3);   
 cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num run_num '_' Hemi 'H.mgh']
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'BOLD',filesep,'BOLD_FC_',elec_name '_' Hemi 'H']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'BOLD',filesep,[Patient '_'],[elec_name '_BOLD_FC_'],[ Hemi 'H']]));
 close;
     end
 end

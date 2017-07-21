@@ -39,11 +39,12 @@ TR=2; % fMRI TR in seconds
 BOLD_step=1; % step length (number of TRs)
 BOLD_window_size=15; % number of TRs per window
 BOLD_window_duration=TR*BOLD_window_size;
+BOLD_run='run1';
 
 %% iEEG defaults
 iEEG_sampling=1000;
 iEEG_step=2000;
-iEEG_window_size=10000;
+iEEG_window_size=30000;
 iEEG_window_duration=iEEG_window_size/iEEG_sampling;
 iEEG_window_plot=[117]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Gamma
@@ -99,17 +100,8 @@ for chan=3:length(chan_names)
     end
 end
 fs_chanlabels=fs_chanlabels(3:end);
-end
 
-depth_chanlabels={};
-if depth=='1'
-    for i=1:length(fs_chanlabels)
-    curr_elec=fs_chanlabels{i};
-    depth_chanlabels{i,1}=curr_elec(2:end);
-    end
-    fs_chanlabels=depth_chanlabels;
 end
-
 
 %% Load iEEG data
 if BOLD=='iEEG'
@@ -445,8 +437,21 @@ end
 if BOLD=='BOLD'
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
+if depth=='1'
+    roi1_ts=load(['elec' num2str(roi1_num) runnum '_ts_FSL.txt']);
+roi2_ts=load(['elec' num2str(roi2_num) runnum '_ts_FSL.txt']);
+else
 roi1_ts=load(['elec' num2str(roi1_num) runnum '_ts_GSR.txt']);
 roi2_ts=load(['elec' num2str(roi2_num) runnum '_ts_GSR.txt']);
+end
+% load all BOLD ROI time series
+if seed=='1'  
+       for i=1:length(elecNames)
+    elec_num=num2str(i);
+    BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_GSR.txt']);
+   end  
+end
+
 end
 
 if BOLD=='iEEG'
@@ -502,6 +507,8 @@ end
 
 %% Sliding windows for seed to all regions
 if seed=='1'
+    cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
+    if BOLD=='iEEG';
 seed_allwindows_fisher=[];
   for i=1:iEEG_step:length(roi1_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
@@ -511,9 +518,24 @@ seed_allwindows_fisher=[];
     seed_window_fisher=ALL_window_fisher(:,roi1_num);
     seed_allwindows_fisher=[seed_allwindows_fisher seed_window_fisher];
   end  
-  if iEEG_window_size/iEEG_step==2
-      save([roi1 '_30sec_windows'],'seed_allwindows_fisher');
+  if iEEG_window_size==30000
+      save([roi1 '_30sec_windows_iEEG'],'seed_allwindows_fisher');
   end
+    end
+  if BOLD=='BOLD'
+seed_allwindows_fisher=[];
+  for i=1:BOLD_step:length(roi1_ts)-BOLD_window_size;
+    a=i+BOLD_window_size;
+    ALL_window_ts=BOLD_ts(i:a,:);
+    ALL_window_corr=corrcoef(ALL_window_ts);
+    ALL_window_fisher=fisherz(ALL_window_corr);
+    seed_window_fisher=ALL_window_fisher(:,roi1_num);
+    seed_allwindows_fisher=[seed_allwindows_fisher seed_window_fisher];
+  end  
+  if BOLD_window_size==15
+      save([roi1 '_30sec_windows_BOLD'],'seed_allwindows_fisher');
+  end    
+  end    
 end
 
 %% Sliding windows for ROI pair

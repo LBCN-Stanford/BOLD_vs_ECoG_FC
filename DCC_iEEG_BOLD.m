@@ -217,5 +217,9 @@ for i=1:size(HFB_medium_iElvis_norm,2)
    HFB_medium_dcc=squeeze(R(1,2,:));
    HFB_medium_dcc_mat(:,i)=HFB_medium_dcc;
     end
-    end
+end
+    
+save('HFB_medium_dcc_mat','HFB_medium_dcc_mat');
+save('BOLD_dcc_mat','BOLD_dcc_mat');
+
     
