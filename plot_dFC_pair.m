@@ -59,10 +59,10 @@ elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient]);
 end
     
-if depth=='0'
-hemi=importdata(['hemi.txt']); 
-hemi=char(hemi);
-end
+%if depth=='0'
+%hemi=importdata(['hemi.txt']); 
+%hemi=char(hemi);
+%end
     if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
 elseif rest=='0'
