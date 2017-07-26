@@ -14,6 +14,17 @@ getECoGSubDir; global globalECoGDir;
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
 
+ %% Load distance
+ cd([fsDir '/' Patient '/elec_recon']);
+vox=dlmread([Patient '.PIAL'],' ',2,0);
+distances=zeros(size(vox,1));
+for i = 1:size(vox,1)
+ coord = vox(i,:);
+     for ii = 1:size(vox,1)
+         distances(i,ii)=sqrt((vox(ii,1)-coord(1))^2+(vox(ii,2)-coord(2))^2+(vox(ii,3)-coord(3))^2);
+     end
+end
+
 %% Load sliding window vectors
     if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
@@ -23,11 +34,13 @@ elseif rest=='0'
     
     BOLD=load([roi1 '_' Window_dur 'sec_windows_BOLD.mat']);
     iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG.mat']);
- 
- %% Load distance   
-    
- %% Get target index number
+     
+ %% Get seed and target index numbers
+ roi1_num=strmatch(roi1,elecNames,'exact');
 roi2_num=strmatch(roi2,elecNames,'exact');
+
+%% Get distances for seed
+seed_distance=distances(:,roi1_num);
 
 %% Find window indices for high and low seed-target FC states
 target_BOLD_sw_ts=BOLD.seed_allwindows_fisher(roi2_num,:);
@@ -106,18 +119,23 @@ mean_iEEG_high_windows(find(isfinite(mean_iEEG_high_windows)<1))=[];
 mean_BOLD_low_windows(find(isfinite(mean_BOLD_low_windows)<1))=[];
 mean_iEEG_low_windows(find(isfinite(mean_iEEG_low_windows)<1))=[];
 
-% REMOVE BAD INDICES FROM DISTANCE VECTOR
+seed_distance(bad_chans)=[];
+seed_distance(find(seed_distance==0))=[];
 
 %% Correlate BOLD vs iEEG (high and low FC states)
 [r,p]=corr(mean_BOLD_high_windows,mean_iEEG_high_windows);
 high_BOLD_iEEG_corr=r; high_BOLD_iEEG_p=p;
 [rho,p]=corr(mean_BOLD_high_windows,mean_iEEG_high_windows,'type','Spearman');
-high_BOLD_iEEG_rho=rho; 
+high_BOLD_iEEG_rho=rho;
+[r,p]=partialcorr(mean_BOLD_high_windows,mean_iEEG_high_windows,seed_distance);
+high_BOLD_iEEG_partial=r;
 
 [r,p]=corr(mean_BOLD_low_windows,mean_iEEG_low_windows);
 low_BOLD_iEEG_corr=r; low_BOLD_iEEG_p=p;
 [rho,p]=corr(mean_BOLD_low_windows,mean_iEEG_low_windows,'type','Spearman');
 low_BOLD_iEEG_rho=rho;
+[r,p]=partialcorr(mean_BOLD_low_windows,mean_iEEG_low_windows,seed_distance);
+low_BOLD_iEEG_partial=r;
 
 %% Plots
 
@@ -126,8 +144,8 @@ h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[' High FC state: BOLD vs HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
-    ['r = ' num2str(high_BOLD_iEEG_corr) '; rho = ' num2str(high_BOLD_iEEG_rho)]},'Fontsize',12); 
-    %['distance-corrected r = ' num2str(elec_BOLD_alpha_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_medium_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(high_BOLD_iEEG_corr) '; rho = ' num2str(high_BOLD_iEEG_rho)]; ... 
+    ['distance-corrected r = ' num2str(high_BOLD_iEEG_partial)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
@@ -138,8 +156,8 @@ h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[' Low FC state: BOLD vs HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
-    ['r = ' num2str(low_BOLD_iEEG_corr) '; rho = ' num2str(low_BOLD_iEEG_rho)]},'Fontsize',12); 
-    %['distance-corrected r = ' num2str(elec_BOLD_alpha_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_medium_partialcorr)]},'Fontsize',12);
+    ['r = ' num2str(low_BOLD_iEEG_corr) '; rho = ' num2str(low_BOLD_iEEG_rho)]; ...
+    ['distance-corrected r = ' num2str(low_BOLD_iEEG_partial)]},'Fontsize',12);
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
