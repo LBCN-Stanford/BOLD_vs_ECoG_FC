@@ -23,7 +23,9 @@ elseif rest=='0'
     
     BOLD=load([roi1 '_' Window_dur 'sec_windows_BOLD.mat']);
     iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG.mat']);
-   
+ 
+ %% Load distance   
+    
  %% Get target index number
 roi2_num=strmatch(roi2,elecNames,'exact');
 
@@ -94,6 +96,7 @@ for i=1:length(all_bad_indices)
 end
 bad_chans=bad_iElvis(find(bad_iElvis>0));
 
+%% remove bad indices
 mean_BOLD_high_windows(bad_chans)=[];
 mean_iEEG_high_windows(bad_chans)=[];
 mean_BOLD_low_windows(bad_chans)=[];
@@ -103,17 +106,44 @@ mean_iEEG_high_windows(find(isfinite(mean_iEEG_high_windows)<1))=[];
 mean_BOLD_low_windows(find(isfinite(mean_BOLD_low_windows)<1))=[];
 mean_iEEG_low_windows(find(isfinite(mean_iEEG_low_windows)<1))=[];
 
+% REMOVE BAD INDICES FROM DISTANCE VECTOR
+
 %% Correlate BOLD vs iEEG (high and low FC states)
+[r,p]=corr(mean_BOLD_high_windows,mean_iEEG_high_windows);
+high_BOLD_iEEG_corr=r; high_BOLD_iEEG_p=p;
+[rho,p]=corr(mean_BOLD_high_windows,mean_iEEG_high_windows,'type','Spearman');
+high_BOLD_iEEG_rho=rho; 
 
-%nans_to_remove=find(isnan(mean_BOLD_high_windows)==1);
-%mean_BOLD_high_windows(nans_to_remove)=[];
-%mean_iEEG_high_windows(nans_to_remove)=[];
-%mean_BOLD_low_windows(nans_to_remove)=[];
-%mean_iEEG_low_windows(nans_to_remove)=[];
+[r,p]=corr(mean_BOLD_low_windows,mean_iEEG_low_windows);
+low_BOLD_iEEG_corr=r; low_BOLD_iEEG_p=p;
+[rho,p]=corr(mean_BOLD_low_windows,mean_iEEG_low_windows,'type','Spearman');
+low_BOLD_iEEG_rho=rho;
 
+%% Plots
 
+scatter(mean_BOLD_high_windows,mean_iEEG_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' High FC state: BOLD vs HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(high_BOLD_iEEG_corr) '; rho = ' num2str(high_BOLD_iEEG_rho)]},'Fontsize',12); 
+    %['distance-corrected r = ' num2str(elec_BOLD_alpha_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_medium_partialcorr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('HFB (0.1-1Hz) FC');
+set(gcf,'PaperPositionMode','auto');
+pause; close;
 
-
+scatter(mean_BOLD_low_windows,mean_iEEG_low_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' Low FC state: BOLD vs HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(low_BOLD_iEEG_corr) '; rho = ' num2str(low_BOLD_iEEG_rho)]},'Fontsize',12); 
+    %['distance-corrected r = ' num2str(elec_BOLD_alpha_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_alpha_medium_partialcorr)]},'Fontsize',12);
+xlabel('BOLD FC');
+ylabel('HFB (0.1-1Hz) FC');
+set(gcf,'PaperPositionMode','auto');
+pause; close;
 
 
 

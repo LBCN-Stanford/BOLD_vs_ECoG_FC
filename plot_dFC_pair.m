@@ -37,14 +37,14 @@ end
 %% BOLD Defaults
 TR=2; % fMRI TR in seconds
 BOLD_step=1; % step length (number of TRs)
-BOLD_window_size=15; % number of TRs per window
+BOLD_window_size=20; % number of TRs per window
 BOLD_window_duration=TR*BOLD_window_size;
 BOLD_run='run1';
 
 %% iEEG defaults
 iEEG_sampling=1000;
 iEEG_step=2000;
-iEEG_window_size=30000;
+iEEG_window_size=40000;
 iEEG_window_duration=iEEG_window_size/iEEG_sampling;
 iEEG_window_plot=[117]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Gamma
@@ -518,8 +518,9 @@ seed_allwindows_fisher=[];
     seed_window_fisher=ALL_window_fisher(:,roi1_num);
     seed_allwindows_fisher=[seed_allwindows_fisher seed_window_fisher];
   end  
-  if iEEG_window_size==30000
-      save([roi1 '_30sec_windows_iEEG'],'seed_allwindows_fisher');
+  if iEEG_step==2000
+   windowsize=num2str(iEEG_window_size/iEEG_sampling);
+      save([roi1 '_' windowsize 'sec_windows_iEEG'],'seed_allwindows_fisher');
   end
     end
   if BOLD=='BOLD'
@@ -532,8 +533,9 @@ seed_allwindows_fisher=[];
     seed_window_fisher=ALL_window_fisher(:,roi1_num);
     seed_allwindows_fisher=[seed_allwindows_fisher seed_window_fisher];
   end  
-  if BOLD_window_size==15
-      save([roi1 '_30sec_windows_BOLD'],'seed_allwindows_fisher');
+  if BOLD_step==1
+      windowsize=num2str(BOLD_window_duration);
+      save([roi1 '_' windowsize 'sec_windows_BOLD'],'seed_allwindows_fisher');
   end    
   end    
 end
