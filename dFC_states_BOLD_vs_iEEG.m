@@ -85,8 +85,23 @@ end
 iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
     end
 
-    % EDIT FROM HERE (July 21/2017)
 % convert bad indices to iElvis
+for i=1:length(all_bad_indices)
+    ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(i));
+    if isempty(ind_iElvis)~=1
+    bad_iElvis(i,:)=ind_iElvis;
+    end
+end
+bad_chans=bad_iElvis(find(bad_iElvis>0));
+
+mean_BOLD_high_windows(bad_chans)=[];
+mean_iEEG_high_windows(bad_chans)=[];
+mean_BOLD_low_windows(bad_chans)=[];
+mean_iEEG_low_windows(bad_chans)=[];
+mean_BOLD_high_windows(find(isfinite(mean_BOLD_high_windows)<1))=[];
+mean_iEEG_high_windows(find(isfinite(mean_iEEG_high_windows)<1))=[];
+mean_BOLD_low_windows(find(isfinite(mean_BOLD_low_windows)<1))=[];
+mean_iEEG_low_windows(find(isfinite(mean_iEEG_low_windows)<1))=[];
 
 %% Correlate BOLD vs iEEG (high and low FC states)
 
