@@ -1,7 +1,8 @@
 %% Compare high and low states of FC between 2 nodes - BOLD vs iEEG
-% must first run plot_dFC_pair.m for both BOLD and iEEG
+% must first run plot_dFC_pair.m (with seed to all enabled) for both BOLD and iEEG
 
 Patient=input('Patient: ','s');
+hemi=input('Hemisphere (r or l): ','s');
 runs=input('iEEG run (e.g. 1): ','s');
 rest=input('Rest(1) or Sleep(0)? ','s');
 Window_dur=input('Window duration (in sec): ','s'); 
@@ -143,7 +144,11 @@ low_high_iEEG_corr=r; low_high_iEEG_p=p;
 [r,p]=corr(mean_BOLD_high_windows,mean_BOLD_low_windows);
 low_high_BOLD_corr=r; low_high_BOLD_p=p;
 
+[r,p]=corr(mean_BOLD_high_windows,mean_iEEG_low_windows);
+BOLD_high_iEEG_low_corr=r;
 
+[r,p]=corr(mean_BOLD_low_windows,mean_iEEG_high_windows);
+BOLD_low_iEEG_high_corr=r;
 
 %% Plots
 
@@ -193,4 +198,38 @@ ylabel('high seed-target BOLD FC state');
 set(gcf,'PaperPositionMode','auto');
 pause; close;
 
+scatter(mean_BOLD_low_windows,mean_iEEG_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' BOLD low vs iEEG high FC seed-target state ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(BOLD_low_iEEG_high_corr)]},'Fontsize',12); 
+xlabel('low seed-target BOLD FC state');
+ylabel('high seed-target iEEG FC state');
+set(gcf,'PaperPositionMode','auto');
+pause; close;
 
+scatter(mean_BOLD_high_windows,mean_iEEG_low_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' BOLD high vs iEEG low FC seed-target state ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(BOLD_high_iEEG_low_corr)]},'Fontsize',12); 
+xlabel('high seed-target BOLD FC state');
+ylabel('low seed-target iEEG FC state');
+set(gcf,'PaperPositionMode','auto');
+pause; close;
+
+%% view BOLD and iEEG states on brains
+ignoreChans=[elecNames(bad_chans); elecNames(roi1_num)];
+elecname
+cfg=[];
+cfg.elecColors=mean_BOLD_high_windows;
+cfg.elecNames=
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' BOLD FC: high state']; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='r';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);

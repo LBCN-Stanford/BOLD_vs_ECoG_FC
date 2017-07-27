@@ -1,7 +1,8 @@
 %% Compare high and low states of FC between 2 nodes - BOLD vs iEEG
-% must first run plot_dFC_pair.m for both BOLD and iEEG
+% must first run plot_dFC_pair.m (with seed to all enabled) for both BOLD and iEEG
 
 Patient=input('Patient: ','s');
+hemi=input('Hemisphere (r or l): ','s');
 runs=input('iEEG run (e.g. 1): ','s');
 rest=input('Rest(1) or Sleep(0)? ','s');
 Window_dur=input('Window duration (in sec): ','s'); 
@@ -62,10 +63,10 @@ BOLD_low_windows=BOLD.seed_allwindows_fisher(:,BOLD_low);
 iEEG_high_windows=iEEG.seed_allwindows_fisher(:,iEEG_high);
 iEEG_low_windows=iEEG.seed_allwindows_fisher(:,iEEG_low);
 
-mean_BOLD_high_windows=mean(BOLD_high_windows,2); mean_BOLD_high_view=mean_BOLD_high_windows;
-mean_BOLD_low_windows=mean(BOLD_low_windows,2); mean_BOLD_low_view=mean_BOLD_low_windows;
-mean_iEEG_high_windows=mean(iEEG_high_windows,2); mean_iEEG_high_view=mean_iEEG_high_windows;
-mean_iEEG_low_windows=mean(iEEG_low_windows,2); mean_iEEG_low_view=mean_iEEG_low_windows;
+mean_BOLD_high_windows=mean(BOLD_high_windows,2); 
+mean_BOLD_low_windows=mean(BOLD_low_windows,2); 
+mean_iEEG_high_windows=mean(iEEG_high_windows,2); 
+mean_iEEG_low_windows=mean(iEEG_low_windows,2); 
 
 %% Remove bad indices (convert from iEEG to iElvis order)
 load('all_bad_indices.mat');
@@ -218,6 +219,60 @@ xlabel('high seed-target BOLD FC state');
 ylabel('low seed-target iEEG FC state');
 set(gcf,'PaperPositionMode','auto');
 pause; close;
+
+%% view BOLD and iEEG states on brains
+ignoreChans=[elecNames(bad_chans); elecNames(roi1_num)];
+elecnames=elecNames;
+elecnames([bad_chans; roi1_num])=[];
+
+% BOLD high state
+cfg=[];
+cfg.elecColors=mean_BOLD_high_windows;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' BOLD FC: high state']; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+
+% iEEG high state
+cfg=[];
+cfg.elecColors=mean_iEEG_high_windows;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' iEEG FC: high state'];
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+
+% BOLD low state
+cfg=[];
+cfg.elecColors=mean_BOLD_low_windows;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' BOLD FC: low state']; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+
+% iEEG low state
+cfg=[];
+cfg.elecColors=mean_iEEG_low_windows;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' iEEG FC: low state']; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+
 
 
 
