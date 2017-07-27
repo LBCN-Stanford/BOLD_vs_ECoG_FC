@@ -221,7 +221,7 @@ set(gcf,'PaperPositionMode','auto');
 pause; close;
 
 %% view BOLD and iEEG states on brains
-ignoreChans=[elecNames(bad_chans); elecNames(roi1_num)];
+ignoreChans=[elecNames(bad_chans)];
 elecnames=elecNames;
 elecnames([bad_chans; roi1_num])=[];
 
