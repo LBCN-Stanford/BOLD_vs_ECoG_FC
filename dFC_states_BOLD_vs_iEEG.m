@@ -123,6 +123,13 @@ mean_iEEG_low_windows(find(isfinite(mean_iEEG_low_windows)<1))=[];
 seed_distance(bad_chans)=[];
 seed_distance(find(seed_distance==0))=[];
 
+%% Find electrodes with greatest FC change between high vs low state
+BOLD_high_minus_low=mean_BOLD_high_windows-mean_BOLD_low_windows;
+iEEG_high_minus_low=mean_iEEG_high_windows-mean_iEEG_low_windows;
+
+global_BOLD_high_minus_low=mean(BOLD_high_minus_low);
+global_iEEG_high_minus_low=mean(iEEG_high_minus_low);
+
 %% Correlate BOLD vs iEEG (high and low FC states)
 [r,p]=corr(mean_BOLD_high_windows,mean_iEEG_high_windows);
 high_BOLD_iEEG_corr=r; high_BOLD_iEEG_p=p;
