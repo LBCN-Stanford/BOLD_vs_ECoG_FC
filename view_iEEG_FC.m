@@ -42,11 +42,11 @@ coords=dlmread([Patient '.PIALVOX'],' ',2,0);
 cd electrode_spheres;
 mkdir('SBCA/figs');
 mkdir('SBCA/figs/iEEG');
-mkdir(['SBCA/figs/iEEG/iEEG_BOLD_HFB_' Rest]);
-mkdir(['SBCA/figs/iEEG_BOLD_HFB_medium_' Rest]);
-mkdir(['SBCA/figs/iEEG_BOLD_alpha_medium_' Rest]);
-mkdir(['SBCA/figs/iEEG_BOLD_SCP_' Rest]);
-mkdir(['SBCA/figs/iEEG_BOLD_HFB_slow_' Rest]);
+mkdir(['SBCA/figs/iEEG/iEEG_BOLD_HFB']);
+mkdir(['SBCA/figs/iEEG_BOLD_HFB_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_alpha_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_SCP']);
+mkdir(['SBCA/figs/iEEG_BOLD_HFB_slow']);
 
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);

@@ -130,6 +130,27 @@ iEEG_high_minus_low=mean_iEEG_high_windows-mean_iEEG_low_windows;
 global_BOLD_high_minus_low=mean(BOLD_high_minus_low);
 global_iEEG_high_minus_low=mean(iEEG_high_minus_low);
 
+%% kmeans clustering of seed FC states
+to_remove=[bad_chans;roi1_num];
+iEEG.seed_allwindows_fisher(to_remove,:)=[];
+BOLD.seed_allwindows_fisher(to_remove,:)=[];
+
+[IDX_iEEG,C_iEEG]=kmeans(iEEG.seed_allwindows_fisher',2,'distance','sqEuclidean','display','final','replicate',100,'maxiter',250);
+[IDX_BOLD,C_BOLD]=kmeans(BOLD.seed_allwindows_fisher',2,'distance','sqEuclidean','display','final','replicate',100,'maxiter',250);
+
+%% Correlate BOLD vs iEEG kmeans states (centroids)
+k1_BOLD=C_BOLD(1,:); k2_BOLD=C_BOLD(2,:);
+k1_iEEG=C_iEEG(1,:); k2_iEEG=C_iEEG(2,:);
+
+[r,p]=corr(k1_BOLD,k1_iEEG); k1B_vs_k1E=r; k1B_vs_k1E_p=p;
+[rho,p]=corr(k1_BOLD,k1_iEEG,'type','Spearman'); k1B_vs_k1E_rho=rho;
+[r,p]=corr(k1_BOLD,k2_iEEG); k1B_vs_k2E=r; k1B_vs_k2E_p=p;
+[rho,p]=corr(k1_BOLD,k2_iEEG,'type','Spearman'); k1B_vs_k2E_rho=rho;
+[r,p]=corr(k2_BOLD,k1_iEEG); k2B_vs_k1E=r; k2B_vs_k1E_p=p;
+[rho,p]=corr(k2_BOLD,k1_iEEG,'type','Spearman'); k2B_vs_k1E_rho=rho;
+[r,p]=corr(k2_BOLD,k2_iEEG); k2B_vs_k2E=r; k2B_vs_k2E_p=p;
+[rho,p]=corr(k2_BOLD,k2_iEEG,'type','Spearman'); k2B_vs_k2E_rho=rho;
+
 %% Correlate BOLD vs iEEG (high and low FC states)
 [r,p]=corr(mean_BOLD_high_windows,mean_iEEG_high_windows);
 high_BOLD_iEEG_corr=r; high_BOLD_iEEG_p=p;
@@ -157,7 +178,28 @@ BOLD_high_iEEG_low_corr=r;
 [r,p]=corr(mean_BOLD_low_windows,mean_iEEG_high_windows);
 BOLD_low_iEEG_high_corr=r;
 
+% Find electrodes with greatest high vs low state FC change, correlate changes
+BOLD_max_increase_elec=find(BOLD_high_minus_low==max(BOLD_high_minus_low));
+iEEG_max_increase_elec=find(iEEG_high_minus_low==max(iEEG_high_minus_low));
+BOLD_max_decrease_elec=find(BOLD_high_minus_low==min(BOLD_high_minus_low));
+iEEG_max_decrease_elec=find(iEEG_high_minus_low==min(iEEG_high_minus_low));
+
+[r,p]=corr(BOLD_high_minus_low,iEEG_high_minus_low);
+BOLD_vs_iEEG_change_corr=r;
+
 %% Plots
+scatter(k1_BOLD,k1_iEEG,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({['State 1: BOLD vs HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(k1B_vs_k1E) '; rho = ' num2str(k1B_vs_k1E_rho)]; ... 
+    ['distance-corrected r = ' num2str(k1B_vs_k1E_partial)]},'Fontsize',12);
+xlabel('BOLD FC: k-state 1');
+ylabel('HFB (0.1-1Hz) FC: k-state 1');
+set(gcf,'PaperPositionMode','auto');
+pause; close;
+
 
 scatter(mean_BOLD_high_windows,mean_iEEG_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
@@ -227,6 +269,17 @@ ylabel('low seed-target iEEG FC state');
 set(gcf,'PaperPositionMode','auto');
 pause; close;
 
+scatter(BOLD_high_minus_low,iEEG_high_minus_low,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' BOLD change vs iEEG change (high minus low) ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(BOLD_vs_iEEG_change_corr)]},'Fontsize',12); 
+xlabel('BOLD FC change');
+ylabel('iEEG FC change');
+set(gcf,'PaperPositionMode','auto');
+pause; close;
+
 %% view BOLD and iEEG states on brains
 ignoreChans=[elecNames(bad_chans)];
 elecnames=elecNames;
@@ -279,7 +332,6 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-
 
 
 
