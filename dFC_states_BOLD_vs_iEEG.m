@@ -194,6 +194,7 @@ iEEG_max_decrease_elec=find(iEEG_high_minus_low==min(iEEG_high_minus_low));
 BOLD_vs_iEEG_change_corr=r;
 
 [r,p]=corr(BOLD_k1_minus_k2,iEEG_k1_minus_k2);
+kBOLD_vs_iEEG_change_corr=r;
 
 %% Plots
 scatter(k1_BOLD,k1_iEEG,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
@@ -318,6 +319,17 @@ set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[' BOLD change vs iEEG change (high minus low) ' Window_dur ' sec windows']; ...
     ['r = ' num2str(BOLD_vs_iEEG_change_corr)]},'Fontsize',12); 
+xlabel('BOLD FC change');
+ylabel('iEEG FC change');
+set(gcf,'PaperPositionMode','auto');
+pause; close;
+
+scatter(BOLD_k1_minus_k2,iEEG_k1_minus_k2,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' BOLD change vs iEEG change (kstate 1 vs 2) ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(kBOLD_vs_iEEG_change_corr)]},'Fontsize',12); 
 xlabel('BOLD FC change');
 ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
