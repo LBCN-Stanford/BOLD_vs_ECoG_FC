@@ -71,6 +71,7 @@ load('all_bad_indices.mat');
 
 % Load channel name-number mapping
 cd([fsDir '/' Patient '/elec_recon']);
+mkdir(['electrode_spheres/SBCA/figs/kstates']);
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
 
 % Load channel names (in freesurfer/elec recon order)
@@ -474,6 +475,7 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k1']]));
 
 % iEEG k1 state
 cfg=[];
@@ -486,6 +488,7 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k1']]));
 
 % BOLD k2 state
 cfg=[];
@@ -498,6 +501,7 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k2']]));
 
 % iEEG k2 state
 cfg=[];
@@ -510,7 +514,9 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k2']]));
 
+if states==3
 % BOLD k3 state
 cfg=[];
 cfg.elecColors=k3_BOLD;
@@ -522,6 +528,7 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k3']]));
 
 % iEEG k3 state
 cfg=[];
@@ -534,5 +541,6 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k3']]));
+end
 pause; close('all');

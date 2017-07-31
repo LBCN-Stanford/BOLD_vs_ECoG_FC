@@ -325,6 +325,7 @@ set(gcf,'PaperPositionMode','auto');
 pause; close;
 
 % BOLD high/low vs iEEG high/low seed-target plots
+FigHandle = figure('Position', [200, 50, 1049, 895]);
 subplot(2,2,1)
 scatter(mean_BOLD_high_windows,mean_iEEG_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
@@ -360,7 +361,7 @@ xlabel('low seed-target BOLD FC state');
 ylabel('high seed-target iEEG FC state');
 set(gcf,'PaperPositionMode','auto');
 
-s
+subplot(2,2,4)
 scatter(mean_BOLD_high_windows,mean_iEEG_low_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
@@ -413,54 +414,54 @@ elecnames=elecNames;
 elecnames([bad_chans; roi1_num])=[];
 
 % BOLD high state
-cfg=[];
-cfg.elecColors=mean_BOLD_high_windows;
-cfg.elecNames=elecnames;
-cfg.ignoreChans=ignoreChans;
-cfg.title=[roi1 ' BOLD FC: high state']; 
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='z';
-cfg.pullOut=3;
-cfg.elecColorScale='minmax';
-cfgOut=plotPialSurf(Patient,cfg);
+% cfg=[];
+% cfg.elecColors=mean_BOLD_high_windows;
+% cfg.elecNames=elecnames;
+% cfg.ignoreChans=ignoreChans;
+% cfg.title=[roi1 ' BOLD FC: high state']; 
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='z';
+% cfg.pullOut=3;
+% cfg.elecColorScale='minmax';
+% cfgOut=plotPialSurf(Patient,cfg);
 
 % iEEG high state
-cfg=[];
-cfg.elecColors=mean_iEEG_high_windows;
-cfg.elecNames=elecnames;
-cfg.ignoreChans=ignoreChans;
-cfg.title=[roi1 ' iEEG FC: high state'];
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='z';
-cfg.pullOut=3;
-cfg.elecColorScale='minmax';
-cfgOut=plotPialSurf(Patient,cfg);
+% cfg=[];
+% cfg.elecColors=mean_iEEG_high_windows;
+% cfg.elecNames=elecnames;
+% cfg.ignoreChans=ignoreChans;
+% cfg.title=[roi1 ' iEEG FC: high state'];
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='z';
+% cfg.pullOut=3;
+% cfg.elecColorScale='minmax';
+% cfgOut=plotPialSurf(Patient,cfg);
 
 % BOLD low state
-cfg=[];
-cfg.elecColors=mean_BOLD_low_windows;
-cfg.elecNames=elecnames;
-cfg.ignoreChans=ignoreChans;
-cfg.title=[roi1 ' BOLD FC: low state']; 
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='z';
-cfg.pullOut=3;
-cfg.elecColorScale='minmax';
-cfgOut=plotPialSurf(Patient,cfg);
+% cfg=[];
+% cfg.elecColors=mean_BOLD_low_windows;
+% cfg.elecNames=elecnames;
+% cfg.ignoreChans=ignoreChans;
+% cfg.title=[roi1 ' BOLD FC: low state']; 
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='z';
+% cfg.pullOut=3;
+% cfg.elecColorScale='minmax';
+% cfgOut=plotPialSurf(Patient,cfg);
 
 % iEEG low state
-cfg=[];
-cfg.elecColors=mean_iEEG_low_windows;
-cfg.elecNames=elecnames;
-cfg.ignoreChans=ignoreChans;
-cfg.title=[roi1 ' iEEG FC: low state']; 
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='z';
-cfg.pullOut=3;
-cfg.elecColorScale='minmax';
-cfgOut=plotPialSurf(Patient,cfg);
+% cfg=[];
+% cfg.elecColors=mean_iEEG_low_windows;
+% cfg.elecNames=elecnames;
+% cfg.ignoreChans=ignoreChans;
+% cfg.title=[roi1 ' iEEG FC: low state']; 
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='z';
+% cfg.pullOut=3;
+% cfg.elecColorScale='minmax';
+% cfgOut=plotPialSurf(Patient,cfg);
 
-pause; close('all');
+% pause; close('all');
 
 % BOLD k1 state
 cfg=[];
@@ -473,6 +474,7 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'iEEG_FC_',elec_name,'_run' ecog_runname]));
 
 % iEEG k1 state
 cfg=[];
@@ -509,3 +511,29 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
+
+% BOLD k3 state
+cfg=[];
+cfg.elecColors=k3_BOLD;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' BOLD: k3 state']; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+
+% iEEG k3 state
+cfg=[];
+cfg.elecColors=k3_iEEG;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' iEEG: k3 state']; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+
+pause; close('all');
