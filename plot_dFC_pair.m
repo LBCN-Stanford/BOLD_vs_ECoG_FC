@@ -16,6 +16,11 @@ if BOLD=='2'
 else
     frequency=' ';
 end
+if BOLD=='1';
+    BOLD_window_duration=input('Window duration (in sec) :','s'); BOLD_window_duration=str2num(BOLD_window_duration);
+elseif BOLD=='2';
+    iEEG_window_duration=input('Window duration (in sec) :','s'); iEEG_window_duration=str2num(iEEG_window_duration);
+end
 runs=input('run (e.g. 1): ','s');
 rest=input('Rest(1) or Sleep(0)? ','s');
 roi1=input('ROI 1 (e.g. AFS9): ','s');
@@ -37,15 +42,19 @@ end
 %% BOLD Defaults
 TR=2; % fMRI TR in seconds
 BOLD_step=1; % step length (number of TRs)
-BOLD_window_size=20; % number of TRs per window
-BOLD_window_duration=TR*BOLD_window_size;
+if BOLD=='BOLD'
+BOLD_window_size=BOLD_window_duration/TR; % number of TRs per window
+end
+%BOLD_window_duration=TR*BOLD_window_size;
 BOLD_run='run1';
 
 %% iEEG defaults
 iEEG_sampling=1000;
 iEEG_step=2000;
-iEEG_window_size=40000;
-iEEG_window_duration=iEEG_window_size/iEEG_sampling;
+if BOLD=='iEEG'
+iEEG_window_size=iEEG_window_duration*iEEG_sampling;
+end
+%iEEG_window_duration=iEEG_window_size/iEEG_sampling;
 iEEG_window_plot=[117]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Gamma
 %depth='0';
