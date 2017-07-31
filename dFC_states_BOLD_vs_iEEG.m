@@ -28,13 +28,10 @@ for i = 1:size(vox,1)
 end
 
 %% Load sliding window vectors
-    if rest=='1'
-cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
-elseif rest=='0'
-    cd([globalECoGDir '/Sleep/' Patient '/Run' runs]);
-    end
     
+cd([globalECoGDir '/Rest/' Patient '/Run1']);    
     BOLD=load([roi1 '_' Window_dur 'sec_windows_BOLD.mat']);
+    cd([globalECoGDir '/Rest/' Patient '/Run' runs]);  
     iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG.mat']);
      
  %% Get seed and target index numbers
@@ -327,6 +324,9 @@ ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
 pause; close;
 
+% BOLD high/low vs iEEG high/low seed-target plots
+FigHandle = figure('Position', [200, 50, 1049, 895]);
+subplot(2,2,1)
 scatter(mean_BOLD_high_windows,mean_iEEG_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
@@ -337,8 +337,8 @@ title({[' High FC state: BOLD vs HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
-pause; close;
 
+subplot(2,2,2)
 scatter(mean_BOLD_low_windows,mean_iEEG_low_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
@@ -349,30 +349,8 @@ title({[' Low FC state: BOLD vs HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
 xlabel('BOLD FC');
 ylabel('HFB (0.1-1Hz) FC');
 set(gcf,'PaperPositionMode','auto');
-pause; close;
 
-scatter(mean_iEEG_low_windows,mean_iEEG_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
-h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({[' iEEG: Low vs High FC state: HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
-    ['r = ' num2str(low_high_iEEG_corr)]},'Fontsize',12); 
-xlabel('low seed-target iEEG FC state');
-ylabel('high seed-target iEEG FC state');
-set(gcf,'PaperPositionMode','auto');
-pause; close;
-
-scatter(mean_BOLD_low_windows,mean_BOLD_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
-h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({[' BOLD: Low vs High FC state ' Window_dur ' sec windows']; ...
-    ['r = ' num2str(low_high_BOLD_corr)]},'Fontsize',12); 
-xlabel('low seed-target BOLD FC state');
-ylabel('high seed-target BOLD FC state');
-set(gcf,'PaperPositionMode','auto');
-pause; close;
-
+subplot(2,2,3)
 scatter(mean_BOLD_low_windows,mean_iEEG_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
@@ -382,8 +360,8 @@ title({[' BOLD low vs iEEG high FC seed-target state ' Window_dur ' sec windows'
 xlabel('low seed-target BOLD FC state');
 ylabel('high seed-target iEEG FC state');
 set(gcf,'PaperPositionMode','auto');
-pause; close;
 
+subplot(2,2,4)
 scatter(mean_BOLD_high_windows,mean_iEEG_low_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
@@ -392,6 +370,29 @@ title({[' BOLD high vs iEEG low FC seed-target state ' Window_dur ' sec windows'
     ['r = ' num2str(BOLD_high_iEEG_low_corr)]},'Fontsize',12); 
 xlabel('high seed-target BOLD FC state');
 ylabel('low seed-target iEEG FC state');
+set(gcf,'PaperPositionMode','auto');
+pause; close;
+
+figure(2)
+scatter(mean_iEEG_low_windows,mean_iEEG_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' iEEG: Low vs High FC state: HFB (0.1-1Hz) ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(low_high_iEEG_corr)]},'Fontsize',12); 
+xlabel('low seed-target iEEG FC state');
+ylabel('high seed-target iEEG FC state');
+set(gcf,'PaperPositionMode','auto');
+
+figure(3)
+scatter(mean_BOLD_low_windows,mean_BOLD_high_windows,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' BOLD: Low vs High FC state ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(low_high_BOLD_corr)]},'Fontsize',12); 
+xlabel('low seed-target BOLD FC state');
+ylabel('high seed-target BOLD FC state');
 set(gcf,'PaperPositionMode','auto');
 pause; close;
 
@@ -413,54 +414,54 @@ elecnames=elecNames;
 elecnames([bad_chans; roi1_num])=[];
 
 % BOLD high state
-cfg=[];
-cfg.elecColors=mean_BOLD_high_windows;
-cfg.elecNames=elecnames;
-cfg.ignoreChans=ignoreChans;
-cfg.title=[roi1 ' BOLD FC: high state']; 
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='z';
-cfg.pullOut=3;
-cfg.elecColorScale='minmax';
-cfgOut=plotPialSurf(Patient,cfg);
+% cfg=[];
+% cfg.elecColors=mean_BOLD_high_windows;
+% cfg.elecNames=elecnames;
+% cfg.ignoreChans=ignoreChans;
+% cfg.title=[roi1 ' BOLD FC: high state']; 
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='z';
+% cfg.pullOut=3;
+% cfg.elecColorScale='minmax';
+% cfgOut=plotPialSurf(Patient,cfg);
 
 % iEEG high state
-cfg=[];
-cfg.elecColors=mean_iEEG_high_windows;
-cfg.elecNames=elecnames;
-cfg.ignoreChans=ignoreChans;
-cfg.title=[roi1 ' iEEG FC: high state'];
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='z';
-cfg.pullOut=3;
-cfg.elecColorScale='minmax';
-cfgOut=plotPialSurf(Patient,cfg);
+% cfg=[];
+% cfg.elecColors=mean_iEEG_high_windows;
+% cfg.elecNames=elecnames;
+% cfg.ignoreChans=ignoreChans;
+% cfg.title=[roi1 ' iEEG FC: high state'];
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='z';
+% cfg.pullOut=3;
+% cfg.elecColorScale='minmax';
+% cfgOut=plotPialSurf(Patient,cfg);
 
 % BOLD low state
-cfg=[];
-cfg.elecColors=mean_BOLD_low_windows;
-cfg.elecNames=elecnames;
-cfg.ignoreChans=ignoreChans;
-cfg.title=[roi1 ' BOLD FC: low state']; 
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='z';
-cfg.pullOut=3;
-cfg.elecColorScale='minmax';
-cfgOut=plotPialSurf(Patient,cfg);
+% cfg=[];
+% cfg.elecColors=mean_BOLD_low_windows;
+% cfg.elecNames=elecnames;
+% cfg.ignoreChans=ignoreChans;
+% cfg.title=[roi1 ' BOLD FC: low state']; 
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='z';
+% cfg.pullOut=3;
+% cfg.elecColorScale='minmax';
+% cfgOut=plotPialSurf(Patient,cfg);
 
 % iEEG low state
-cfg=[];
-cfg.elecColors=mean_iEEG_low_windows;
-cfg.elecNames=elecnames;
-cfg.ignoreChans=ignoreChans;
-cfg.title=[roi1 ' iEEG FC: low state']; 
-cfg.view=[hemi 'omni'];
-cfg.elecUnits='z';
-cfg.pullOut=3;
-cfg.elecColorScale='minmax';
-cfgOut=plotPialSurf(Patient,cfg);
+% cfg=[];
+% cfg.elecColors=mean_iEEG_low_windows;
+% cfg.elecNames=elecnames;
+% cfg.ignoreChans=ignoreChans;
+% cfg.title=[roi1 ' iEEG FC: low state']; 
+% cfg.view=[hemi 'omni'];
+% cfg.elecUnits='z';
+% cfg.pullOut=3;
+% cfg.elecColorScale='minmax';
+% cfgOut=plotPialSurf(Patient,cfg);
 
-pause; close('all');
+% pause; close('all');
 
 % BOLD k1 state
 cfg=[];
@@ -509,3 +510,29 @@ cfg.elecUnits='z';
 cfg.pullOut=3;
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
+
+% BOLD k3 state
+cfg=[];
+cfg.elecColors=k3_BOLD;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' BOLD: k3 state']; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+
+% iEEG k3 state
+cfg=[];
+cfg.elecColors=k3_iEEG;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' iEEG: k3 state']; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+
+pause; close('all');
