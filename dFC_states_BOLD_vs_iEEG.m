@@ -235,6 +235,22 @@ k1k3_BOLD_vs_iEEG_change_corr=r; k1k3_BOLD_vs_iEEG_change_p=p;
 k2k3_BOLD_vs_iEEG_change_corr=r; k2k3_BOLD_vs_iEEG_change_p=p;
 end
 
+%% Correlate between k-state changes: iEEG vs iEEG
+[r,p]=corr(k1_iEEG,k2_iEEG);
+k1k2_iEEG_corr=r;
+[r,p]=corr(k1_iEEG,k3_iEEG);
+k1k3_iEEG_corr=r;
+[r,p]=corr(k2_iEEG,k3_iEEG);
+k2k3_iEEG_corr=r;
+
+%% Correlate between k-state changes: BOLD vs BOLD
+[r,p]=corr(k1_BOLD,k2_BOLD);
+k1k2_BOLD_corr=r;
+[r,p]=corr(k1_BOLD,k3_BOLD);
+k1k3_BOLD_corr=r;
+[r,p]=corr(k2_BOLD,k3_BOLD);
+k2k3_BOLD_corr=r;
+
 %% Plots
 FigHandle = figure('Position', [200, 50, 1049, 895]);
 
@@ -289,40 +305,90 @@ set(gcf,'PaperPositionMode','auto');
 pause; close;
 
 % k1 vs k2 change: BOLD vs iEEG
-figure(1)
+FigHandle = figure('Position', [400, 500, 1200, 300]);
+if states==3
+subplot(1,3,1)
+end
 scatter(BOLD_k1_minus_k2,iEEG_k1_minus_k2,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({[' BOLD change vs iEEG change (kstate 1 vs 2) ' Window_dur ' sec windows']; ...
+title({['kstate 1 vs 2: ' Window_dur ' sec windows']; ...
     ['r = ' num2str(k1k2_BOLD_vs_iEEG_change_corr) ' p = ' num2str(k1k2_BOLD_vs_iEEG_change_p)]},'Fontsize',12); 
 xlabel('BOLD FC change');
 ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
-pause; close;
+if states==2
+    pause; close;
+end
 
 % k1 vs k3 change: BOLD vs iEEG
+if states==3
+subplot(1,3,2)
 scatter(BOLD_k1_minus_k3,iEEG_k1_minus_k3,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({[' BOLD change vs iEEG change (kstate 1 vs 3) ' Window_dur ' sec windows']; ...
+title({['kstate 1 vs 3: ' Window_dur ' sec windows']; ...
     ['r = ' num2str(k1k3_BOLD_vs_iEEG_change_corr) ' p = ' num2str(k1k3_BOLD_vs_iEEG_change_p)]},'Fontsize',12); 
 xlabel('BOLD FC change');
 ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
-pause; close;
 
 % k2 vs k3 change: BOLD vs iEEG
+subplot(1,3,3)
 scatter(BOLD_k2_minus_k3,iEEG_k2_minus_k3,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title({[' BOLD change vs iEEG change (kstate 2 vs 3) ' Window_dur ' sec windows']; ...
+title({['kstate 2 vs 3: ' Window_dur ' sec windows']; ...
     ['r = ' num2str(k2k3_BOLD_vs_iEEG_change_corr) ' p = ' num2str(k2k3_BOLD_vs_iEEG_change_p)]},'Fontsize',12); 
 xlabel('BOLD FC change');
 ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
+end
+pause; close;
+
+% iEEG correlations between k states
+kstates_iEEG_allcorr=[k1k2_iEEG_corr k1k3_iEEG_corr k2k3_iEEG_corr];
+
+    plot(1:length(kstates_iEEG_allcorr),kstates_iEEG_allcorr,'k.--', ...
+        'LineWidth',2,'Color',[.6 .6 .6],'MarkerSize',25,'MarkerEdgeColor',[.3 .3 .3]);      
+       set(gca,'Xtick',0:1:4)
+ set(gca,'XTickLabel',{'','k1-k2', 'k1-k3','k2-k3'})
+ set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+  ylabel('iEEG between-state correlation (r)'); 
+  
+    hold on
+   set(gca,'box','off'); 
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+  ylim([0 1]);
+   set(gca,'Xtick',0:1:4)
+   set(gca,'XTickLabel',{'','k1-k2', 'k1-k3','k2-k3'})
+ylabel('iEEG between-state correlation (r)'); 
+% print('-opengl','-r300','-dpng',strcat([pwd,filesep,region '_allfreqs']));
+pause; close;
+
+% BOLD correlations between kstates
+kstates_BOLD_allcorr=[k1k2_BOLD_corr k1k3_BOLD_corr k2k3_BOLD_corr];
+
+    plot(1:length(kstates_BOLD_allcorr),kstates_BOLD_allcorr,'k.--', ...
+        'LineWidth',2,'Color',[.6 .6 .6],'MarkerSize',25,'MarkerEdgeColor',[.3 .3 .3]);      
+       set(gca,'Xtick',0:1:4)
+ set(gca,'XTickLabel',{'','k1-k2', 'k1-k3','k2-k3'})
+ set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+  ylabel('BOLD between-state correlation (r)'); 
+  
+    hold on
+   set(gca,'box','off'); 
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+  ylim([0 1]);
+   set(gca,'Xtick',0:1:4)
+   set(gca,'XTickLabel',{'','k1-k2', 'k1-k3','k2-k3'})
+ylabel('BOLD between-state correlation (r)'); 
+% print('-opengl','-r300','-dpng',strcat([pwd,filesep,region '_allfreqs']));
 pause; close;
 
 % BOLD high/low vs iEEG high/low seed-target plots
