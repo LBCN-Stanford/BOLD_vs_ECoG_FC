@@ -337,12 +337,12 @@ if states==3
 
     plot(1:length(kstates_BE_allcorr),kstates_BE_allcorr,'k.--', ...
         'LineWidth',2,'Color',[.6 .6 .6],'MarkerSize',25,'MarkerEdgeColor',[.3 .3 .3]);            
- set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+ set(gca,'Fontsize',12,'FontWeight','bold','LineWidth',2,'TickDir','out');
   ylabel('BOLD vs iEEG state correlation (r)'); 
   
     hold on
    set(gca,'box','off'); 
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gca,'Fontsize',12,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
   ylim([0 .8]);
    set(gca,'Xtick',0:1:10)
@@ -350,9 +350,29 @@ set(gcf,'color','w');
        'BOLD3-iEEG1','BOLD3-iEEG2','BOLD3-iEEG3'})
    xtickangle(90)
 ylabel('BOLD vs iEEG state correlation (r)'); 
-% print('-opengl','-r300','-dpng',strcat([pwd,filesep,region '_allfreqs']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_vs_iEEG_states_' Window_dur]]));
 pause; close;   
 end
+
+% k=3 BOLD vs iEEG between-state changes
+if states==3
+    plot(1:length(BOLD_iEEG_kstates_allcorr),abs(BOLD_iEEG_kstates_allcorr),'k.--', ...
+        'LineWidth',2,'Color',[.6 .6 .6],'MarkerSize',25,'MarkerEdgeColor',[.3 .3 .3]);            
+ set(gca,'Fontsize',12,'FontWeight','bold','LineWidth',2,'TickDir','out');  
+    hold on
+   set(gca,'box','off'); 
+set(gca,'Fontsize',12,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+  %ylim([0 .8]);
+   set(gca,'Xtick',0:1:10)
+   set(gca,'XTickLabel',{'','k1k2BOLD-k1k2iEEG', 'k1k2BOLD-k1k3iEEG','k1k2BOLD-k2k3iEEG','k1k3BOLD-k1k2iEEG','k1k3BOLD-k1k3iEEG','k1k3BOLD-k2k3iEEG' ...
+       'k2k3BOLD-k1k2iEEG','k2k3BOLD-k1k3iEEG','k2k3BOLD-k2k3iEEG'})
+   xtickangle(90)
+   ylabel('|r| BOLD vs iEEG change'); 
+   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_vs_iEEG_kchanges_' Window_dur]]));
+   pause; close;
+end
+
 
 % k1 vs k2 change: BOLD vs iEEG
 FigHandle = figure('Position', [400, 500, 1200, 300]);
@@ -364,7 +384,7 @@ h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({['kstate 1 vs 2: ' Window_dur ' sec windows']; ...
-    ['r = ' num2str(k1k2BOLD_vs_k1k2iEEG_change_corr) ' p = ' num2str(k1k2_BOLD_vs_iEEG_change_p)]},'Fontsize',12); 
+    ['r = ' num2str(k1k2BOLD_vs_k1k2iEEG_change_corr) ' p = ' num2str(k1k2BOLD_vs_k1k2iEEG_change_p)]},'Fontsize',12); 
 xlabel('BOLD FC change');
 ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
@@ -380,7 +400,7 @@ h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({['kstate 1 vs 3: ' Window_dur ' sec windows']; ...
-    ['r = ' num2str(k1k3BOLD_vs_k1k3iEEG_change_corr) ' p = ' num2str(k1k3_BOLD_vs_iEEG_change_p)]},'Fontsize',12); 
+    ['r = ' num2str(k1k3BOLD_vs_k1k3iEEG_change_corr) ' p = ' num2str(k1k3BOLD_vs_k1k3iEEG_change_p)]},'Fontsize',12); 
 xlabel('BOLD FC change');
 ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
@@ -392,7 +412,7 @@ h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({['kstate 2 vs 3: ' Window_dur ' sec windows']; ...
-    ['r = ' num2str(k2k3BOLD_vs_k2k3iEEG_change_corr) ' p = ' num2str(k2k3_BOLD_vs_iEEG_change_p)]},'Fontsize',12); 
+    ['r = ' num2str(k2k3BOLD_vs_k2k3iEEG_change_corr) ' p = ' num2str(k2k3BOLD_vs_k2k3iEEG_change_p)]},'Fontsize',12); 
 xlabel('BOLD FC change');
 ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
@@ -418,7 +438,7 @@ set(gcf,'color','w');
    set(gca,'Xtick',0:1:4)
    set(gca,'XTickLabel',{'','k1-k2', 'k1-k3','k2-k3'})
 ylabel('iEEG between-state correlation (r)'); 
-% print('-opengl','-r300','-dpng',strcat([pwd,filesep,region '_allfreqs']));
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_vs_iEEG_kstates_' Window_dur]]));
 pause; close;
 end
 
@@ -441,7 +461,7 @@ set(gcf,'color','w');
    set(gca,'Xtick',0:1:4)
    set(gca,'XTickLabel',{'','k1-k2', 'k1-k3','k2-k3'})
 ylabel('BOLD between-state correlation (r)'); 
-% print('-opengl','-r300','-dpng',strcat([pwd,filesep,region '_allfreqs']));
+ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_vs_BOLD_kstates_' Window_dur]]));
 pause; close;
 end
 
@@ -593,10 +613,11 @@ cfg.title=[roi1 ' BOLD: k1 state'];
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='z';
 cfg.pullOut=3;
-cfg.elecColorScale='minmax';
+cfg.elecColorScale=[-1.5 2];
+%cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k1']]));
-
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k1_' Window_dur]]));
+ 
 % iEEG k1 state
 cfg=[];
 cfg.elecColors=k1_iEEG;
@@ -606,9 +627,10 @@ cfg.title=[roi1 ' iEEG: k1 state'];
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='z';
 cfg.pullOut=3;
-cfg.elecColorScale='minmax';
+cfg.elecColorScale=[-0.1 0.4];
+%cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k1']]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k1_' Window_dur]]));
 
 % BOLD k2 state
 cfg=[];
@@ -619,9 +641,10 @@ cfg.title=[roi1 ' BOLD: k2 state'];
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='z';
 cfg.pullOut=3;
-cfg.elecColorScale='minmax';
+cfg.elecColorScale=[-1.5 2];
+%cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k2']]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k2_' Window_dur]]));
 
 % iEEG k2 state
 cfg=[];
@@ -632,9 +655,10 @@ cfg.title=[roi1 ' iEEG: k2 state'];
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='z';
 cfg.pullOut=3;
-cfg.elecColorScale='minmax';
+cfg.elecColorScale=[-0.1 0.4];
+%cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k2']]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k2_' Window_dur]]));
 
 if states==3
 % BOLD k3 state
@@ -646,9 +670,10 @@ cfg.title=[roi1 ' BOLD: k3 state'];
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='z';
 cfg.pullOut=3;
-cfg.elecColorScale='minmax';
+cfg.elecColorScale=[-1.5 2];
+%cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k3']]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_FC_run1_k3_' Window_dur]]));
 
 % iEEG k3 state
 cfg=[];
@@ -659,8 +684,9 @@ cfg.title=[roi1 ' iEEG: k3 state'];
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='z';
 cfg.pullOut=3;
-cfg.elecColorScale='minmax';
+cfg.elecColorScale=[-0.1 0.4];
+%cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k3']]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k3_' Window_dur]]));
 end
 pause; close('all');
