@@ -130,6 +130,37 @@ BOLD.seed_allwindows_fisher(to_remove,:)=[];
 [IDX_iEEG,C_iEEG]=kmeans(iEEG.seed_allwindows_fisher',states,'distance','sqEuclidean','display','final','replicate',1000,'maxiter',250);
 [IDX_BOLD,C_BOLD]=kmeans(BOLD.seed_allwindows_fisher',states,'distance','sqEuclidean','display','final','replicate',1000,'maxiter',250);
 
+%% Get optimal k using silhouette criterion
+silh_iEEG=evalclusters(iEEG.seed_allwindows_fisher','kmeans','silhouette','klist',[2:10]);
+silh_BOLD=evalclusters(BOLD.seed_allwindows_fisher','kmeans','silhouette','klist',[2:10]);
+
+plot(silh_iEEG);
+pause; close;
+plot(silh_BOLD);
+pause; close;
+
+%% Get optimal k using elbow criterion
+% dim=8;
+% % default number of test to get minimun under differnent random centriods
+% test_num=10;
+% distortion=zeros(dim(1),1);
+% for k_temp=1:dim(1)
+%     [~,~,sumd]=kmeans(iEEG.seed_allwindows_fisher',k_temp,'emptyaction','drop');
+%     destortion_temp=sum(sumd);
+%     % try differnet tests to find minimun disortion under k_temp clusters
+%     for test_count=2:test_num
+%         [~,~,sumd]=kmeans(X,k_temp,'emptyaction','drop');
+%         destortion_temp=min(destortion_temp,sum(sumd));
+%     end
+%     distortion(k_temp,1)=destortion_temp;
+% end
+% 
+% variance=distortion(1:end-1)-distortion(2:end);
+% distortion_percent=cumsum(variance)/(distortion(1)-distortion(end));
+% plot(distortion_percent,'b*--');
+
+
+
 %% Correlate BOLD vs iEEG kmeans states (centroids)
 k1_BOLD=C_BOLD(1,:)'; k2_BOLD=C_BOLD(2,:)';
 k1_iEEG=C_iEEG(1,:)'; k2_iEEG=C_iEEG(2,:)';
@@ -265,20 +296,54 @@ end
 %% Correlate between k-state changes: iEEG vs iEEG
 [r,p]=corr(k1_iEEG,k2_iEEG);
 k1k2_iEEG_corr=r;
+if states>2
 [r,p]=corr(k1_iEEG,k3_iEEG);
 k1k3_iEEG_corr=r;
 [r,p]=corr(k2_iEEG,k3_iEEG);
 k2k3_iEEG_corr=r;
+end
 
 %% Correlate between k-state changes: BOLD vs BOLD
 [r,p]=corr(k1_BOLD,k2_BOLD);
 k1k2_BOLD_corr=r;
+if states>2
 [r,p]=corr(k1_BOLD,k3_BOLD);
 k1k3_BOLD_corr=r;
 [r,p]=corr(k2_BOLD,k3_BOLD);
 k2k3_BOLD_corr=r;
+end
 
 %% Plots
+
+% k=2 BOLD vs BOLD corr
+if states==2
+scatter(k1_BOLD,k2_BOLD,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' BOLD: k1 vs k2 ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(k1k2_BOLD_corr)]},'Fontsize',12); 
+xlabel(['BOLD k1 ' roi1 ' FC']);
+ylabel(['BOLD k2 ' roi1 ' FC']);
+set(gcf,'PaperPositionMode','auto');
+pause; close;
+end
+
+% k=2 iEEG vs iEEG corr
+if states==2
+scatter(k1_iEEG,k2_iEEG,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[' iEEG: k1 vs k2 ' Window_dur ' sec windows']; ...
+    ['r = ' num2str(k1k2_iEEG_corr)]},'Fontsize',12); 
+xlabel(['iEEG k1 ' roi1 ' FC']);
+ylabel(['iEEG k2 ' roi1 ' FC']);
+set(gcf,'PaperPositionMode','auto');
+pause; close;
+end
+
+
 FigHandle = figure('Position', [200, 50, 1049, 895]);
 
 % k=2 BOLD vs iEEG plots
@@ -331,6 +396,28 @@ ylabel('HFB (0.1-1Hz) FC: k-state 2');
 set(gcf,'PaperPositionMode','auto');
 pause; close;
 
+% k=2 BOLD vs iEEG states
+if states==2 
+kstates_BE_allcorr=[k1B_vs_k1E k1B_vs_k2E k2B_vs_k1E k2B_vs_k2E];
+
+    plot(1:length(kstates_BE_allcorr),kstates_BE_allcorr,'k.--', ...
+        'LineWidth',2,'Color',[.6 .6 .6],'MarkerSize',25,'MarkerEdgeColor',[.3 .3 .3]);            
+ set(gca,'Fontsize',12,'FontWeight','bold','LineWidth',2,'TickDir','out');
+  ylabel('BOLD vs iEEG state correlation (r)'); 
+  
+    hold on
+   set(gca,'box','off'); 
+set(gca,'Fontsize',12,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+  ylim([0 .8]);
+   set(gca,'Xtick',0:1:10)
+   set(gca,'XTickLabel',{'','BOLD1-iEEG1', 'BOLD1-iEEG2','BOLD2-iEEG1','BOLD2-iEEG2','BOLD2-'})
+   xtickangle(90)
+ylabel('BOLD vs iEEG state correlation (r)'); 
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,['k2_' roi1 '_BOLD_vs_iEEG_states_' Window_dur]]));
+pause; close; 
+end
+
 % k=3 BOLD vs iEEG states
 if states==3
  kstates_BE_allcorr=[k1B_vs_k1E k1B_vs_k2E k1B_vs_k3E k2B_vs_k1E k2B_vs_k2E k2B_vs_k3E k3B_vs_k1E k3B_vs_k2E k3B_vs_k3E];
@@ -350,7 +437,7 @@ set(gcf,'color','w');
        'BOLD3-iEEG1','BOLD3-iEEG2','BOLD3-iEEG3'})
    xtickangle(90)
 ylabel('BOLD vs iEEG state correlation (r)'); 
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_vs_iEEG_states_' Window_dur]]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,['k3_' roi1 '_BOLD_vs_iEEG_states_' Window_dur]]));
 pause; close;   
 end
 
@@ -369,7 +456,7 @@ set(gcf,'color','w');
        'k2k3BOLD-k1k2iEEG','k2k3BOLD-k1k3iEEG','k2k3BOLD-k2k3iEEG'})
    xtickangle(90)
    ylabel('|r| BOLD vs iEEG change'); 
-   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_BOLD_vs_iEEG_kchanges_' Window_dur]]));
+   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,['k3_' roi1 '_BOLD_vs_iEEG_kchanges_' Window_dur]]));
    pause; close;
 end
 
