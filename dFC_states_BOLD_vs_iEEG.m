@@ -690,3 +690,71 @@ cfgOut=plotPialSurf(Patient,cfg);
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_iEEG_FC_run' runs '_k3_' Window_dur]]));
 end
 pause; close('all');
+
+% plot BOLD change and iEEG change for between-state pair with max
+% correspondence
+if states==3
+    maxcorr=max(abs(BOLD_iEEG_kstates_allcorr));
+ind=find(abs(BOLD_iEEG_kstates_allcorr)==maxcorr);
+if ind==1
+    BOLD_plot=BOLD_k1_minus_k2; BOLD_title=['BOLD k1-k2'];
+    iEEG_plot=iEEG_k1_minus_k2; iEEG_title=['iEEG k1-k2'];
+elseif ind==2
+    BOLD_plot=BOLD_k1_minus_k2; BOLD_title=['BOLD k1-k2'];
+    iEEG_plot=iEEG_k1_minus_k3; iEEG_title=['iEEG k1-k3'];
+elseif ind==3
+     BOLD_plot=BOLD_k1_minus_k2; BOLD_title=['BOLD k1-k2'];
+    iEEG_plot=iEEG_k2_minus_k3; iEEG_title=['iEEG k2-k3'];
+elseif ind==4
+     BOLD_plot=BOLD_k1_minus_k3; BOLD_title=['BOLD k1-k3'];
+    iEEG_plot=iEEG_k1_minus_k2; iEEG_title=['iEEG k1-k2'];
+elseif ind==5
+     BOLD_plot=BOLD_k1_minus_k3; BOLD_title=['BOLD k1-k3'];
+    iEEG_plot=iEEG_k1_minus_k3; iEEG_title=['iEEG k1-k3'];
+elseif ind==6
+     BOLD_plot=BOLD_k1_minus_k3; BOLD_title=['BOLD k1-k3'];
+    iEEG_plot=iEEG_k2_minus_k3; iEEG_title=['iEEG k2-k3'];
+elseif ind==7
+     BOLD_plot=BOLD_k2_minus_k3; BOLD_title=['BOLD k2-k3'];
+    iEEG_plot=iEEG_k1_minus_k2; iEEG_title=['iEEG k1-k2'];
+elseif ind==8
+         BOLD_plot=BOLD_k2_minus_k3; BOLD_title=['BOLD k2-k3'];
+    iEEG_plot=iEEG_k1_minus_k3; iEEG_title=['iEEG k1-k3'];
+elseif ind==9
+         BOLD_plot=BOLD_k2_minus_k3; BOLD_title=['BOLD k2-k3'];
+    iEEG_plot=iEEG_k2_minus_k3; iEEG_title=['iEEG k2-k3'];
+end
+
+% flip BOLD values if BOLD-iEEG state difference corr is negative
+if BOLD_iEEG_kstates_allcorr(ind)<0
+    BOLD_plot=-BOLD_plot;
+end
+% BOLD change plot
+cfg=[];
+cfg.elecColors=BOLD_plot;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' ' BOLD_title ': r = ' num2str(maxcorr)]; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+%cfg.elecColorScale=[-1.5 2];
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_' BOLD_title '_' Window_dur]]));
+
+% iEEG change plot
+cfg=[];
+cfg.elecColors=iEEG_plot;
+cfg.elecNames=elecnames;
+cfg.ignoreChans=ignoreChans;
+cfg.title=[roi1 ' ' iEEG_title ': r = ' num2str(maxcorr)]; 
+cfg.view=[hemi 'omni'];
+cfg.elecUnits='z';
+cfg.pullOut=3;
+%cfg.elecColorScale=[-1.5 2];
+cfg.elecColorScale='minmax';
+cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,[roi1 '_' iEEG_title '_' Window_dur]]));
+end
+pause; close;
