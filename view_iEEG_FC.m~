@@ -32,6 +32,11 @@ end
 load('HFB_corr.mat');
 load('HFB_medium_corr.mat');
 load('alpha_medium_corr.mat');
+load('Beta1_medium_corr.mat');
+load('Beta2_medium_corr.mat');
+load('Theta_medium_corr.mat');
+load('Delta_medium_corr.mat');
+load('Gamma_medium_corr.mat');
 load('SCP_medium_corr.mat');
 load('HFB_slow_corr.mat');
 load('all_bad_indices.mat');
@@ -42,11 +47,17 @@ coords=dlmread([Patient '.PIALVOX'],' ',2,0);
 cd electrode_spheres;
 mkdir('SBCA/figs');
 mkdir('SBCA/figs/iEEG');
-mkdir(['SBCA/figs/iEEG/iEEG_BOLD_HFB_' Rest]);
-mkdir(['SBCA/figs/iEEG_BOLD_HFB_medium_' Rest]);
-mkdir(['SBCA/figs/iEEG_BOLD_alpha_medium_' Rest]);
-mkdir(['SBCA/figs/iEEG_BOLD_SCP_' Rest]);
-mkdir(['SBCA/figs/iEEG_BOLD_HFB_slow_' Rest]);
+mkdir(['SBCA/figs/iEEG/iEEG_BOLD_HFB']);
+mkdir(['SBCA/figs/iEEG_BOLD_HFB_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Gamma_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Beta2_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Beta1_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Alpha_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Theta_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Delta_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_alpha_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_SCP']);
+mkdir(['SBCA/figs/iEEG_BOLD_HFB_slow']);
 
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
@@ -98,20 +109,35 @@ end
 bad_chans=bad_iElvis(find(bad_iElvis>0));
 ignoreChans=[elecNames(bad_chans)];
 
-cd electrod
+cd electrode_spheres;
+
 for elec=1:length(coords);
    elec_num=num2str(elec);
    
-   good_chan=isempty(find(bad_chans==elec_num));
-   if good_chan==1
+   if isempty(find(bad_chans==elec))==1 %only plot good chans
+
        
 elec_name=char(parcOut(elec,1)); 
     elecColors_HFB=HFB_corr(:,elec);
+    elecColors_HFB(bad_chans)=[];
     %elecColors_HFB(elec)=[];
    elecColors_HFB_medium=HFB_medium_corr(:,elec);
+   elecColors_HFB_medium(bad_chans)=[];
    %elecColors_HFB_medium(elec)=[];   
    elecColors_alpha_medium=alpha_medium_corr(:,elec);
+   elecColors_alpha_medium(bad_chans)=[];
    %elecColors_alpha_medium(elec)=[];
+   elecColors_Beta1_medium=Beta1_medium_corr(:,elec);
+   elecColors_Beta1_medium(bad_chans)=[];
+   elecColors_Beta2_medium=Beta2_medium_corr(:,elec);
+   elecColors_Beta2_medium(bad_chans)=[];
+   elecColors_Gamma_medium=Gamma_medium_corr(:,elec);
+   elecColors_Gamma_medium(bad_chans)=[];
+   elecColors_Theta_medium=Theta_medium_corr(:,elec);
+   elecColors_Theta_medium(bad_chans)=[];
+   elecColors_Delta_medium=Delta_medium_corr(:,elec);
+   elecColors_Delta_medium(bad_chans)=[];
+   
    elecColors_SCP=SCP_medium_corr(:,elec);
    %elecColors_SCP(elec)=[];
    elecColors_HFBslow=HFB_slow_corr(:,elec);
@@ -161,8 +187,9 @@ elseif freq=='2'
    cfg.elecColors=elecColors_alpha_medium; 
    cfg.elecColorScale=[-0.4 0.4];
 elseif freq=='3'
-    cfg.elecColors=elecColors_HFBslow;
-    cfg.elecColorScale=[-0.4 0.4];
+    cfg.elecColors=elecColors_Beta1_medium;
+    %cfg.elecColors=elecColors_HFBslow;
+    %cfg.elecColorScale=[-0.4 0.4];
 elseif freq=='4'
     cfg.elecColors=elecColors_SCP;
     cfg.elecColorScale=[-0.4 0.4];
@@ -208,5 +235,6 @@ end
 %   close; 
     end
     end
-end 
+ 
+   end
 end

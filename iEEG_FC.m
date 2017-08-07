@@ -201,6 +201,11 @@ Delta_medium_corr=corrcoef(Delta_medium_iElvis);
 save('HFB_corr','HFB_corr');
 save('HFB_medium_corr','HFB_medium_corr');
 save('alpha_medium_corr','alpha_medium_corr');
+save('Beta1_medium_corr','Beta1_medium_corr');
+save('Beta2_medium_corr','Beta2_medium_corr');
+save('Theta_medium_corr','Theta_medium_corr');
+save('Delta_medium_corr','Delta_medium_corr');
+save('Gamma_medium_corr','Gamma_medium_corr');
 save('SCP_medium_corr','SCP_medium_corr');
 save('HFB_slow_corr','HFB_slow_corr');
 

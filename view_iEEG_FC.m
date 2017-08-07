@@ -7,7 +7,7 @@ ecog_runname=input('ECoG Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
-freq=input('HFB 0.1-1Hz (1) alpha (2) HFB <0.1Hz (3) SCP (4) HFB unfiltered (5) ','s');
+freq=input('HFB 0.1-1Hz (1) alpha (2) beta1 (3) beta2 (4) Gamma (5) Delta (6) Theta (7) ','s');
 depth=str2num(depth);
 bold_run_num=['run' bold_runname];
 ecog_run_num=['run' ecog_runname];
@@ -32,6 +32,11 @@ end
 load('HFB_corr.mat');
 load('HFB_medium_corr.mat');
 load('alpha_medium_corr.mat');
+load('Beta1_medium_corr.mat');
+load('Beta2_medium_corr.mat');
+load('Theta_medium_corr.mat');
+load('Delta_medium_corr.mat');
+load('Gamma_medium_corr.mat');
 load('SCP_medium_corr.mat');
 load('HFB_slow_corr.mat');
 load('all_bad_indices.mat');
@@ -44,6 +49,12 @@ mkdir('SBCA/figs');
 mkdir('SBCA/figs/iEEG');
 mkdir(['SBCA/figs/iEEG/iEEG_BOLD_HFB']);
 mkdir(['SBCA/figs/iEEG_BOLD_HFB_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Gamma_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Beta2_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Beta1_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Alpha_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Theta_medium']);
+mkdir(['SBCA/figs/iEEG_BOLD_Delta_medium']);
 mkdir(['SBCA/figs/iEEG_BOLD_alpha_medium']);
 mkdir(['SBCA/figs/iEEG_BOLD_SCP']);
 mkdir(['SBCA/figs/iEEG_BOLD_HFB_slow']);
@@ -103,17 +114,30 @@ cd electrode_spheres;
 for elec=1:length(coords);
    elec_num=num2str(elec);
    
-   %good_chan=isempty(find(bad_chans==elec_num));
-   %if good_chan==1
+   if isempty(find(bad_chans==elec))==1 %only plot good chans
+
        
 elec_name=char(parcOut(elec,1)); 
     elecColors_HFB=HFB_corr(:,elec);
+    elecColors_HFB(bad_chans)=[];
     %elecColors_HFB(elec)=[];
    elecColors_HFB_medium=HFB_medium_corr(:,elec);
    elecColors_HFB_medium(bad_chans)=[];
    %elecColors_HFB_medium(elec)=[];   
    elecColors_alpha_medium=alpha_medium_corr(:,elec);
+   elecColors_alpha_medium(bad_chans)=[];
    %elecColors_alpha_medium(elec)=[];
+   elecColors_Beta1_medium=Beta1_medium_corr(:,elec);
+   elecColors_Beta1_medium(bad_chans)=[];
+   elecColors_Beta2_medium=Beta2_medium_corr(:,elec);
+   elecColors_Beta2_medium(bad_chans)=[];
+   elecColors_Gamma_medium=Gamma_medium_corr(:,elec);
+   elecColors_Gamma_medium(bad_chans)=[];
+   elecColors_Theta_medium=Theta_medium_corr(:,elec);
+   elecColors_Theta_medium(bad_chans)=[];
+   elecColors_Delta_medium=Delta_medium_corr(:,elec);
+   elecColors_Delta_medium(bad_chans)=[];
+   
    elecColors_SCP=SCP_medium_corr(:,elec);
    %elecColors_SCP(elec)=[];
    elecColors_HFBslow=HFB_slow_corr(:,elec);
@@ -161,16 +185,28 @@ cfg.elecColors=elecColors_HFB_medium;
 cfg.elecColorScale=[-0.1 0.4];
 elseif freq=='2'
    cfg.elecColors=elecColors_alpha_medium; 
-   cfg.elecColorScale=[-0.4 0.4];
+   cfg.elecColorScale=[-0.1 0.4];
 elseif freq=='3'
-    cfg.elecColors=elecColors_HFBslow;
-    cfg.elecColorScale=[-0.4 0.4];
+    cfg.elecColors=elecColors_Beta1_medium;
+    cfg.elecColorScale=[-0.1 0.4];
+    %cfg.elecColors=elecColors_HFBslow;
+    %cfg.elecColorScale=[-0.4 0.4];
 elseif freq=='4'
-    cfg.elecColors=elecColors_SCP;
-    cfg.elecColorScale=[-0.4 0.4];
+    cfg.elecColors=elecColors_Beta2_medium;
+    cfg.elecColorScale=[-0.1 0.4];
+    %cfg.elecColors=elecColors_SCP;
+    %cfg.elecColorScale=[-0.4 0.4];
 elseif freq=='5'
-    cfg.elecColors=elecColors_HFB;
-    cfg.elecColorScale=[0 0.2];
+    cfg.elecColors=elecColors_Gamma_medium;
+    cfg.elecColorScale=[-0.1 0.4];
+    %cfg.elecColors=elecColors_HFB;
+    %cfg.elecColorScale=[0 0.2];
+   elseif freq=='6'
+    cfg.elecColors=elecColors_Delta_medium;
+    cfg.elecColorScale=[-0.1 0.4]; 
+    elseif freq=='7'
+    cfg.elecColors=elecColors_Theta_medium;
+    cfg.elecColorScale=[-0.1 0.4];
 end
 cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num bold_run_num '_' Hemi 'H.mgh']
 %cfg.elecColorScale='minmax';
@@ -184,11 +220,18 @@ if freq=='1'
 elseif freq=='2'
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_alpha_medium',filesep,[Rest '_'],'alpha_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='3'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB_slow',filesep,[Rest '_'],'HFB_slow_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_Beta1_medium',filesep,[Rest '_'],'Beta1_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    %print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB_slow',filesep,[Rest '_'],'HFB_slow_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='4'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_SCP',filesep,[Rest '_'],'SCP_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_Beta2_medium',filesep,[Rest '_'],'Beta2_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    %print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_SCP',filesep,[Rest '_'],'SCP_iEEG_FC_',elec_name,'_run' ecog_runname]));
 elseif freq=='5'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB',filesep,[Rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_Gamma_medium',filesep,[Rest '_'],'Gamma_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    %print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_HFB',filesep,[Rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname]));
+elseif freq=='6'
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_Delta_medium',filesep,[Rest '_'],'Delta_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
+elseif freq=='7'
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG_BOLD_Theta_medium',filesep,[Rest '_'],'Theta_medium_iEEG_FC_',elec_name,'_run' ecog_runname]));
 end
     close;
   
@@ -211,4 +254,5 @@ end
     end
     end
  
+   end
 end
