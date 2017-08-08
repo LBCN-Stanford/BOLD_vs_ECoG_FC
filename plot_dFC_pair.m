@@ -19,7 +19,10 @@ end
 if BOLD=='1';
     BOLD_window_duration=input('Window duration (in sec) :','s'); BOLD_window_duration=str2num(BOLD_window_duration);
 elseif BOLD=='2';
-    iEEG_window_duration=input('Window duration (in sec) :','s'); iEEG_window_duration=str2num(iEEG_window_duration);
+    iEEG_window_duration=input('Window duration (sec); aa for range of 10-100 sec durations :','s'); 
+    if isempty(str2num(iEEG_window_duration))==0
+    iEEG_window_duration=str2num(iEEG_window_duration);
+    end
 end
 runs=input('run (e.g. 1): ','s');
 rest=input('Rest(1) or Sleep(0)? ','s');
@@ -52,10 +55,15 @@ BOLD_run='run1';
 iEEG_sampling=1000;
 iEEG_step=2000;
 if BOLD=='iEEG'
-iEEG_window_size=iEEG_window_duration*iEEG_sampling;
+    if isnumeric(iEEG_window_duration)==1
+iEEG_window_size=iEEG_window_duration*iEEG_sampling;    
+    else
+        iEEG_window_sizes=[10 20 30 40 50 60 70 80 90 100]*iEEG_sampling;
+        iEEG_window_size=30*iEEG_sampling; % example for plots
+    end
 end
 %iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-iEEG_window_plot=[117]; % window to plot time series; set to zero to turn off
+iEEG_window_plot=[50]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Gamma
 %depth='0';
 
@@ -369,8 +377,6 @@ end
 end
 end
 
-
-
 %% Convert ROI names to numbers (iElvis space)
 roi1_num=strmatch(roi1,parcOut(:,1),'exact');
 roi2_num=strmatch(roi2,parcOut(:,1),'exact');
@@ -563,6 +569,116 @@ end
 end
 
 if BOLD=='iEEG'
+   % loop for multiple window durations: HFB
+    if isnumeric(iEEG_window_duration)==0 
+   
+        all_windows_corr=zeros((ceil((length(roi1_HFB_medium_ts)-iEEG_window_sizes(1))/iEEG_step)),length(iEEG_window_sizes));
+        all_windows_fisher=zeros((ceil((length(roi1_HFB_medium_ts)-iEEG_window_sizes(1))/iEEG_step)),length(iEEG_window_sizes));
+        
+        for j=1:length(iEEG_window_sizes);
+        
+          for i=1:iEEG_step:length(roi1_HFB_medium_ts)-iEEG_window_sizes(j);
+    a=i+iEEG_window_sizes(j);
+    roi1_HFB_window_ts=roi1_HFB_medium_ts(i:a);
+    roi2_HFB_window_ts=roi2_HFB_medium_ts(i:a);
+%             if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+%         roi1_window_ts_plot=roi1_window_ts;
+%         roi2_window_ts_plot=roi2_window_ts;
+%             end
+    window_corr=corr(roi1_HFB_window_ts,roi2_HFB_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_corr(i,j)=window_corr;   
+   all_windows_fisher(i,j)=window_fisher;
+   
+  end            
+        end
+    end
+  
+    % for multiple windows, get HFB correlation time courses
+    window10_HFB_fisher=all_windows_fisher(:,1);
+    window10_HFB_fisher(find(window10_HFB_fisher==0))=[];
+    window20_HFB_fisher=all_windows_fisher(:,2);
+    window20_HFB_fisher(find(window20_HFB_fisher==0))=[];
+    window30_HFB_fisher=all_windows_fisher(:,3);
+    window30_HFB_fisher(find(window30_HFB_fisher==0))=[];
+    window40_HFB_fisher=all_windows_fisher(:,4);
+    window40_HFB_fisher(find(window40_HFB_fisher==0))=[];
+    window50_HFB_fisher=all_windows_fisher(:,5);
+    window50_HFB_fisher(find(window50_HFB_fisher==0))=[];
+    window60_HFB_fisher=all_windows_fisher(:,6);
+    window60_HFB_fisher(find(window60_HFB_fisher==0))=[];
+    window70_HFB_fisher=all_windows_fisher(:,7);
+    window70_HFB_fisher(find(window70_HFB_fisher==0))=[];
+    window80_HFB_fisher=all_windows_fisher(:,8);
+    window80_HFB_fisher(find(window80_HFB_fisher==0))=[];
+    window90_HFB_fisher=all_windows_fisher(:,9);
+    window90_HFB_fisher(find(window90_HFB_fisher==0))=[];
+    window100_HFB_fisher=all_windows_fisher(:,10);
+    window100_HFB_fisher(find(window100_HFB_fisher==0))=[];
+    
+     % loop for multiple window durations: Alpha
+     
+     all_windows_corr=zeros((ceil((length(roi1_Alpha_medium_ts)-iEEG_window_sizes(1))/iEEG_step)),length(iEEG_window_sizes));
+        all_windows_fisher=zeros((ceil((length(roi1_Alpha_medium_ts)-iEEG_window_sizes(1))/iEEG_step)),length(iEEG_window_sizes));
+        
+        for j=1:length(iEEG_window_sizes);
+        
+          for i=1:iEEG_step:length(roi1_Alpha_medium_ts)-iEEG_window_sizes(j);
+    a=i+iEEG_window_sizes(j);
+    roi1_Alpha_window_ts=roi1_Alpha_medium_ts(i:a);
+    roi2_Alpha_window_ts=roi2_Alpha_medium_ts(i:a);
+%             if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
+%         roi1_window_ts_plot=roi1_window_ts;
+%         roi2_window_ts_plot=roi2_window_ts;
+%             end
+    window_corr=corr(roi1_Alpha_window_ts,roi2_Alpha_window_ts);
+    window_fisher=fisherz(window_corr);
+    all_windows_corr(i,j)=window_corr;   
+   all_windows_fisher(i,j)=window_fisher;
+   
+  end            
+        end
+    
+  
+    % for multiple windows, get Alpha correlation time courses
+    window10_Alpha_fisher=all_windows_fisher(:,1);
+    window10_Alpha_fisher(find(window10_Alpha_fisher==0))=[];
+    window20_Alpha_fisher=all_windows_fisher(:,2);
+    window20_Alpha_fisher(find(window20_Alpha_fisher==0))=[];
+    window30_Alpha_fisher=all_windows_fisher(:,3);
+    window30_Alpha_fisher(find(window30_Alpha_fisher==0))=[];
+    window40_Alpha_fisher=all_windows_fisher(:,4);
+    window40_Alpha_fisher(find(window40_Alpha_fisher==0))=[];
+    window50_Alpha_fisher=all_windows_fisher(:,5);
+    window50_Alpha_fisher(find(window50_Alpha_fisher==0))=[];
+    window60_Alpha_fisher=all_windows_fisher(:,6);
+    window60_Alpha_fisher(find(window60_Alpha_fisher==0))=[];
+    window70_Alpha_fisher=all_windows_fisher(:,7);
+    window70_Alpha_fisher(find(window70_Alpha_fisher==0))=[];
+    window80_Alpha_fisher=all_windows_fisher(:,8);
+    window80_Alpha_fisher(find(window80_Alpha_fisher==0))=[];
+    window90_Alpha_fisher=all_windows_fisher(:,9);
+    window90_Alpha_fisher(find(window90_Alpha_fisher==0))=[];
+    window100_Alpha_fisher=all_windows_fisher(:,10);
+    window100_Alpha_fisher(find(window100_Alpha_fisher==0))=[];
+    
+    % correlate Alpha vs HFB
+    
+    SWC_HFB_vs_Alpha_10=corr(window10_HFB_fisher,window10_Alpha_fisher);
+    SWC_HFB_vs_Alpha_20=corr(window20_HFB_fisher,window20_Alpha_fisher);
+    SWC_HFB_vs_Alpha_30=corr(window30_HFB_fisher,window30_Alpha_fisher);
+    SWC_HFB_vs_Alpha_40=corr(window40_HFB_fisher,window40_Alpha_fisher);
+    SWC_HFB_vs_Alpha_50=corr(window50_HFB_fisher,window50_Alpha_fisher);
+    SWC_HFB_vs_Alpha_60=corr(window60_HFB_fisher,window60_Alpha_fisher);
+    SWC_HFB_vs_Alpha_70=corr(window70_HFB_fisher,window70_Alpha_fisher);
+    SWC_HFB_vs_Alpha_80=corr(window80_HFB_fisher,window80_Alpha_fisher);
+    SWC_HFB_vs_Alpha_90=corr(window90_HFB_fisher,window90_Alpha_fisher);
+    SWC_HFB_vs_Alpha_100=corr(window100_HFB_fisher,window100_Alpha_fisher);
+    
+    SWC_HFB_vs_Alpha_all=[SWC_HFB_vs_Alpha_10; SWC_HFB_vs_Alpha_20; SWC_HFB_vs_Alpha_30; SWC_HFB_vs_Alpha_40; SWC_HFB_vs_Alpha_50; ...
+        SWC_HFB_vs_Alpha_60; SWC_HFB_vs_Alpha_70; SWC_HFB_vs_Alpha_80; SWC_HFB_vs_Alpha_90; SWC_HFB_vs_Alpha_100];
+    
+    % single window duration
     if frequency~='0' && frequency ~='p'
     all_windows_corr=[]; all_windows_fisher=[];
   %for i=1:iEEG_step:floor(length(roi1_ts)/iEEG_step);
@@ -843,8 +959,8 @@ lag_times=lag_times/iEEG_sampling;
 lag_peak=lag_times(find(lag_corr==max(lag_corr)));
 
 %% calculate dynamic conditional correlations
-[H,R,Theta,X]=DCC_X([roi1_ts_norm roi2_ts_norm],0,0);
-dcc=squeeze(R(1,2,:));
+%[H,R,Theta,X]=DCC_X([roi1_ts_norm roi2_ts_norm],0,0);
+%dcc=squeeze(R(1,2,:));
 
     elseif frequency=='0'
         roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(roi1_HFB_medium_ts))/std(roi1_HFB_medium_ts);
@@ -983,16 +1099,16 @@ legend([roi1],[roi2]);
 hold on;
 
 % iEEG dynamic conditional correlations
-subplot(3,1,2);
-plot(time,dcc,'k','LineWidth',2);
-title({['Dynamic Conditional Correlation: ' roi1 ' vs ' roi2]; ['Var = ' num2str(var(dcc))]},'Fontsize',12);
-xlabel(['Time (sec)']); ylabel(['DCC']);
-xlim([0,time(end)]);
-set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
-hold on;
+% subplot(3,1,2);
+% plot(time,dcc,'k','LineWidth',2);
+% title({['Dynamic Conditional Correlation: ' roi1 ' vs ' roi2]; ['Var = ' num2str(var(dcc))]},'Fontsize',12);
+% xlabel(['Time (sec)']); ylabel(['DCC']);
+% xlim([0,time(end)]);
+% set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+% hold on;
 
 % iEEG sliding-window correlation
-subplot(3,1,3);
+subplot(3,1,2);
 plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ['Mean = ' num2str(mean(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
@@ -1062,12 +1178,14 @@ legend('HFB','α','β1','β2','δ','θ','γ','Location','southeast')
 pause; close;
 
 % dFC for HFB vs alpha
-if frequency=='0'
+SWC_HFB_vs_alpha=corr(all_windows_HFB_medium_fisher,all_windows_Alpha_medium_fisher);
+
+    FigHandle = figure('Position', [200, 600, 1000, 400]);
 plot(1:length(all_windows_HFB_medium_fisher),norm_all_windows_HFB_medium_fisher,...
     1:length(all_windows_Alpha_medium_fisher),norm_all_windows_Alpha_medium_fisher,...
     'LineWidth',2);
 title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
-    ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
+    ['Step size = ' num2str(step_size) ' sec; r = ' num2str(SWC_HFB_vs_alpha)]} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
@@ -1161,7 +1279,27 @@ xlim([0,time(end)]);
 legend([roi1],[roi2]);
 pause; close
 end
+
+% dFC for HFB vs alpha as a function of window length
+if iEEG_window_duration=='aa'
+
+   % FigHandle = figure('Position', [200, 600, 1000, 400]);
+plot(SWC_HFB_vs_Alpha_all,'k.-','Marker','square', 'LineWidth',2);
+title([roi1 '-' roi2 ' HFB vs Alpha dynamic FC'],'Fontsize',12);
+ylim([-1 1]);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+xlabel(['Sliding window duration (sec)']); 
+ylabel(['HFB-Alpha FC correlation (r)']);
+xticks([1 2 3 4 5 6 7 8 9 10])
+xticklabels({'10','20','30','40','50','60','70','80','90','100'})
+
+pause; close;
 end
+end
+
+
+
 
 if frequency=='p'
 plot(1:length(all_windows_HFB_fisher),all_windows_HFB_fisher,...
