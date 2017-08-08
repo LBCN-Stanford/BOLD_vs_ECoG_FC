@@ -1061,6 +1061,19 @@ set(gcf,'color','w');
 legend('HFB','α','β1','β2','δ','θ','γ','Location','southeast')
 pause; close;
 
+% dFC for HFB vs alpha
+if frequency=='0'
+plot(1:length(all_windows_HFB_medium_fisher),norm_all_windows_HFB_medium_fisher,...
+    1:length(all_windows_Alpha_medium_fisher),norm_all_windows_Alpha_medium_fisher,...
+    'LineWidth',2);
+title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
+    ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
+xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+legend('HFB','α','Location','southeast')
+pause; close;
+
 % dFC cross-correlation of frequencies
 all_windows_allfreqs=[all_windows_Delta_medium_fisher all_windows_Theta_medium_fisher all_windows_Alpha_medium_fisher ...
     all_windows_Beta1_medium_fisher all_windows_Beta2_medium_fisher all_windows_Gamma_medium_fisher all_windows_HFB_medium_fisher];

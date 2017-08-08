@@ -203,11 +203,13 @@ elseif freq=='5'
     %cfg.elecColorScale=[0 0.2];
    elseif freq=='6'
     cfg.elecColors=elecColors_Delta_medium;
-    cfg.elecColorScale=[-0.1 0.4]; 
+    cfg.elecColorScale=[0.2 0.8]; 
+    %cfg.elecColorScale='minmax';
     elseif freq=='7'
     cfg.elecColors=elecColors_Theta_medium;
-    cfg.elecColorScale=[-0.1 0.4];
+    cfg.elecColorScale=[0.2 0.8];
 end
+cfg.elecColors(find(cfg.elecColors==1))=[];
 cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num bold_run_num '_' Hemi 'H.mgh']
 %cfg.elecColorScale='minmax';
 
