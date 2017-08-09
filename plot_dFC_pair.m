@@ -64,7 +64,7 @@ iEEG_window_size=iEEG_window_duration*iEEG_sampling;
 end
 %iEEG_window_duration=iEEG_window_size/iEEG_sampling;
 iEEG_window_plot=[50]; % window to plot time series; set to zero to turn off
-freq_window_plot=[1 2]; % 1=HFB, 2=Gamma
+freq_window_plot=[1 2]; % 1=HFB, 2=Alpha
 %depth='0';
 
 
@@ -592,7 +592,7 @@ if BOLD=='iEEG'
    
   end            
         end
-    end
+    
   
     % for multiple windows, get HFB correlation time courses
     window10_HFB_fisher=all_windows_fisher(:,1);
@@ -662,6 +662,7 @@ if BOLD=='iEEG'
     window100_Alpha_fisher=all_windows_fisher(:,10);
     window100_Alpha_fisher(find(window100_Alpha_fisher==0))=[];
     
+    
     % correlate Alpha vs HFB
     
     SWC_HFB_vs_Alpha_10=corr(window10_HFB_fisher,window10_Alpha_fisher);
@@ -677,6 +678,7 @@ if BOLD=='iEEG'
     
     SWC_HFB_vs_Alpha_all=[SWC_HFB_vs_Alpha_10; SWC_HFB_vs_Alpha_20; SWC_HFB_vs_Alpha_30; SWC_HFB_vs_Alpha_40; SWC_HFB_vs_Alpha_50; ...
         SWC_HFB_vs_Alpha_60; SWC_HFB_vs_Alpha_70; SWC_HFB_vs_Alpha_80; SWC_HFB_vs_Alpha_90; SWC_HFB_vs_Alpha_100];
+    end
     
     % single window duration
     if frequency~='0' && frequency ~='p'
@@ -1178,6 +1180,9 @@ legend('HFB','α','β1','β2','δ','θ','γ','Location','southeast')
 pause; close;
 
 % dFC for HFB vs alpha
+if iEEG_window_duration=='aa'
+    window_duration=30;
+end
 SWC_HFB_vs_alpha=corr(all_windows_HFB_medium_fisher,all_windows_Alpha_medium_fisher);
 
     FigHandle = figure('Position', [200, 600, 1000, 400]);
@@ -1262,8 +1267,8 @@ if freq_window_plot(i)==1
     freq_name='HFB';
     roi1_window_ts_plot=HFB_roi1_window_ts_plot; roi2_window_ts_plot=HFB_roi2_window_ts_plot;
 elseif freq_window_plot(i)==2
-    freq_name='Gamma';
-    roi1_window_ts_plot=Gamma_roi1_window_ts_plot; roi2_window_ts_plot=Gamma_roi2_window_ts_plot;
+    freq_name='Alpha';
+    roi1_window_ts_plot=Alpha_roi1_window_ts_plot; roi2_window_ts_plot=Alpha_roi2_window_ts_plot;
 end
 time=1:length(roi1_window_ts_plot); time=time/iEEG_sampling;
 window_corr=num2str(corr(roi1_window_ts_plot,roi2_window_ts_plot));
@@ -1297,8 +1302,6 @@ xticklabels({'10','20','30','40','50','60','70','80','90','100'})
 pause; close;
 end
 end
-
-
 
 
 if frequency=='p'
