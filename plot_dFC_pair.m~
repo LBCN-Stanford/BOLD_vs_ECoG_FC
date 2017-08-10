@@ -63,8 +63,8 @@ iEEG_window_size=iEEG_window_duration*iEEG_sampling;
     end
 end
 %iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-iEEG_window_plot=[50]; % window to plot time series; set to zero to turn off
-freq_window_plot=[1 2]; % 1=HFB, 2=Gamma
+iEEG_window_plot=[179]; % window to plot time series; set to zero to turn off
+freq_window_plot=[1 2]; % 1=HFB, 2=Alpha
 %depth='0';
 
 
@@ -592,7 +592,7 @@ if BOLD=='iEEG'
    
   end            
         end
-    end
+    
   
     % for multiple windows, get HFB correlation time courses
     window10_HFB_fisher=all_windows_fisher(:,1);
@@ -662,6 +662,7 @@ if BOLD=='iEEG'
     window100_Alpha_fisher=all_windows_fisher(:,10);
     window100_Alpha_fisher(find(window100_Alpha_fisher==0))=[];
     
+    
     % correlate Alpha vs HFB
     
     SWC_HFB_vs_Alpha_10=corr(window10_HFB_fisher,window10_Alpha_fisher);
@@ -677,6 +678,8 @@ if BOLD=='iEEG'
     
     SWC_HFB_vs_Alpha_all=[SWC_HFB_vs_Alpha_10; SWC_HFB_vs_Alpha_20; SWC_HFB_vs_Alpha_30; SWC_HFB_vs_Alpha_40; SWC_HFB_vs_Alpha_50; ...
         SWC_HFB_vs_Alpha_60; SWC_HFB_vs_Alpha_70; SWC_HFB_vs_Alpha_80; SWC_HFB_vs_Alpha_90; SWC_HFB_vs_Alpha_100];
+     
+    end
     
     % single window duration
     if frequency~='0' && frequency ~='p'
@@ -699,6 +702,34 @@ all_windows_corr=all_windows_corr';
 all_windows_fisher=all_windows_fisher';
     end
 if frequency=='0'
+    
+    % normalize time courses
+            roi1_HFB_medium_ts_norm=(roi1_HFB_medium_ts-mean(roi1_HFB_medium_ts))/std(roi1_HFB_medium_ts);
+        roi1_Alpha_medium_ts_norm=(roi1_Alpha_medium_ts-mean(roi1_Alpha_medium_ts))/std(roi1_Alpha_medium_ts);
+        roi1_Beta1_medium_ts_norm=(roi1_Beta1_medium_ts-mean(roi1_Beta1_medium_ts))/std(roi1_Beta1_medium_ts);
+        roi1_Beta2_medium_ts_norm=(roi1_Beta2_medium_ts-mean(roi1_Beta2_medium_ts))/std(roi1_Beta2_medium_ts);
+        roi1_Theta_medium_ts_norm=(roi1_Theta_medium_ts-mean(roi1_Theta_medium_ts))/std(roi1_Theta_medium_ts);
+        roi1_Delta_medium_ts_norm=(roi1_Delta_medium_ts-mean(roi1_Delta_medium_ts))/std(roi1_Delta_medium_ts);
+        roi1_Gamma_medium_ts_norm=(roi1_Gamma_medium_ts-mean(roi1_Gamma_medium_ts))/std(roi1_Gamma_medium_ts);
+        roi2_HFB_medium_ts_norm=(roi2_HFB_medium_ts-mean(roi2_HFB_medium_ts))/std(roi2_HFB_medium_ts);
+        roi2_Alpha_medium_ts_norm=(roi2_Alpha_medium_ts-mean(roi2_Alpha_medium_ts))/std(roi2_Alpha_medium_ts);
+        roi2_Beta1_medium_ts_norm=(roi2_Beta1_medium_ts-mean(roi2_Beta1_medium_ts))/std(roi2_Beta1_medium_ts);
+        roi2_Beta2_medium_ts_norm=(roi2_Beta2_medium_ts-mean(roi2_Beta2_medium_ts))/std(roi2_Beta2_medium_ts);
+        roi2_Theta_medium_ts_norm=(roi2_Theta_medium_ts-mean(roi2_Theta_medium_ts))/std(roi2_Theta_medium_ts);
+        roi2_Delta_medium_ts_norm=(roi2_Delta_medium_ts-mean(roi2_Delta_medium_ts))/std(roi2_Delta_medium_ts);
+        roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);
+    
+        % MTD: HFB vs Alpha
+    Alpha_mat=[roi1_Alpha_medium_ts_norm roi2_Alpha_medium_ts_norm];
+    HFB_mat=[roi1_HFB_medium_ts_norm roi2_HFB_medium_ts_norm];
+    
+    mtd_alpha=coupling(Alpha_mat,iEEG_window_duration*iEEG_sampling);
+    mtd_alpha=squeeze(mtd_alpha(1,2,:));
+    
+    mtd_HFB=coupling(HFB_mat,iEEG_window_duration*iEEG_sampling);
+    mtd_HFB=squeeze(mtd_HFB(1,2,:));
+    
+    % Sliding window correlations for each frequency
      all_windows_HFB_medium_corr=[]; all_windows_HFB_medium_fisher=[];
   for i=1:iEEG_step:length(roi1_HFB_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
@@ -1177,12 +1208,28 @@ set(gcf,'color','w');
 legend('HFB','α','β1','β2','δ','θ','γ','Location','southeast')
 pause; close;
 
-% dFC for HFB vs alpha
+% Sliding window dFC for HFB vs alpha
+if iEEG_window_duration=='aa'
+    window_duration=30;
+end
 SWC_HFB_vs_alpha=corr(all_windows_HFB_medium_fisher,all_windows_Alpha_medium_fisher);
 
     FigHandle = figure('Position', [200, 600, 1000, 400]);
 plot(1:length(all_windows_HFB_medium_fisher),norm_all_windows_HFB_medium_fisher,...
     1:length(all_windows_Alpha_medium_fisher),norm_all_windows_Alpha_medium_fisher,...
+    'LineWidth',2);
+title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
+    ['Step size = ' num2str(step_size) ' sec; r = ' num2str(SWC_HFB_vs_alpha)]} ,'Fontsize',12);
+xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+legend('HFB','α','Location','southeast')
+pause; close;
+
+% MTD for HFB vs alpha
+    FigHandle = figure('Position', [200, 600, 1000, 400]);
+plot(1:length(mtd_HFB),mtd_HFB,...
+    1:length(mtd_alpha),mtd_alpha,...
     'LineWidth',2);
 title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec; r = ' num2str(SWC_HFB_vs_alpha)]} ,'Fontsize',12);
@@ -1262,8 +1309,8 @@ if freq_window_plot(i)==1
     freq_name='HFB';
     roi1_window_ts_plot=HFB_roi1_window_ts_plot; roi2_window_ts_plot=HFB_roi2_window_ts_plot;
 elseif freq_window_plot(i)==2
-    freq_name='Gamma';
-    roi1_window_ts_plot=Gamma_roi1_window_ts_plot; roi2_window_ts_plot=Gamma_roi2_window_ts_plot;
+    freq_name='Alpha';
+    roi1_window_ts_plot=Alpha_roi1_window_ts_plot; roi2_window_ts_plot=Alpha_roi2_window_ts_plot;
 end
 time=1:length(roi1_window_ts_plot); time=time/iEEG_sampling;
 window_corr=num2str(corr(roi1_window_ts_plot,roi2_window_ts_plot));
@@ -1284,22 +1331,19 @@ end
 if iEEG_window_duration=='aa'
 
    % FigHandle = figure('Position', [200, 600, 1000, 400]);
-plot(SWC_HFB_vs_Alpha_all,'k.-', 'LineWidth',2);
-title(['HFB vs Alpha co-evolution of functional connectity '],'Fontsize',12);
+plot(SWC_HFB_vs_Alpha_all,'k.-','Marker','square', 'LineWidth',2);
+title([roi1 '-' roi2 ' HFB vs Alpha dynamic FC'],'Fontsize',12);
 ylim([-1 1]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
+xlabel(['Sliding window duration (sec)']); 
+ylabel(['HFB-Alpha FC correlation (r)']);
+xticks([1 2 3 4 5 6 7 8 9 10])
+xticklabels({'10','20','30','40','50','60','70','80','90','100'})
 
-xlabel(['Window number (' num2str(window_duration) ' sec windows)']); 
-ylabel(['HFB_ vs']);
-
-
-legend('HFB','α','Location','southeast')
 pause; close;
 end
 end
-
-
 
 
 if frequency=='p'
