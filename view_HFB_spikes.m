@@ -61,6 +61,41 @@ end
 for i=1:length(chanlabels)
     iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels,'exact');    
 end
+    for i=1:length(chanlabels)
+iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
+    end
+   
+    %% Transform iEEG data to iElvis order
+
+     for iEEG_chan=1:size(HFB,1)
+    HFB_ts(:,iEEG_chan)=HFB(iEEG_chan,:)';      
+     end  
+     
+        for iEEG_chan=1:size(raw,1)
+    raw_ts(:,iEEG_chan)=raw(iEEG_chan,:)';      
+        end 
+        
+  raw_iElvis=NaN(size(raw_ts,1),length(chanlabels));             
+HFB_iElvis=NaN(size(HFB_ts,1),length(chanlabels));
+
+for i=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(i);
+    new_ind=iEEG_to_iElvis_chanlabel(i);
+    HFB_iElvis(:,new_ind)=HFB_ts(:,curr_iEEG_chan);
+    raw_iElvis(:,new_ind)=raw_ts(:,curr_iEEG_chan);
+end
+    
+%% Transform bad channel list to iElvis order
+iEEG_bad=HFB.badchannels';
+
+for i=1:length(iEEG_bad)
+    ind_iElvis=find(iElvis_to_iEEG_chanlabel==iEEG_bad(i));
+    if isempty(ind_iElvis)~=1
+    bad_iElvis(i,:)=ind_iElvis;
+    end
+end
+bad_chans=bad_iElvis(find(bad_iElvis>0));
+
 
 %% Make plots
 if rest=='1'
@@ -71,9 +106,9 @@ end
 
 for i=1:length(chanlabels)
     HFB_z=[];
-    HFB_z=(HFB(i,:)-mean(HFB(i,:)))/std(HFB(i,:));
-    chan_sd=num2str(std(raw(i,:)));
-    if isempty(find(HFB.badchannels==i))==1
+    HFB_z=(HFB_iElvis(:,1)-mean(HFB_iElvis(:,i)))/std(HFB_iElvis(:,i));
+    chan_sd=num2str(std(raw_iElvis(:,i)));
+    if isempty(find(bad_chans==i))==1
        bad='good';
     else bad='bad';
     end
@@ -84,8 +119,8 @@ for i=1:length(chanlabels)
    subplot(2,1,1)
    title(['Channel ' elec_name{1} ' (' bad ') |μV| differences; SD=' chan_sd] , 'Fontsize', 12)
    hold on;
-   plot(1:length(diff(raw(i,:))),abs(diff(raw(i,:))));
-   xlim([0,length(diff(raw(i,:)))]);
+   plot(1:length(diff(raw_iElvis(:,i))),abs(diff(raw_iElvis(:,i))));
+   xlim([0,length(diff(raw_iElvis(:,i)))]);
    subplot(2,1,2);
    title(['Channel ' elec_name{1} ' HFB (z-scored); max |z|=' num2str(max(abs(HFB_z)))] , 'Fontsize', 12)
    hold on;

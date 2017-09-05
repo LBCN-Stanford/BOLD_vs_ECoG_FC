@@ -65,7 +65,7 @@ iEEG_window_size=iEEG_window_duration*iEEG_sampling;
     end
 end
 %iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-iEEG_window_plot=[179]; % window to plot time series; set to zero to turn off
+iEEG_window_plot=[57]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Alpha
 %depth='0';
 
@@ -733,18 +733,28 @@ if frequency=='0'
     
     % Sliding window correlations for each frequency
      all_windows_HFB_medium_corr=[]; all_windows_HFB_medium_fisher=[];
+     roi1_HFB_alpha_fisher_allwindows=[]; roi2_HFB_alpha_fisher_allwindows=[];
   for i=1:iEEG_step:length(roi1_HFB_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
-    roi1_window_ts=roi1_HFB_medium_ts(i:a);
-    roi2_window_ts=roi2_HFB_medium_ts(i:a);
-        if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
-        HFB_roi1_window_ts_plot=roi1_window_ts;
-        HFB_roi2_window_ts_plot=roi2_window_ts;
-    end
-    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    roi1_window_HFB_ts=roi1_HFB_medium_ts(i:a); roi1_window_alpha_ts=roi1_Alpha_medium_ts(i:a);
+    roi2_window_HFB_ts=roi2_HFB_medium_ts(i:a); roi2_window_alpha_ts=roi2_Alpha_medium_ts(i:a);
+    
+        if i==1+iEEG_step*iEEG_window_plot-iEEG_step; % for plotting specific window
+        HFB_roi1_window_ts_plot=roi1_window_HFB_ts;
+        HFB_roi2_window_ts_plot=roi2_window_HFB_ts;
+        end
+    
+        
+    window_corr=corr(roi1_window_HFB_ts,roi2_window_HFB_ts);
     window_fisher=fisherz(window_corr);
     all_windows_HFB_medium_corr=[all_windows_HFB_medium_corr window_corr];   
    all_windows_HFB_medium_fisher=[all_windows_HFB_medium_fisher window_fisher];
+   
+   roi1_HFB_alpha_window_corr=corr(roi1_window_HFB_ts,roi1_window_alpha_ts);
+   roi1_HFB_alpha_fisher_allwindows=[roi1_HFB_alpha_fisher_allwindows fisherz(roi1_HFB_alpha_window_corr)];
+   
+   roi2_HFB_alpha_window_corr=corr(roi2_window_HFB_ts,roi2_window_alpha_ts);
+   roi2_HFB_alpha_fisher_allwindows=[roi2_HFB_alpha_fisher_allwindows fisherz(roi2_HFB_alpha_window_corr)];
   end  
 all_windows_HFB_medium_corr=all_windows_HFB_medium_corr';
 all_windows_HFB_medium_fisher=all_windows_HFB_medium_fisher';
@@ -1082,7 +1092,9 @@ title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fon
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(time,roi1_ts_norm,'r',time,roi2_ts_norm,'b','LineWidth',2);
+p=plot(time,roi1_ts_norm,time,roi2_ts_norm);
+p(1).LineWidth=2; p(1).Color=[cdcol.portraitplum];
+p(2).LineWidth=2; p(2).Color=[cdcol.vermilion];
 xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
@@ -1098,7 +1110,9 @@ hold on;
 
 % BOLD Sliding-window correlations
 subplot(3,1,3);
-plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
+p=plot(1:length(all_windows_fisher),all_windows_fisher);
+p(1).LineWidth=2; p(1).Color=cdcol.scarlet;
+
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
@@ -1126,7 +1140,9 @@ title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fon
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(time,roi1_ts_norm,'r',time,roi2_ts_norm,'b','LineWidth',2);
+p=plot(time,roi1_ts_norm,time,roi2_ts_norm);
+p(1).LineWidth=2; p(1).Color=cdcol.portraitplum;
+p(2).LineWidth=2; p(2).Color=cdcol.vermilion;
 xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
@@ -1322,9 +1338,11 @@ end
 time=1:length(roi1_window_ts_plot); time=time/iEEG_sampling;
 window_corr=num2str(corr(roi1_window_ts_plot,roi2_window_ts_plot));
 FigHandle = figure('Position', [200, 600, 1000, 400]);
-plot(time,roi1_window_ts_plot,'r',...
-    time,roi2_window_ts_plot,'b',...
-    'LineWidth',2);
+p=plot(time,roi1_window_ts_plot,...
+    time,roi2_window_ts_plot);
+p(1).LineWidth=3; p(1).Color=cdcol.portraitplum;
+p(2).LineWidth=3; p(2).Color=cdcol.vermilion;
+
 title({[freq_name ' (0.1-1 Hz): ' roi1 ' vs ' roi2];...
     ['Window ' num2str(iEEG_window_plot) ':  r = ' window_corr]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
