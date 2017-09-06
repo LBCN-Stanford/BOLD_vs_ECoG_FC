@@ -6,6 +6,7 @@ rest=input('Rest(1) Sleep(0) 7heaven (2)? ','s');
 ecog_runname=input('ECoG Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2): ','s');
+view_bad=input('show bad channels (1) or hide (0)? ','s');
 depth=input('depth(1) or subdural(0)? ','s');
 freq=input('HFB 0.1-1Hz (1) alpha (2) beta1 (3) beta2 (4) Gamma (5) Delta (6) Theta (7) ','s');
 depth=str2num(depth);
@@ -100,6 +101,7 @@ iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanl
     end
 
 % convert bad indices to iElvis
+if view_bad==0
 for i=1:length(all_bad_indices)
     ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(i));
     if isempty(ind_iElvis)~=1
@@ -108,6 +110,9 @@ for i=1:length(all_bad_indices)
 end
 bad_chans=bad_iElvis(find(bad_iElvis>0));
 ignoreChans=[elecNames(bad_chans)];
+else
+   bad_chans=[]; ignoreChans=[]; 
+end
 
 cd electrode_spheres;
 
@@ -117,16 +122,14 @@ for elec=1:length(coords);
    if isempty(find(bad_chans==elec))==1 %only plot good chans
 
        
+           
 elec_name=char(parcOut(elec,1)); 
     elecColors_HFB=HFB_corr(:,elec);
     elecColors_HFB(bad_chans)=[];
-    %elecColors_HFB(elec)=[];
    elecColors_HFB_medium=HFB_medium_corr(:,elec);
-   elecColors_HFB_medium(bad_chans)=[];
-   %elecColors_HFB_medium(elec)=[];   
+   elecColors_HFB_medium(bad_chans)=[];  
    elecColors_alpha_medium=alpha_medium_corr(:,elec);
    elecColors_alpha_medium(bad_chans)=[];
-   %elecColors_alpha_medium(elec)=[];
    elecColors_Beta1_medium=Beta1_medium_corr(:,elec);
    elecColors_Beta1_medium(bad_chans)=[];
    elecColors_Beta2_medium=Beta2_medium_corr(:,elec);
@@ -136,19 +139,19 @@ elec_name=char(parcOut(elec,1));
    elecColors_Theta_medium=Theta_medium_corr(:,elec);
    elecColors_Theta_medium(bad_chans)=[];
    elecColors_Delta_medium=Delta_medium_corr(:,elec);
-   elecColors_Delta_medium(bad_chans)=[];
-   
-   elecColors_SCP=SCP_medium_corr(:,elec);
-   %elecColors_SCP(elec)=[];
+   elecColors_Delta_medium(bad_chans)=[];   
+   elecColors_SCP=SCP_medium_corr(:,elec);  
    elecColors_HFBslow=HFB_slow_corr(:,elec);
-   %elecColors_HFBslow(elec)=[];
+   
    
 curr_elecNames=elecNames;
 curr_elecNames([bad_chans; elec])=[];
 
 if iEEG=='1';
  cfg=[];
+ if view_bad==0
  cfg.ignoreChans=ignoreChans;
+ end
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='r';
 cfg.pullOut=3;
@@ -163,6 +166,7 @@ cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'iEEG_FC_',elec_name,'_run' ecog_runname]));
   close;
+   
   
 elseif iEEG=='2'    
         if depth==0
@@ -173,7 +177,9 @@ elseif iEEG=='2'
           
     if elec_ts(1)~=0
      cfg=[];
-    cfg.ignoreChans=ignoreChans; 
+      if view_bad==0
+ cfg.ignoreChans=ignoreChans;
+      end   
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='r';
 cfg.pullOut=3;
