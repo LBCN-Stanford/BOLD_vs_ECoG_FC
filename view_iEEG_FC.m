@@ -101,7 +101,7 @@ iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanl
     end
 
 % convert bad indices to iElvis
-if view_bad==0
+if view_bad=='0'
 for i=1:length(all_bad_indices)
     ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(i));
     if isempty(ind_iElvis)~=1
@@ -149,7 +149,7 @@ curr_elecNames([bad_chans; elec])=[];
 
 if iEEG=='1';
  cfg=[];
- if view_bad==0
+ if view_bad=='0'
  cfg.ignoreChans=ignoreChans;
  end
 cfg.view=[hemi 'omni'];
@@ -177,7 +177,7 @@ elseif iEEG=='2'
           
     if elec_ts(1)~=0
      cfg=[];
-      if view_bad==0
+      if view_bad=='0'
  cfg.ignoreChans=ignoreChans;
       end   
 cfg.view=[hemi 'omni'];
