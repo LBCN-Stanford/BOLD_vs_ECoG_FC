@@ -9,8 +9,7 @@ globalECoGDir=getECoGSubDir;
 fsDir=getFsurfSubDir();
 
 %% Make output directory for figures
-cd([fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/figs']);
-mkdir(['iEEG_vs_iEEG']);
+
 
 % Load iEEG runs
 cd([globalECoGDir '/Rest/' Patient '/' run1]);
@@ -95,8 +94,8 @@ title([elec_name ': Run1 vs Run2 FC; r = ' num2str(elec_run1run2_corr)],'Fontsiz
 xlabel('Run1 FC');
 ylabel('Run2 FC');
 set(gcf,'PaperPositionMode','auto');
-print('-opengl','-r300','-dpng',strcat([pwd '/electrode_spheres/SBCA/figs/iEEG_vs_iEEG/' elec_name '_' run1 run2]));
 close;
+print('-opengl','-r300','-dpng',strcat([[pwd '/electrode_spheres/SBCA/figs/'elec_name '_' Run1Run2]));
 
 end
 end
