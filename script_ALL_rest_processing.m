@@ -8,7 +8,8 @@
 
 %% Set patient name and run number
 Patient=input('Patient: ','s'); sub=Patient;
-runname=input('Run (e.g. 2): ','s'); run=runname; 
+rest=input('Rest (1) or Sleep (2)? ','s');
+runname=input('Run (e.g. 2): ','s'); run=runname;
 TDT=input('TDT (1) or EDF (0): ','s');
 
 if TDT=='1'
@@ -26,7 +27,11 @@ else
     bad_chans=[];
 end
 
+if rest=='1'
 cd([globalECoGDir '/Rest/' sub '/Run' run]);
+elseif rest=='2'
+   cd([globalECoGDir '/Sleep/' sub '/Run' run]);
+end
 %% Default parameters
 
 %% Convert EDF to SPM .mat

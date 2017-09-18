@@ -106,7 +106,7 @@ end
 
 for i=1:length(chanlabels)
     HFB_z=[];
-    HFB_z=(HFB_iElvis(:,1)-mean(HFB_iElvis(:,i)))/std(HFB_iElvis(:,i));
+    HFB_z=(HFB_iElvis(:,i)-mean(HFB_iElvis(:,i)))/std(HFB_iElvis(:,i));
     chan_sd=num2str(std(raw_iElvis(:,i)));
     if isempty(find(bad_chans==i))==1
        bad='good';

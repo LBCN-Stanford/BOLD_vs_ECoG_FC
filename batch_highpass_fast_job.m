@@ -11,4 +11,4 @@ matlabbatch{1}.spm.meeg.preproc.filter.freq = 1;
 matlabbatch{1}.spm.meeg.preproc.filter.dir = 'twopass';
 matlabbatch{1}.spm.meeg.preproc.filter.order = 4;
 matlabbatch{1}.spm.meeg.preproc.filter.prefix = 'fast';
-disp('Done low-pass filtering (<0.1 Hz) averaged HFB time series');
+disp('Done high-pass filtering (>1 Hz) averaged HFB time series');

@@ -1135,7 +1135,7 @@ if frequency~='0' && frequency~='p'
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 time=(1:length(roi1_ts))/iEEG_sampling;
-subplot(3,1,1);
+subplot(2,1,1);
 title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
@@ -1147,17 +1147,8 @@ xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
 
-% iEEG dynamic conditional correlations
-% subplot(3,1,2);
-% plot(time,dcc,'k','LineWidth',2);
-% title({['Dynamic Conditional Correlation: ' roi1 ' vs ' roi2]; ['Var = ' num2str(var(dcc))]},'Fontsize',12);
-% xlabel(['Time (sec)']); ylabel(['DCC']);
-% xlim([0,time(end)]);
-% set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
-% hold on;
-
 % iEEG sliding-window correlation
-subplot(3,1,2);
+subplot(2,1,2);
 plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ['Mean = ' num2str(mean(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
