@@ -50,6 +50,9 @@ z2=num2str(d(3));
 
 nElectrode=int2str(electrode(:));
 
+if electrode==58
+    pause
+end
 %% Make 6-mm radius spherical ROI around coordinates
 cmd = ['fslmaths GSR_run1_1vol.nii.gz -roi ' x2 ' 1 ' y2 ' 1 ' z2 ' 1 0 1 electrode_spheres/elec' nElectrode '_PIALVOX'];
 [b,c]=system(cmd);

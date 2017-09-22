@@ -3003,7 +3003,7 @@ close;
 end
 
 %% save correlations
-if plotting=='1' || plotting=='0'
+if plotting=='1' || plotting=='0'   
   save('corr_BOLD_HFB_medium_allelecs','corr_BOLD_HFB_medium_allelecs');  
 save('partialcorr_BOLD_HFB_medium_allelecs','partialcorr_BOLD_HFB_medium_allelecs');
 save('p_BOLD_HFB_medium_allelecs','p_BOLD_HFB_medium_allelecs');
