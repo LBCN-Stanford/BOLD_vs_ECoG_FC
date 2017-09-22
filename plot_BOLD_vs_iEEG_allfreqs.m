@@ -1,6 +1,6 @@
 % must first run BOLD_vs_ECoG_FC_corr_iElvis.m
-% dFC_preproc_list.txt file should contain subject names (column 1), ECoG run number 
-% (column 2) electrode number (column 3), and network identity (column 4)
+% dFC_preproc_list.txt file should contain subject names in number format (column 1),
+% ECoG run number (column 2) electrode number (column 3), and network identity (column 4)
 % network identity: 1=DMN, 2=DAN, 3=FPCN
 
 %Patient=input('Patient: ','s');
@@ -24,11 +24,10 @@ mkdir('DMN_Core'); cd ..
 %% Load subject, ECoG run number, and electrode list
 list=importdata('dFC_preproc_list.txt',' ');
 subjects=list.textdata;
-ecog_runs=list.data(:,1);
-elecs=list.data(:,2);
-networks=list.data(:,3);
-
-
+subject_nums=list.data(:,1);
+ecog_runs=list.data(:,2);
+elecs=list.data(:,3);
+networks=list.data(:,4);
 allsubs_seedcorr_allfreqs=NaN(length(subjects),7);
 
 for sub=1:length(subjects)
@@ -85,12 +84,25 @@ for i=1:length(networks)
     end
 end
 % Subject marker coding
-
+for i=1:length(subject_nums)
+    if subject_nums(i)==1
+   subjectmarker{i,:}='<';
+    elseif subject_nums(i)==2
+        subjectmarker{i,:}='s';
+    elseif subject_nums(i)==3
+        subjectmarker{i,:}='o';
+    elseif subject_nums(i)==4
+        subjectmarker{i,:}='>';
+    elseif subject_nums(i)==5
+        subjectmarker{i,:}='^'
+    end
+end
 
 % plot
 for i=1:length(allsubs_seedcorr_allfreqs)
-    plot(1:length(allsubs_seedcorr_allfreqs),allsubs_seedcorr_allfreqs(:,i),'k.--', ...
-        'LineWidth',2,'Color',network_color(i,:),'MarkerSize',25,'MarkerEdgeColor',network_color(i,:));      
+    plot(1:length(allsubs_seedcorr_allfreqs),allsubs_seedcorr_allfreqs(:,i),[subjectmarker{i,:} '--'], ...
+        'LineWidth',2,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+        'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
     ylim([0 0.8]);
        set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
