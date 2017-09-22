@@ -1,17 +1,19 @@
 % must first run BOLD_vs_ECoG_FC_corr_iElvis.m
-% DMN_Core_list.txt file should contain subject names (column 1) and
-% electrode number (column 2)
+% dFC_preproc_list.txt file should contain subject names (column 1), ECoG run number 
+% (column 2) electrode number (column 3), and network identity (column 4)
+% network identity: 1=DMN, 2=DAN, 3=FPCN
 
 %Patient=input('Patient: ','s');
 bold_runname=input('BOLD Run (e.g. 2): ','s');
-ecog_runname=input('ECoG Run (e.g. 2): ','s');
+%ecog_runname=input('ECoG Run (e.g. 2): ','s');
 % hemi=input('Hemisphere (r or l): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
-region=input('Seed location (e.g. mPFC) ','s');
+%region=input('Seed location (e.g. mPFC) ','s');
 %freq=input('HFB 0.1-1Hz (1) or alpha (2) or HFB <0.1Hz (3) or SCP (4) ','s');
 depth=str2num(depth);
 bold_run_num=['run' bold_runname];
-ecog_run_num=['run' ecog_runname];
+%ecog_run_num=['run' ecog_runname];
+load('cdcol.mat');
 
 globalECoGDir=getECoGSubDir;
 cd([globalECoGDir '/Rest']);
@@ -19,18 +21,22 @@ mkdir('Figs');
 cd Figs;
 mkdir('DMN_Core'); cd ..
 
-%% Load DMN Core subject and electrode list
-sublist=importdata('DMN_Core_list2.txt',' ');
-subjects=sublist.textdata;
-elecs=sublist.data;
+%% Load subject, ECoG run number, and electrode list
+list=importdata('dFC_preproc_list.txt',' ');
+subjects=list.textdata;
+ecog_runs=list.data(:,1);
+elecs=list.data(:,2);
+networks=list.data(:,3);
 
 
 allsubs_seedcorr_allfreqs=NaN(length(subjects),7);
 
 for sub=1:length(subjects)
     Patient=subjects{sub}
+    ecog_runname=num2str(ecog_runs(sub));
     elec=elecs(sub)
-%% Load partial corr values for each freq
+    network=networks(sub);
+%% Load corr/partial corr values for each freq
 cd([globalECoGDir '/Rest/' Patient '/Run' ecog_runname '/BOLD_ECoG_figs/GSR']);
 load('partialcorr_BOLD_Delta_medium_allelecs.mat');
 load('partialcorr_BOLD_Theta_medium_allelecs.mat');
@@ -63,15 +69,28 @@ corr_seed_allfreqs=corr_allseeds_allfreqs(elec,:);
 allsubs_seedcorr_allfreqs(sub,:)=corr_seed_allfreqs;
 allsubs_seedpartialcorr_allfreqs(sub,:)=partialcorr_seed_allfreqs;
 end
+allsubs_seedcorr_allfreqs=allsubs_seedcorr_allfreqs';
 
 %% Make plots
 cd([globalECoGDir '/Rest/Figs/DMN_Core']);
 
-%     if corr_allseeds_allfreqs(i,:)~=0
-%elec_name=char(elecNames(i));
- 
-    plot(1:length(allsubs_seedcorr_allfreqs),allsubs_seedcorr_allfreqs','k.--', ...
-        'LineWidth',2,'Color',[.6 .6 .6],'MarkerSize',25,'MarkerEdgeColor',[.3 .3 .3]);      
+% Network color coding
+for i=1:length(networks)
+    if networks(i)==1
+   network_color(i,:)=cdcol.cobaltblue;
+    elseif networks(i)==2
+        network_color(i,:)=cdcol.grassgreen;
+    elseif networks(i)==3
+        network_color(i,:)=cdcol.orange 
+    end
+end
+% Subject marker coding
+
+
+% plot
+for i=1:length(allsubs_seedcorr_allfreqs)
+    plot(1:length(allsubs_seedcorr_allfreqs),allsubs_seedcorr_allfreqs(:,i),'k.--', ...
+        'LineWidth',2,'Color',network_color(i,:),'MarkerSize',25,'MarkerEdgeColor',network_color(i,:));      
     ylim([0 0.8]);
        set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
@@ -86,8 +105,9 @@ set(gcf,'color','w');
   ylim([0 0.8]);
    set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'', 'δ','θ', 'α','β1','β2','γ','HFB'})
-ylabel('BOLD-iEEG correlation (r)'); 
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,region '_allfreqs']));
+ylabel('BOLD-ECoG FC correlation (r)'); 
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_allfreqs']));
+end
 pause; close;
 %end
 

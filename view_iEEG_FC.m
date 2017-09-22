@@ -228,7 +228,7 @@ cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' ele
 elseif iEEG=='3'
     [averts, label, col]=read_annotation(fullfile(getFsurfSubDir(),'fsaverage','label',[ hemi 'h.Yeo2011_7Networks_N1000.annot']));
     cfg.overlayParcellation='Y7';
-    %% For potting individual networks
+    %% For plotting individual networks
 %     cfg.opaqueness=1;
 %     id=8; %DAN=4; Salience=5; FPCN=7; DMN=8
 %     parc_col = .7.*255.*ones(size(col.table(:,1:3)));
