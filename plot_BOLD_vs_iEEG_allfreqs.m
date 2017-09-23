@@ -52,11 +52,32 @@ load('corr_BOLD_beta2_medium_allelecs.mat');
 load('corr_BOLD_Gamma_medium_allelecs.mat');
 load('corr_BOLD_HFB_medium_allelecs.mat');
 
+%% Load corr for other BOLD preproc pipelines
+cd([globalECoGDir '/Rest/' Patient '/Run' ecog_runname '/BOLD_ECoG_figs/AROMA']);
+%AROMA_Delta=load('corr_BOLD_Delta_medium_allelecs.mat');
+%AROMA_Theta=load('corr_BOLD_Theta_medium_allelecs.mat');
+%AROMA_alpha=load('corr_BOLD_alpha_medium_allelecs.mat');
+%AROMA_beta1=load('corr_BOLD_beta1_medium_allelecs.mat');
+%AROMA_beta2=load('corr_BOLD_beta2_medium_allelecs.mat');
+%AROMA_Gamma=load('corr_BOLD_Gamma_medium_allelecs.mat');
+AROMA_HFB=load('corr_BOLD_HFB_medium_allelecs.mat');
+cd([globalECoGDir '/Rest/' Patient '/Run' ecog_runname '/BOLD_ECoG_figs/aCompCor']);
+%aCompCor_Delta=load('corr_BOLD_Delta_medium_allelecs.mat');
+%aCompCor_Theta=load('corr_BOLD_Theta_medium_allelecs.mat');
+%aCompCor_alpha=load('corr_BOLD_alpha_medium_allelecs.mat');
+%aCompCor_beta1=load('corr_BOLD_beta1_medium_allelecs.mat');
+%aCompCor_beta2=load('corr_BOLD_beta2_medium_allelecs.mat');
+%aCompCor_Gamma=load('corr_BOLD_Gamma_medium_allelecs.mat');
+aCompCor_HFB=load('corr_BOLD_HFB_medium_allelecs.mat');
+
 partialcorr_allseeds_allfreqs=[partialcorr_BOLD_Delta_medium_allelecs partialcorr_BOLD_Theta_medium_allelecs partialcorr_BOLD_alpha_medium_allelecs ...
     partialcorr_BOLD_beta1_medium_allelecs partialcorr_BOLD_beta2_medium_allelecs partialcorr_BOLD_Gamma_medium_allelecs partialcorr_BOLD_HFB_medium_allelecs];
 
 corr_allseeds_allfreqs=[corr_BOLD_Delta_medium_allelecs corr_BOLD_Theta_medium_allelecs corr_BOLD_alpha_medium_allelecs ...
     corr_BOLD_beta1_medium_allelecs corr_BOLD_beta2_medium_allelecs corr_BOLD_Gamma_medium_allelecs corr_BOLD_HFB_medium_allelecs];
+
+%AROMA_corr_all_seeds_allfreqs=[AROMA_Delta AROMA_Theta AROMA_alpha AROMA_beta1 AROMA_beta2 AROMA_Gamma AROMA_HFB];
+%aCompCor_corr_all_seeds_allfreqs=[aCompCor_Delta aCompCor_Theta aCompCor_alpha aCompCor_beta1 aCompCor_beta2 aCompCor_Gamma aCompCor_HFB];
 
 fsDir=getFsurfSubDir();
 parcOut=elec2Parc_v2([Patient],'DK',0);
@@ -64,11 +85,13 @@ elecNames = parcOut(:,1);
 
 partialcorr_seed_allfreqs=partialcorr_allseeds_allfreqs(elec,:);
 corr_seed_allfreqs=corr_allseeds_allfreqs(elec,:);
+AROMA_corr_seed_HFB=AROMA_HFB.corr_BOLD_HFB_medium_allelecs(elec);
+aCompCor_corr_seed_HFB=aCompCor_HFB.corr_BOLD_HFB_medium_allelecs(elec);
 
-allsubs_seedcorr_allfreqs(sub,:)=corr_seed_allfreqs;
-allsubs_seedpartialcorr_allfreqs(sub,:)=partialcorr_seed_allfreqs;
+allsubs_seedcorr_allpreproc_HFB(:,sub)=[corr_seed_allfreqs(7) aCompCor_corr_seed_HFB AROMA_corr_seed_HFB];
+allsubs_seedcorr_allfreqs(:,sub)=corr_seed_allfreqs;
+allsubs_seedpartialcorr_allfreqs(:,sub)=partialcorr_seed_allfreqs;
 end
-allsubs_seedcorr_allfreqs=allsubs_seedcorr_allfreqs';
 
 %% Make plots
 cd([globalECoGDir '/Rest/Figs/DMN_Core']);
@@ -100,8 +123,8 @@ end
 
 % plot
 for i=1:length(allsubs_seedcorr_allfreqs)
-    plot(1:length(allsubs_seedcorr_allfreqs),allsubs_seedcorr_allfreqs(:,i),[subjectmarker{i,:} '--'], ...
-        'LineWidth',2,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+    plot(1:size(allsubs_seedcorr_allfreqs,1),allsubs_seedcorr_allfreqs(:,i),[subjectmarker{i,:} '-'], ...
+        'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
     ylim([0 0.8]);
        set(gca,'Xtick',0:1:8)
@@ -122,6 +145,35 @@ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_allfreqs']));
 end
 pause; close;
 %end
+
+FigHandle = figure('Position', [400, 600, 400, 700]);
+figure(1)
+for i=1:length(allsubs_seedcorr_allpreproc_HFB)   
+    plot(1:size(allsubs_seedcorr_allpreproc_HFB,1),allsubs_seedcorr_allpreproc_HFB(:,i),[subjectmarker{i,:} '-'], ...
+        'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+        'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
+    ylim([0 0.8]);
+    xlim([0.5 3.5]);
+       set(gca,'Xtick',0:3)
+       xtickangle(45)
+ set(gca,'XTickLabel',{'','GSR', 'aCompCor','AROMA'})
+ set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
+  ylabel('BOLD-ECoG FC correlation (r)'); 
+  
+    hold on
+   set(gca,'box','off'); 
+set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+%title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
+xlim([0.5 3.5])
+  ylim([0 0.8]);
+   set(gca,'Xtick',0:3)
+   xtickangle(45)
+ set(gca,'XTickLabel',{'', 'GSR','aCompCor', 'AROMA'})
+ylabel('BOLD-ECoG FC correlation (r)'); 
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_allpreproc']));
+end
+pause; close;
 
 
 
