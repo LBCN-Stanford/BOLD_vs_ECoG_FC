@@ -1,0 +1,72 @@
+% Plot 2 resting state runs vs sleep and 7heaven
+% must first run BOLD_vs_ECoG_FC_corr_iElvis.m for each run used
+% dFC_iEEG_multirun.txt file should contain subject name (column 1), sub number (column 2),
+% electrode number (column 3), network identity (column 4), rest 1 number (column 5),
+% rest 2 number (column 6), sleep number (column 7), 7 heaven number
+% (column 8)
+% network identity: 1=DMN, 2=DAN, 3=FPCN
+
+%Patient=input('Patient: ','s');
+%bold_runname=input('BOLD Run (e.g. 2): ','s');
+%ecog_runname=input('ECoG Run (e.g. 2): ','s');
+% hemi=input('Hemisphere (r or l): ','s');
+%depth=input('depth(1) or subdural(0)? ','s');
+%region=input('Seed location (e.g. mPFC) ','s');
+%freq=input('HFB 0.1-1Hz (1) or alpha (2) or HFB <0.1Hz (3) or SCP (4) ','s');
+% depth=str2num(depth);
+bold_run_num=['run1']
+%bold_run_num=['run1' bold_runname];
+%ecog_run_num=['run' ecog_runname];
+load('cdcol.mat');
+
+globalECoGDir=getECoGSubDir;
+cd([globalECoGDir '/Rest']);
+mkdir('Figs');
+cd Figs;
+mkdir('DMN_Core'); cd ..
+
+%% Load subject, ECoG run numbers, and electrode list
+list=importdata('dFC_iEEG_multirun.txt',' ');
+subjects=list.textdata;
+subject_nums=list.data(:,1);
+elecs=list.data(:,2);
+networks=list.data(:,3);
+rest_run1=list.data(:,4); rest_run2=list.data(:,5);
+sleep_run=list.data(:,6); heaven_run=list.data(:,7);
+%allsubs_seedcorr_allfreqs=NaN(length(subjects),7);
+
+for sub=1:length(subjects)
+    Patient=subjects{sub}
+    curr_rest_run1=rest_run1(sub);
+    curr_rest_run2name=rest_run2(sub);
+    elec=elecs(sub)
+    network=networks(sub);
+    curr_sleep_run=sleep_run(sub);
+    curr_heaven_run=heaven_run(sub);
+
+ %% get elec names
+fsDir=getFsurfSubDir();
+parcOut=elec2Parc_v2([Patient],'DK',0);
+elecNames = parcOut(:,1);
+
+%% Load corr values for each run
+cd([fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/figs/iEEG_vs_iEEG']);
+rest1sleep1=load(['Run' num2str(curr_rest_run1) 'RestRun' num2str(curr_sleep_run) 'Sleep.mat']);
+rest1heaven1=load(['Run' num2str(curr_rest_run1) 'RestRun' num2str(curr_heaven_run) 'Sleep.mat']);
+rest2sleep1=load(['Run' num2str(curr_rest_run2) 'RestRun' num2str(curr_sleep_run) 'Sleep.mat']);
+rest2heaven2=load(['Run' num2str(curr_rest_run1) 'RestRun' num2str(curr_heaven_run) 'Sleep.mat']);
+
+%% get elec names
+fsDir=getFsurfSubDir();
+parcOut=elec2Parc_v2([Patient],'DK',0);
+elecNames = parcOut(:,1);
+
+%% Get BOLD-ECoG corr for electrode of interest
+seed_rest1sleep1=rest1sleep1.allelecs_run1run2_corr(elec);
+seed_rest1sleep1=rest1sleep1.allelecs_run1run2_corr(elec);
+seed_rest1sleep1=rest1sleep1.allelecs_run1run2_corr(elec);
+
+%% concatenate across subjects
+allsubs_seed_HFB_medium_allruns(:,sub)=[seed_HFB_medium_run1 seed_HFB_medium_run2];
+end
+

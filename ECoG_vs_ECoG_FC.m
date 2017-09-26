@@ -1,6 +1,8 @@
 % Needed: manually created channel name-number mapping file (.xls format)
 Patient=input('Patient: ','s'); sub=Patient;
-run1name=input('Run (e.g. 1): ','s'); run1=['Run' run1name]; 
+run1type=input('First run type: Rest (0) Sleep (1) 7 heaven (2): ','s'); 
+run1name=input('Run (e.g. 1): ','s'); run1=['Run' run1name];
+run2type=input('Second run type: Rest (0) Sleep (1) 7 heaven (2): ','s'); 
 run2name=input('Run (e.g. 2): ','s'); run2=['Run' run2name];
 hemi=input('hemi (R or L): ','s');
 depth=input('depth (1) or subdural (0) ','s');
@@ -8,15 +10,42 @@ depth=input('depth (1) or subdural (0) ','s');
 globalECoGDir=getECoGSubDir;
 fsDir=getFsurfSubDir();
 
+if run1type=='0'
+   run1Type=['Rest'];
+elseif run1type=='1'
+    run1Type=['Sleep'];
+elseif run1type=='2'
+   run1Type=['7heaven'];
+end
+if run2type=='0'
+   run2Type=['Rest'];
+elseif run2type=='1'
+   run2Type=['Sleep'];
+elseif run2type=='2'
+   run2Type=['7heaven'];
+end
+
 %% Make output directory for figures
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/figs']);
 mkdir(['iEEG_vs_iEEG']);
 
 % Load iEEG runs
+if run1type=='0'
 cd([globalECoGDir '/Rest/' Patient '/' run1]);
+elseif run1type=='1'
+    cd([globalECoGDir '/Sleep/' Patient '/' run1]);
+ elseif run1type=='2'
+    cd([globalECoGDir '/7heaven/' Patient '/' run1]);   
+end
 display(['1. Select Run 1 file']);
 run1_iEEG=spm_eeg_load;
+if run2type=='0'
 cd([globalECoGDir '/Rest/' Patient '/' run2]);
+elseif run2type=='1'
+    cd([globalECoGDir '/Sleep/' Patient '/' run2]);
+ elseif run2type=='2'
+    cd([globalECoGDir '/7heaven/' Patient '/' run2]);   
+end
 display(['2. Select Run 2 file']);
 run2_iEEG=spm_eeg_load;
 
@@ -72,7 +101,7 @@ run2_column(isnan(run2_column)==1)=[];
 [r,p]=corr(run1_column,run2_column);
 run1run2_corr=num2str(r);
 
-%% Correlate between-run seed-based FC for each good electrode and plot
+%% Correlate between-run seed-based FC for each good electrode, save and plot
 for i=1:size(run1_allcorr,1)
 if isempty(find(bad_chans==i))==1
     elec_name=char(elecNames(i));
@@ -85,21 +114,29 @@ run1_elec_FC(find(isnan(run1_elec_FC)))=[];
 run2_elec_FC(find(isnan(run2_elec_FC)))=[];
 
 elec_run1run2_corr=corr(run1_elec_FC,run2_elec_FC);
+allelecs_run1run2_corr(i,:)=elec_run1run2_corr;
 
 figure(1)
 scatter(run1_elec_FC,run2_elec_FC,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gca,'Fontsize',16,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title([elec_name ': Run1 vs Run2 FC; r = ' num2str(elec_run1run2_corr)],'Fontsize',12);
+    ylim([-0.1 0.7]);
+    xlim([-0.1 0.7]);
+       set(gca,'Xtick',[-0.1 0.1 0.3 0.5 0.7])
+       set(gca,'Ytick',[-0.1 0.1 0.3 0.5 0.7])     
 xlabel('Run1 FC');
 ylabel('Run2 FC');
 set(gcf,'PaperPositionMode','auto');
-print('-opengl','-r300','-dpng',strcat([pwd '/electrode_spheres/SBCA/figs/iEEG_vs_iEEG/' elec_name '_' run1 run2]));
+print('-opengl','-r300','-dpng',strcat([pwd '/electrode_spheres/SBCA/figs/iEEG_vs_iEEG/' elec_name '_' run1 run1Type run2 run2Type]));
 close;
 
 end
 end
+cd([fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/figs/iEEG_vs_iEEG']);
+filename=[run1 run1Type run2 run2Type];
+save(filename,'allelecs_run1run2_corr');
 
 
 %% Plots
