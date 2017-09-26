@@ -3,7 +3,7 @@ run_num=input('run (e.g. 1): ','s');
 depth=input('depth (1) or subdural (0) ','s');
 if depth=='0'
 hemi=input('hemi (R or L): ','s');
-rest=input('Rest(1) or Sleep(0)? ','s');
+rest=input('Rest(1) or Sleep(0) or 7heaven (2)? ','s');
 end
 tdt=0; % tdt=1, edf=0
 
@@ -15,6 +15,8 @@ if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/' runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/' runname]);
+elseif rest=='2'
+    cd([globalECoGDir '/7heaven/' Patient '/' runname]);
 end
 
 mkdir(['HFB_plots']);
@@ -102,6 +104,8 @@ if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/' runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/' runname]);
+elseif rest=='2'
+    cd([globalECoGDir '/7heaven/' Patient '/' runname]);
 end
 
 for i=1:length(chanlabels)

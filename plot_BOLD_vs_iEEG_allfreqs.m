@@ -1,6 +1,6 @@
 % must first run BOLD_vs_ECoG_FC_corr_iElvis.m
-% dFC_preproc_list.txt file should contain subject names in number format (column 1),
-% ECoG run number (column 2) electrode number (column 3), and network identity (column 4)
+% dFC_preproc_list.txt file should contain subject name (column 1), sub number (column 2),
+% ECoG run number (column 3) electrode number (column 4), and network identity (column 5)
 % network identity: 1=DMN, 2=DAN, 3=FPCN
 
 %Patient=input('Patient: ','s');

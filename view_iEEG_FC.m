@@ -171,13 +171,17 @@ cfg.elecColorScale=[-0.1 0.4];
 cfg.elecColors(find(cfg.elecColors==1))=[];
 % cfg.elecShape='sphere';
 % cfg.elecSize=2;
+% brainView.light=[1 0 0];
+%   brainView.hem='l';
+% brainView.eyes=[160 75]
+% cfg.view=brainView
 cfgOut=plotPialSurf(Patient,cfg);
 if freq=='2'
-  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Alpha_iEEG_FC_',elec_name,'_run' ecog_runname]));
+  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Alpha_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 elseif freq=='1'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
     elseif freq=='3'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Beta1_iEEG_FC_',elec_name,'_run' ecog_runname]));
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Beta1_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 end
     close;
    

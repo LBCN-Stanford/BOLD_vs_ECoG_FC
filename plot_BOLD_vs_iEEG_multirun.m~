@@ -1,0 +1,59 @@
+% must first run BOLD_vs_ECoG_FC_corr_iElvis.m for each run used
+% dFC_preproc_list.txt file should contain subject name (column 1), sub number (column 2),
+% electrode number (column 3), and network identity (column 4), run numbers (columns 5+6) 
+% network identity: 1=DMN, 2=DAN, 3=FPCN
+
+%Patient=input('Patient: ','s');
+%bold_runname=input('BOLD Run (e.g. 2): ','s');
+%ecog_runname=input('ECoG Run (e.g. 2): ','s');
+% hemi=input('Hemisphere (r or l): ','s');
+%depth=input('depth(1) or subdural(0)? ','s');
+%region=input('Seed location (e.g. mPFC) ','s');
+%freq=input('HFB 0.1-1Hz (1) or alpha (2) or HFB <0.1Hz (3) or SCP (4) ','s');
+% depth=str2num(depth);
+bold_run_num=['run1']
+%bold_run_num=['run1' bold_runname];
+%ecog_run_num=['run' ecog_runname];
+load('cdcol.mat');
+
+globalECoGDir=getECoGSubDir;
+cd([globalECoGDir '/Rest']);
+mkdir('Figs');
+cd Figs;
+mkdir('DMN_Core'); cd ..
+
+%% Load subject, ECoG run numbers, and electrode list
+list=importdata('dFC_replicate.txt',' ');
+subjects=list.textdata;
+subject_nums=list.data(:,1);
+elecs=list.data(:,2);
+networks=list.data(:,3);
+ecog_run1=list.data(:,4); ecog_run2=list.data(:,5);
+%allsubs_seedcorr_allfreqs=NaN(length(subjects),7);
+
+for sub=1:length(subjects)
+    Patient=subjects{sub}
+    ecog_run1name=num2str(ecog_run1(sub));
+    ecog_run2name=num2str(ecog_run2(sub));
+    elec=elecs(sub)
+    network=networks(sub);
+%% Load corr values for each run
+cd([globalECoGDir '/Rest/' Patient '/Run' ecog_run1name '/BOLD_ECoG_figs/GSR']);
+run1_HFB_medium=load('corr_BOLD_HFB_medium_allelecs.mat');
+cd([globalECoGDir '/Rest/' Patient '/Run' ecog_run2name '/BOLD_ECoG_figs/GSR']);
+run2_HFB_medium=load('corr_BOLD_HFB_medium_allelecs.mat');
+
+%% get elec names
+fsDir=getFsurfSubDir();
+parcOut=elec2Parc_v2([Patient],'DK',0);
+elecNames = parcOut(:,1);
+
+%% Get BOLD-ECoG corr for electrode of interest
+seed_HFB_medium_run1=run1_HFB_medium.corr_BOLD_HFB_medium_allelecs(elec);
+seed_HFB_medium_run2=run2_HFB_medium.corr_BOLD_HFB_medium_allelecs(elec);
+
+%% concatenate across subjects
+allsubs_seed_HFB_medium_allruns(:,sub)=[see];
+end
+
+
