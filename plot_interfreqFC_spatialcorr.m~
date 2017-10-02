@@ -83,14 +83,25 @@ interfreq_lowertri=tril(interfreq_FC_corr);
 load('redblue.m');
 
 FigHandle = figure(1);
-set(FigHandle,'Position',[50, 50, 700, 600]);
+set(FigHandle,'Position',[50, 50, 500, 400]);
 imagesc(interfreq_lowertri,[-1 1]); h=colorbar('vert'); colormap(flipud(redblue)/255)
 set(gcf,'color','w');
 set(h,'fontsize',16);
 set(get(h,'title'),'string','r');
 set(gca,'box','off')
-set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',16)
-set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',16)
-title(['Inter-frequency Spatial FC Correlation'])
+xticks([1 2 3 4 5 6 7])
+xticklabels({'10','20','30','40','50','60','70'},'Font)
+
+set(gca,'YTickLabel',{'HFB','γ', 'β2','β1','α','θ','δ'},'Fontsize',14,'Fontweight','bold')
+set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',14,'Fontweight','bold')
+%xtickangle(90);
+%title(['Inter-frequency Spatial FC Correlation'])
+pause; close
+
+
+set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',14,'Fontweight','bold')
+set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',14,'Fontweight','bold')
+%xtickangle(90);
+%title(['Inter-frequency Spatial FC Correlation'])
 pause; close
 

@@ -79,18 +79,25 @@ allfreq_FC=[seed_Delta_medium seed_Theta_medium seed_Alpha_medium seed_Beta1_med
 interfreq_FC_corr=corrcoef(allfreq_FC);
 
 %% Plot matrix
+cd(['electrode_spheres/SBCA/figs/iEEG']);
+mkdir(['Interfreq']); cd(['Interfreq'])
 interfreq_lowertri=tril(interfreq_FC_corr);
 load('redblue.m');
 
 FigHandle = figure(1);
-set(FigHandle,'Position',[50, 50, 700, 600]);
-imagesc(interfreq_lowertri,[-1 1]); h=colorbar('vert'); colormap(flipud(redblue)/255)
+set(FigHandle,'Position',[50, 50, 800, 800]);
+imagesc(interfreq_lowertri,[-1 1]); h=colorbar('northoutside'); colormap(flipud(redblue)/255)
 set(gcf,'color','w');
-set(h,'fontsize',16);
+set(h,'fontsize',11);
 set(get(h,'title'),'string','r');
 set(gca,'box','off')
-set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',16,'Fontweight','bold')
-set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',16,'Fontweight','bold')
-title(['Inter-frequency Spatial FC Correlation'])
+xticks([1 2 3 4 5 6 7])
+yticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+yticks([1 2 3 4 5 6 7])
+xticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+set(gca,'Fontsize',24,'Fontweight','bold')
+%title(['Inter-frequency Spatial FC Correlation'])
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,[roi1 'Interfreq_spatial_corr']]));
 pause; close
+
 
