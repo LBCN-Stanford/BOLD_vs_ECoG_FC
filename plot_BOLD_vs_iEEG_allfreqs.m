@@ -122,7 +122,7 @@ for i=1:length(subject_nums)
 end
 
 % plot
-FigHandle = figure('Position', [400, 600, 700, 400]);
+FigHandle = figure('Position', [400, 600, 700, 300]);
 figure(1)
 for i=1:length(allsubs_seedcorr_allfreqs)
     plot(1:size(allsubs_seedcorr_allfreqs,1),allsubs_seedcorr_allfreqs(:,i),[subjectmarker{i,:} '-'], ...
@@ -132,19 +132,19 @@ for i=1:length(allsubs_seedcorr_allfreqs)
      xlim([0.5 7.5]);
        set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
- set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-  ylabel('BOLD-ECoG FC correlation (r)'); 
+ set(gca,'Fontsize',16,'FontWeight','bold','LineWidth',2,'TickDir','out');
+  ylabel({'BOLD-ECoG FC', 'Correlation (r)'}); 
   
     hold on
    set(gca,'box','off'); 
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gca,'Fontsize',16,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 %title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
   ylim([0 0.8]);
    xlim([0.5 7.5]);
    set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'', 'δ','θ', 'α','β1','β2','γ','HFB'})
-ylabel('BOLD-ECoG FC correlation (r)'); 
+ylabel({'BOLD-ECoG FC', 'Correlation (r)'}); 
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_allfreqs']));
 end
 pause; close;

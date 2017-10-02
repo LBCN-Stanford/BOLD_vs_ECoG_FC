@@ -2151,11 +2151,11 @@ pause; close;
 figure(2)
 scatter(fisherz(BOLD_scatter),fisherz(medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[1 0 0]); 
 h=lsline; set(h(1),'color',[1 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gca,'Fontsize',16,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({['Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' medium_vs_BOLD_r ' p = ' medium_vs_BOLD_p ]; ...
     ['Spearman ρ = ' medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' medium_partial]; ...
-    ['Partial (alpha-corrected) r = ' HFB_alpha_medium_partial]} ,'Fontsize',12);
+    ['Partial (alpha-corrected) r = ' HFB_alpha_medium_partial]} ,'Fontsize',12); 
 xlabel('BOLD pair-wise FC');
 ylabel('Medium pair-wise FC');
 set(gcf,'PaperPositionMode','auto');
@@ -2640,13 +2640,17 @@ for i=1:length(BOLD_mat);
     figure(3)
 scatter(curr_elec_BOLD,curr_elec_HFB_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs HFB (0.1-1Hz) FC']; ...
     ['r = ' num2str(elec_BOLD_HFB_medium_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_medium_corr)]; ...
     ['distance-corrected r = ' num2str(elec_BOLD_HFB_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_medium_partialcorr)]},'Fontsize',12);
-xlabel('BOLD FC');
-ylabel('HFB (0.1-1Hz) FC');
+xlabel('BOLD FC (z)');
+ylabel('ECoG-HFB FC (z)');
+    ylim([-0.2 0.6]);
+    xlim([-1 2]);
+       set(gca,'Ytick',[-0.2 0 0.2 0.4 0.6])
+       set(gca,'Xtick',[-1 -0.5 0 0.5 1 1.5 2])  
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_GSR']));

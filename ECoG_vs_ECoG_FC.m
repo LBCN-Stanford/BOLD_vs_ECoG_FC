@@ -90,14 +90,19 @@ for i=1:length(bad_chans)
     run2_iElvis(:,bad_chans(i))=NaN;
 end
 
-%% Correlate all FC pairs for good electrodes between runs
+%% Correlate all FC pairs for good electrodes between runs, Fisher-z transform
 run1_allcorr=corrcoef(run1_iElvis); run1_column=run1_allcorr(:);
 run1_column(find(run1_column==1))=NaN;
+run1_allfisher=fisherz(run1_allcorr);
 
 run2_allcorr=corrcoef(run2_iElvis); run2_column=run2_allcorr(:);
 run2_column(find(run2_column==1))=NaN;
+run2_allfisher=fisherz(run2_allcorr);
+
 run1_column(isnan(run1_column)==1)=[];
 run2_column(isnan(run2_column)==1)=[];
+run1_column=fisherz(run1_column);
+run2_column=fisherz(run2_column);
 [r,p]=corr(run1_column,run2_column);
 run1run2_corr=num2str(r);
 
@@ -105,9 +110,11 @@ run1run2_corr=num2str(r);
 for i=1:size(run1_allcorr,1)
 if isempty(find(bad_chans==i))==1
     elec_name=char(elecNames(i));
-run1_elec_FC=run1_allcorr(:,i);
-run2_elec_FC=run2_allcorr(:,i);
+run1_elec_FC=run1_allfisher(:,i);
+run2_elec_FC=run2_allfisher(:,i);
 
+run1_elec_FC(i)=[];
+run2_elec_FC(i)=[];
 run1_elec_FC(find(run1_elec_FC==1))=[];
 run2_elec_FC(find(run2_elec_FC==1))=[];
 run1_elec_FC(find(isnan(run1_elec_FC)))=[];
@@ -121,11 +128,11 @@ scatter(run1_elec_FC,run2_elec_FC,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',16,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-title([elec_name ': Run1 vs Run2 FC; r = ' num2str(elec_run1run2_corr)],'Fontsize',12);
-    ylim([-0.1 0.7]);
-    xlim([-0.1 0.7]);
-       set(gca,'Xtick',[-0.1 0.1 0.3 0.5 0.7])
-       set(gca,'Ytick',[-0.1 0.1 0.3 0.5 0.7])     
+title([elec_name ': Run1 vs Run2 FC (Fisher z); r = ' num2str(elec_run1run2_corr)],'Fontsize',12);
+    ylim([-0.2 0.7]);
+    xlim([-0.2 0.7]);
+       set(gca,'Xtick',[-0.2 0 0.2 0.4 0.6])
+       set(gca,'Ytick',[-0.2 0 0.2 0.4 0.6])     
 xlabel('Run1 FC');
 ylabel('Run2 FC');
 set(gcf,'PaperPositionMode','auto');

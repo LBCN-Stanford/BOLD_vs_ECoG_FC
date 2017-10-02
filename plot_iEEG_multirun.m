@@ -1,5 +1,6 @@
 % Plot 2 resting state runs vs sleep and 7heaven
 % must first run BOLD_vs_ECoG_FC_corr_iElvis.m for each run used
+% must first run ECoG_vs_ECoG_FC.m for each run pair used
 % dFC_iEEG_multirun.txt file should contain subject name (column 1), sub number (column 2),
 % electrode number (column 3), network identity (column 4), rest 1 number (column 5),
 % rest 2 number (column 6), sleep number (column 7), 7 heaven number
@@ -61,15 +62,15 @@ fsDir=getFsurfSubDir();
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
 
-%% Get BOLD-ECoG corr for electrode of interest
+%% Get BOLD-ECoG corr (fisher z) for electrode of interest
 seed_rest1sleep1=rest1sleep1.allelecs_run1run2_corr(elec);
 seed_rest2sleep1=rest2sleep1.allelecs_run1run2_corr(elec);
 seed_rest1heaven1=rest1heaven1.allelecs_run1run2_corr(elec);
 seed_rest2heaven1=rest2heaven1.allelecs_run1run2_corr(elec);
 
 %% concatenate across subjects/seeds
-allsubs_seed_rest1(:,sub)=[seed_rest1sleep1 seed_rest1heaven1];
-allsubs_seed_rest2(:,sub)=[seed_rest2sleep1 seed_rest2heaven1];
+allsubs_seed_sleep(:,sub)=[seed_rest1sleep1 seed_rest2sleep1];
+%allsubs_seed_rest2(:,sub)=[seed_rest2sleep1 seed_rest2heaven1];
 end
 
 %% Make plots
@@ -101,10 +102,10 @@ for i=1:length(subject_nums)
 end
 
 % plot
-FigHandle = figure('Position', [400, 600, 300, 700]);
+FigHandle = figure('Position', [400, 600, 400, 700]);
 figure(1)
-for i=1:length(allsubs_seed_rest1)
-    plot(1:size(allsubs_seed_rest1,1),allsubs_seed_rest1(:,i),[subjectmarker{i,:} '-'], ...
+for i=1:length(allsubs_seed_sleep)
+    plot(1:size(allsubs_seed_sleep,1),allsubs_seed_sleep(:,i),[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
     ylim([0 1]);
@@ -124,39 +125,40 @@ set(gcf,'color','w');
   xlim([0.5 2.5]);
    set(gca,'Xtick',1:1:3)
    %set(gca,'Ytick',1:1:3);
- set(gca,'XTickLabel',{'Sleep','Task','2'})
-ylabel('Correlation with Rest 1 (r)');
+ set(gca,'XTickLabel',{'1','2','2'})
+ylabel('Correlation with Sleep FC (r)');
+xlabel('Rest Run');
 %xlabel('ECoG Run');
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'iEEG_multirun_rest1']));
 end
 pause; close;
 
-FigHandle = figure('Position', [400, 600, 300, 700]);
-figure(1)
-for i=1:length(allsubs_seed_rest2)
-    plot(1:size(allsubs_seed_rest2,1),allsubs_seed_rest2(:,i),[subjectmarker{i,:} '-'], ...
-        'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
-        'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
-    ylim([0 1]);
-    xlim([0.5 2.5]);
-       set(gca,'Xtick',1:1:3)
-       %set(gca,'Ytick',1:1:3);
- set(gca,'XTickLabel',{'Sleep','Task','2'})
- set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
-  ylabel('BOLD-ECoG FC correlation (r)'); 
-  
-    hold on
-   set(gca,'box','off'); 
-set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-%title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
-  ylim([0 1]);
-  xlim([0.5 2.5]);
-   set(gca,'Xtick',1:1:3)
-   %set(gca,'Ytick',1:1:3);
- set(gca,'XTickLabel',{'Sleep','Task','2'})
-ylabel('Correlation with Rest 2 (r)');
-%xlabel('ECoG Run');
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'iEEG_multirun_rest2']));
-end
-pause; close;
+% FigHandle = figure('Position', [400, 600, 300, 700]);
+% figure(1)
+% for i=1:length(allsubs_seed_rest2)
+%     plot(1:size(allsubs_seed_rest2,1),allsubs_seed_rest2(:,i),[subjectmarker{i,:} '-'], ...
+%         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+%         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
+%     ylim([0 1]);
+%     xlim([0.5 2.5]);
+%        set(gca,'Xtick',1:1:3)
+%        %set(gca,'Ytick',1:1:3);
+%  set(gca,'XTickLabel',{'Sleep','Task','2'})
+%  set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
+%   ylabel('BOLD-ECoG FC correlation (r)'); 
+%   
+%     hold on
+%    set(gca,'box','off'); 
+% set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
+% set(gcf,'color','w');
+% %title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
+%   ylim([0 1]);
+%   xlim([0.5 2.5]);
+%    set(gca,'Xtick',1:1:3)
+%    %set(gca,'Ytick',1:1:3);
+%  set(gca,'XTickLabel',{'Sleep','Task','2'})
+% ylabel('Correlation with Rest 2 (r)');
+% %xlabel('ECoG Run');
+% print('-opengl','-r300','-dpng',strcat([pwd,filesep,'iEEG_multirun_rest2']));
+% end
+% pause; close;

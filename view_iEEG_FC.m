@@ -8,7 +8,7 @@ hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2) or iEEG & Yeo atlas (3) or iEEG & IndiPar (4): ','s');
 view_bad=input('show bad channels (1) or hide (0)? ','s');
 depth=input('depth(1) or subdural(0)? ','s');
-freq=input('HFB 0.1-1Hz (1) alpha (2) beta1 (3) beta2 (4) Gamma (5) Delta (6) Theta (7) ','s');
+freq=input('HFB 0.1-1Hz (1) alpha (2) beta1 (3) beta2 (4) Gamma (5) Delta (6) Theta (7) all (8) ','s');
 depth=str2num(depth);
 bold_run_num=['run' bold_runname];
 ecog_run_num=['run' ecog_runname];
@@ -164,26 +164,76 @@ cfg.pullOut=3;
 cfg.title=[elec_name];  
 cfg.showLabels='n';
 cfg.elecNames=curr_elecNames;
+cfg.elecColorScale=[-0.1 0.4];
+
+if freq=='1' || freq =='8'
 cfg.elecColors=elecColors_HFB_medium;
+cfg.elecColors(find(cfg.elecColors==1))=[];
+cfg.elecColorScale=[-0.1 0.4];
+cfgOut=plotPialSurf(Patient,cfg);
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
+close;
+end
+if freq=='2' || freq =='8'
+   cfg.elecColors=elecColors_alpha_medium; 
+   cfg.elecColors(find(cfg.elecColors==1))=[];
+   cfg.elecColorScale=[-0.1 0.4];
+   cfgOut=plotPialSurf(Patient,cfg);
+   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Alpha_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
+close;
+end
+if freq=='3' || freq =='8'
+    cfg.elecColors=elecColors_Beta1_medium;
+    cfg.elecColors(find(cfg.elecColors==1))=[];
+    cfg.elecColorScale=[-0.1 0.4];    
+    cfgOut=plotPialSurf(Patient,cfg);
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Beta1_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
+close;
+end
+if freq=='4' || freq =='8'
+    cfg.elecColors=elecColors_Beta2_medium;
+    cfg.elecColors(find(cfg.elecColors==1))=[];
+    cfg.elecColorScale=[-0.1 0.4];
+    cfgOut=plotPialSurf(Patient,cfg);
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Beta2_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
+close;
+end
+if freq=='5' || freq=='8'
+    cfg.elecColors=elecColors_Gamma_medium;
+    cfg.elecColors(find(cfg.elecColors==1))=[];
+    cfg.elecColorScale=[-0.1 0.4];
+    cfgOut=plotPialSurf(Patient,cfg);
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Gamma_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
+close;  
+end
+if freq=='6' || freq=='8'
+    cfg.elecColors=elecColors_Delta_medium;
+    cfg.elecColors(find(cfg.elecColors==1))=[];
+    cfg.elecColorScale=[-0.1 0.4]; 
+    cfgOut=plotPialSurf(Patient,cfg);
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Delta_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
+close;
+end
+if freq=='7' || freq=='8'
+    cfg.elecColors=elecColors_Theta_medium;
+    cfg.elecColors(find(cfg.elecColors==1))=[];
+    cfg.elecColorScale=[-0.1 0.4];
+    cfgOut=plotPialSurf(Patient,cfg);
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Theta_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
+close;
+end
+      
+%cfg.elecColors=elecColors_HFB_medium;
 %cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num 'run1_' Hemi 'H.mgh']
 % cfg.elecColorScale='minmax';
-cfg.elecColorScale=[-0.1 0.4];
-cfg.elecColors(find(cfg.elecColors==1))=[];
+
 % cfg.elecShape='sphere';
 % cfg.elecSize=2;
 % brainView.light=[1 0 0];
 %   brainView.hem='l';
 % brainView.eyes=[160 75]
 % cfg.view=brainView
-cfgOut=plotPialSurf(Patient,cfg);
-if freq=='2'
-  print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Alpha_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
-elseif freq=='1'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
-    elseif freq=='3'
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Beta1_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
-end
-    close;
+
    
   
 elseif iEEG=='2' || iEEG=='3' || iEEG=='4'   
