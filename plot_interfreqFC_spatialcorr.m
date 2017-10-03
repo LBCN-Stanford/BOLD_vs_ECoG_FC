@@ -1,5 +1,7 @@
 % Plot correlation matrices for inter-frequency FC spatial correlation from
 % a given seed region to all other (non-bad) electrodes
+% also outputs top 10 and 20 percentile target regions with highest HFB
+% correlation to seed
 % must first run iEEG_FC.m
 
 Patient=input('Patient: ','s');
@@ -73,6 +75,13 @@ seed_Beta2_medium(bad_chans)=[]; seed_Beta2_medium(find(seed_Beta2_medium==1))=[
 seed_Theta_medium(bad_chans)=[]; seed_Theta_medium(find(seed_Theta_medium==1))=[];
 seed_Delta_medium(bad_chans)=[]; seed_Delta_medium(find(seed_Delta_medium==1))=[];
 seed_Gamma_medium(bad_chans)=[]; seed_Gamma_medium(find(seed_Gamma_medium==1))=[];
+
+elecNames(bad_chans)=[];
+elecNames(strmatch(roi1,elecNames,'exact'))=[];
+top20_prc_targets=find(seed_HFB_medium>prctile(seed_HFB_medium,80));
+elecNames(top20_prc_targets)
+top10_prc_targets=find(seed_HFB_medium>prctile(seed_HFB_medium,90));
+elecNames(top10_prc_targets)
 
 %% Inter-freq correlation matrix
 allfreq_FC=[seed_Delta_medium seed_Theta_medium seed_Alpha_medium seed_Beta1_medium seed_Beta2_medium seed_Gamma_medium seed_HFB_medium];

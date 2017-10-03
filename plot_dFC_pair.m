@@ -722,6 +722,7 @@ if frequency=='0'
         roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);
     
         % MTD: HFB vs Alpha
+        if isnumeric(iEEG_window_duration)==1
     Alpha_mat=[roi1_Alpha_medium_ts_norm roi2_Alpha_medium_ts_norm];
     HFB_mat=[roi1_HFB_medium_ts_norm roi2_HFB_medium_ts_norm];
     
@@ -730,7 +731,8 @@ if frequency=='0'
     
     mtd_HFB=coupling(HFB_mat,iEEG_window_duration*iEEG_sampling);
     mtd_HFB=squeeze(mtd_HFB(1,2,:));
-    
+        end
+        
     % Sliding window correlations for each frequency
      all_windows_HFB_medium_corr=[]; all_windows_HFB_medium_fisher=[];
      roi1_HFB_alpha_fisher_allwindows=[]; roi2_HFB_alpha_fisher_allwindows=[];
@@ -1239,6 +1241,7 @@ legend('HFB','α','Location','southeast')
 pause; close;
 
 % MTD for HFB vs alpha
+if isnumeric(iEEG_window_duration)==1
 time=(1:length(roi1_HFB_medium_ts))/iEEG_sampling;
     FigHandle = figure('Position', [200, 600, 1000, 400]);
 p= plot(time,mtd_HFB,...
@@ -1252,6 +1255,7 @@ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 set(gcf,'color','w');
 legend('HFB','α','Location','southeast')
 pause; close;
+end
 
 % dFC cross-correlation of frequencies
 all_windows_allfreqs=[all_windows_Delta_medium_fisher all_windows_Theta_medium_fisher all_windows_Alpha_medium_fisher ...
@@ -1361,7 +1365,9 @@ xticklabels({'10','20','30','40','50','60','70','80','90','100'})
 pause; close;
 end
 end
-
+% save SWC values for subject
+cd([globalECoGDir '/Rest/' Patient '/Run' runs])
+save('SWC_HFB_vs_Alpha_all','SWC_HFB_vs_Alpha_all');
 
 if frequency=='p'
 plot(1:length(all_windows_HFB_fisher),all_windows_HFB_fisher,...
@@ -1415,4 +1421,3 @@ legend('HFB','α','β1','β2','δ','θ','γ','Location','northeast')
 pause; close;
 
 end
-
