@@ -1363,11 +1363,13 @@ xticks([1 2 3 4 5 6 7 8 9 10])
 xticklabels({'10','20','30','40','50','60','70','80','90','100'})
 
 pause; close;
-end
-end
 % save SWC values for subject
 cd([globalECoGDir '/Rest/' Patient '/Run' runs])
-save('SWC_HFB_vs_Alpha_all','SWC_HFB_vs_Alpha_all');
+save(['SWC_HFB_vs_Alpha_' roi1 roi2],['SWC_HFB_vs_Alpha_all']);
+end
+end
+
+
 
 if frequency=='p'
 plot(1:length(all_windows_HFB_fisher),all_windows_HFB_fisher,...

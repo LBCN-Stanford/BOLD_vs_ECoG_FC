@@ -1,18 +1,23 @@
 % Run on outputs from plot_dFC_pair.m
 % DAN: yellowgreen, emeraldgreen
+% DMN: cobaltblue, turquoiseblue
 
 % time series for 2 electrodes
+% 60 sec ECoG plot
+%time=(1:length(roi1_ts))/iEEG_sampling;
+time=((1:60000)/iEEG_sampling)';
+roi1_ts_norm=roi1_ts_norm(1:60000);
+roi2_ts_norm=roi2_ts_norm(1:60000);
 FigHandle = figure('Position', [200, 600, 800, 300]);
 figure(1)
-time=(1:length(roi1_ts))/iEEG_sampling;
 %title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',18,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
 hold on;
 p=plot(time,roi1_ts_norm,time,roi2_ts_norm);
-p(1).LineWidth=2; p(1).Color=cdcol.yellowgeen;
-p(2).LineWidth=2; p(2).Color=cdcol.emeraldgreen;
+p(1).LineWidth=2; p(1).Color=cdcol.cobaltblue;
+p(2).LineWidth=2; p(2).Color=cdcol.turquoiseblue;
 xlim([0,time(end)]);
 ylim([-6 6]);
 % legend([roi1],[roi2]);
