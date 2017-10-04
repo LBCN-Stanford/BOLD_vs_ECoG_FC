@@ -1258,22 +1258,35 @@ pause; close;
 end
 
 % dFC cross-correlation of frequencies
+cd([fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/figs/iEEG']);
+mkdir(['Interfreq']); cd(['Interfreq']);
 all_windows_allfreqs=[all_windows_Delta_medium_fisher all_windows_Theta_medium_fisher all_windows_Alpha_medium_fisher ...
     all_windows_Beta1_medium_fisher all_windows_Beta2_medium_fisher all_windows_Gamma_medium_fisher all_windows_HFB_medium_fisher];
 xcorr_allfreqs=corrcoef(all_windows_allfreqs);
 xcorr_allfreqs_column=nonzeros(triu(xcorr_allfreqs)');
 xcorr_allfreqs_column(find(xcorr_allfreqs_column==1))=[];
 
+xcorr_allfreqs_lowertri=tril(xcorr_allfreqs);
+load('redblue.m');
+
 FigHandle = figure(1);
-set(FigHandle,'Position',[50, 50, 700, 600]);
+set(FigHandle,'Position',[50, 50, 800, 800]);
 set(gcf,'color','w');
-imagesc(xcorr_allfreqs,[-1 1]); h=colorbar('vert'); colormap jet
-set(h,'fontsize',16);
+imagesc(xcorr_allfreqs_lowertri,[-1 1]);
+h=colorbar('northoutside'); colormap(flipud(redblue)/255);
+set(h,'fontsize',11);
 set(get(h,'title'),'string','r');
-set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
-set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
-title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
+set(gca,'box','off')
+xticks([1 2 3 4 5 6 7])
+yticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+yticks([1 2 3 4 5 6 7])
+xticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+set(gca,'Fontsize',24,'Fontweight','bold')
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,[roi1 'Interfreq_temporal_corr_' num2str(window_duration) '_' roi1 roi2]]));
+%title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
 pause; close
+
+
 
 % local site cross-frequency correlations
 roi1_xcorr_allfreqs=corrcoef(roi1_all_freq_medium_ts);
@@ -1302,7 +1315,34 @@ set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
 title(['Cross-correlation of frequencies at' roi2])
 pause; close;
 
+% plot local HFB vs alpha (1 min of data) and correlation values
+roi1_HFB_alpha_corr=roi1_xcorr_allfreqs(7,3);
+roi2_HFB_alpha_corr=roi2_xcorr_allfreqs(7,3);
+save([roi1 '_HFB_alpha_corr'],'roi1_HFB_alpha_corr');
+save([roi2 '_HFB_alpha_corr'],'roi2_HFB_alpha_corr');
+
+roi1_HFB_alpha_60sec=corr(roi1_HFB_medium_ts_norm(1:60*iEEG_sampling),roi1_Alpha_medium_ts_norm(1:60*iEEG_sampling));
+roi2_HFB_alpha_60sec=corr(roi2_HFB_medium_ts_norm(1:60*iEEG_sampling),roi2_Alpha_medium_ts_norm(1:60*iEEG_sampling));
+
+time=(1:60000)/iEEG_sampling;
+FigHandle = figure('Position', [200, 600, 1200, 400]);
+plot(time,roi1_HFB_medium_ts_norm(1:60*iEEG_sampling),time,roi1_Alpha_medium_ts_norm(1:60*iEEG_sampling),'k','LineWidth',2);
+title({['HFB-Alpha correlation: r = ' num2str(roi1_HFB_alpha_60sec) ' for ' roi1]} ,'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['Signal']);
+set(gcf,'color','w');
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+pause; close;
+
+FigHandle = figure('Position', [200, 600, 1200, 400]);
+plot(time,roi2_HFB_medium_ts_norm(1:60*iEEG_sampling),time,roi2_Alpha_medium_ts_norm(1:60*iEEG_sampling),'k','LineWidth',2);
+title({['HFB-Alpha correlation: r = ' num2str(roi2_HFB_alpha_60sec) ' for ' roi2]} ,'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['Signal']);
+set(gcf,'color','w');
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+pause; close;
+
 % lag correlations for all frequencies on one plot
+cd([globalECoGDir '/Rest/' Patient '/Run' runs ])
 FigHandle = figure('Position', [200, 600, 1200, 400]);
 plot(lag_times,lag_corr_HFB_medium, ...
     lag_times, lag_corr_Alpha_medium, ...

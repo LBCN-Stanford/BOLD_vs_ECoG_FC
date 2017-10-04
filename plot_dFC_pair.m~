@@ -31,6 +31,8 @@ roi2=input('ROI 2 (e.g. PIHS4): ','s');
 seed=input('seed (ROI1) to all else (1)? ','s');
 depth=input('depth (1) or subdural (0)? ','s');
 
+load('cdcol.mat');
+
 runnum=['run' runs];
 fsDir=getFsurfSubDir();
 getECoGSubDir; global globalECoGDir;
@@ -63,7 +65,7 @@ iEEG_window_size=iEEG_window_duration*iEEG_sampling;
     end
 end
 %iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-iEEG_window_plot=[179]; % window to plot time series; set to zero to turn off
+iEEG_window_plot=[57]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Alpha
 %depth='0';
 
@@ -720,6 +722,7 @@ if frequency=='0'
         roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);
     
         % MTD: HFB vs Alpha
+        if isnumeric(iEEG_window_duration)==1
     Alpha_mat=[roi1_Alpha_medium_ts_norm roi2_Alpha_medium_ts_norm];
     HFB_mat=[roi1_HFB_medium_ts_norm roi2_HFB_medium_ts_norm];
     
@@ -728,21 +731,32 @@ if frequency=='0'
     
     mtd_HFB=coupling(HFB_mat,iEEG_window_duration*iEEG_sampling);
     mtd_HFB=squeeze(mtd_HFB(1,2,:));
-    
+        end
+        
     % Sliding window correlations for each frequency
      all_windows_HFB_medium_corr=[]; all_windows_HFB_medium_fisher=[];
+     roi1_HFB_alpha_fisher_allwindows=[]; roi2_HFB_alpha_fisher_allwindows=[];
   for i=1:iEEG_step:length(roi1_HFB_medium_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
-    roi1_window_ts=roi1_HFB_medium_ts(i:a);
-    roi2_window_ts=roi2_HFB_medium_ts(i:a);
-        if i==1+iEEG_step*iEEG_window_plot-iEEG_step;
-        HFB_roi1_window_ts_plot=roi1_window_ts;
-        HFB_roi2_window_ts_plot=roi2_window_ts;
-    end
-    window_corr=corr(roi1_window_ts,roi2_window_ts);
+    roi1_window_HFB_ts=roi1_HFB_medium_ts(i:a); roi1_window_alpha_ts=roi1_Alpha_medium_ts(i:a);
+    roi2_window_HFB_ts=roi2_HFB_medium_ts(i:a); roi2_window_alpha_ts=roi2_Alpha_medium_ts(i:a);
+    
+        if i==1+iEEG_step*iEEG_window_plot-iEEG_step; % for plotting specific window
+        HFB_roi1_window_ts_plot=roi1_window_HFB_ts;
+        HFB_roi2_window_ts_plot=roi2_window_HFB_ts;
+        end
+    
+        
+    window_corr=corr(roi1_window_HFB_ts,roi2_window_HFB_ts);
     window_fisher=fisherz(window_corr);
     all_windows_HFB_medium_corr=[all_windows_HFB_medium_corr window_corr];   
    all_windows_HFB_medium_fisher=[all_windows_HFB_medium_fisher window_fisher];
+   
+   roi1_HFB_alpha_window_corr=corr(roi1_window_HFB_ts,roi1_window_alpha_ts);
+   roi1_HFB_alpha_fisher_allwindows=[roi1_HFB_alpha_fisher_allwindows fisherz(roi1_HFB_alpha_window_corr)];
+   
+   roi2_HFB_alpha_window_corr=corr(roi2_window_HFB_ts,roi2_window_alpha_ts);
+   roi2_HFB_alpha_fisher_allwindows=[roi2_HFB_alpha_fisher_allwindows fisherz(roi2_HFB_alpha_window_corr)];
   end  
 all_windows_HFB_medium_corr=all_windows_HFB_medium_corr';
 all_windows_HFB_medium_fisher=all_windows_HFB_medium_fisher';
@@ -1080,7 +1094,9 @@ title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fon
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(time,roi1_ts_norm,'r',time,roi2_ts_norm,'b','LineWidth',2);
+p=plot(time,roi1_ts_norm,time,roi2_ts_norm);
+p(1).LineWidth=2; p(1).Color=[cdcol.portraitplum];
+p(2).LineWidth=2; p(2).Color=[cdcol.vermilion];
 xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
@@ -1096,7 +1112,9 @@ hold on;
 
 % BOLD Sliding-window correlations
 subplot(3,1,3);
-plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
+p=plot(1:length(all_windows_fisher),all_windows_fisher);
+p(1).LineWidth=2; p(1).Color=cdcol.scarlet;
+
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Correlation (z)']);
@@ -1119,27 +1137,20 @@ if frequency~='0' && frequency~='p'
 FigHandle = figure('Position', [200, 600, 1200, 800]);
 figure(1)
 time=(1:length(roi1_ts))/iEEG_sampling;
-subplot(3,1,1);
+subplot(2,1,1);
 title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 hold on;
-plot(time,roi1_ts_norm,'r',time,roi2_ts_norm,'b','LineWidth',2);
+p=plot(time,roi1_ts_norm,time,roi2_ts_norm);
+p(1).LineWidth=2; p(1).Color=cdcol.portraitplum;
+p(2).LineWidth=2; p(2).Color=cdcol.vermilion;
 xlim([0,time(end)]);
 legend([roi1],[roi2]);
 hold on;
 
-% iEEG dynamic conditional correlations
-% subplot(3,1,2);
-% plot(time,dcc,'k','LineWidth',2);
-% title({['Dynamic Conditional Correlation: ' roi1 ' vs ' roi2]; ['Var = ' num2str(var(dcc))]},'Fontsize',12);
-% xlabel(['Time (sec)']); ylabel(['DCC']);
-% xlim([0,time(end)]);
-% set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
-% hold on;
-
 % iEEG sliding-window correlation
-subplot(3,1,2);
+subplot(2,1,2);
 plot(1:length(all_windows_fisher),all_windows_fisher,'k','LineWidth',2);
 title({['Dynamic FC: ' roi1 ' vs ' roi2]; ['FCV = ' num2str(std(all_windows_fisher))]; ['Mean = ' num2str(mean(all_windows_fisher))]; ...
     ['Step size = ' num2str(step_size) ' sec']} ,'Fontsize',12);
@@ -1215,9 +1226,12 @@ end
 SWC_HFB_vs_alpha=corr(all_windows_HFB_medium_fisher,all_windows_Alpha_medium_fisher);
 
     FigHandle = figure('Position', [200, 600, 1000, 400]);
-plot(1:length(all_windows_HFB_medium_fisher),norm_all_windows_HFB_medium_fisher,...
-    1:length(all_windows_Alpha_medium_fisher),norm_all_windows_Alpha_medium_fisher,...
-    'LineWidth',2);
+p=plot(1:length(all_windows_HFB_medium_fisher),norm_all_windows_HFB_medium_fisher,...
+1:length(all_windows_Alpha_medium_fisher),norm_all_windows_Alpha_medium_fisher);
+
+p(1).LineWidth=2; p(1).Color=[cdcol.scarlet];
+p(2).LineWidth=2; p(2).Color=[cdcol.turquoiseblue];
+
 title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec; r = ' num2str(SWC_HFB_vs_alpha)]} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);
@@ -1227,35 +1241,52 @@ legend('HFB','α','Location','southeast')
 pause; close;
 
 % MTD for HFB vs alpha
+if isnumeric(iEEG_window_duration)==1
+time=(1:length(roi1_HFB_medium_ts))/iEEG_sampling;
     FigHandle = figure('Position', [200, 600, 1000, 400]);
-plot(1:length(mtd_HFB),mtd_HFB,...
-    1:length(mtd_alpha),mtd_alpha,...
-    'LineWidth',2);
-title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
-    ['Step size = ' num2str(step_size) ' sec; r = ' num2str(SWC_HFB_vs_alpha)]} ,'Fontsize',12);
-xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);
+p= plot(time,mtd_HFB,...
+    time,mtd_alpha);
+p(1).LineWidth=2; p(1).Color=[cdcol.scarlet];
+p(2).LineWidth=2; p(2).Color=[cdcol.turquoiseblue];
+title({['MTD: ' roi1 ' vs ' roi2]; ...
+    ['Window size = ' num2str(iEEG_window_duration) ' sec; r = ' num2str(corr(mtd_alpha,mtd_HFB))]} ,'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['MTD']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
 legend('HFB','α','Location','southeast')
 pause; close;
+end
 
 % dFC cross-correlation of frequencies
+cd([fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/figs/iEEG']);
+mkdir(['Interfreq']); cd(['Interfreq']);
 all_windows_allfreqs=[all_windows_Delta_medium_fisher all_windows_Theta_medium_fisher all_windows_Alpha_medium_fisher ...
     all_windows_Beta1_medium_fisher all_windows_Beta2_medium_fisher all_windows_Gamma_medium_fisher all_windows_HFB_medium_fisher];
 xcorr_allfreqs=corrcoef(all_windows_allfreqs);
 xcorr_allfreqs_column=nonzeros(triu(xcorr_allfreqs)');
 xcorr_allfreqs_column(find(xcorr_allfreqs_column==1))=[];
 
+xcorr_allfreqs_lowertri=tril(xcorr_allfreqs);
+load('redblue.m');
+
 FigHandle = figure(1);
-set(FigHandle,'Position',[50, 50, 700, 600]);
+set(FigHandle,'Position',[50, 50, 800, 800]);
 set(gcf,'color','w');
-imagesc(xcorr_allfreqs,[-1 1]); h=colorbar('vert'); colormap jet
-set(h,'fontsize',16);
+imagesc(xcorr_allfreqs_lowertri,[-1 1]);
+h=colorbar('northoutside'); colormap(flipud(redblue)/255);
+set(h,'fontsize',11);
 set(get(h,'title'),'string','r');
-set(gca,'XTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
-set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
-title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
+set(gca,'box','off')
+xticks([1 2 3 4 5 6 7])
+yticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+yticks([1 2 3 4 5 6 7])
+xticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+set(gca,'Fontsize',24,'Fontweight','bold')
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,[roi1 'Interfreq_temporal_corr_' num2str(window_duration) '_' roi1 roi2]]));
+%title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
 pause; close
+
+
 
 % local site cross-frequency correlations
 roi1_xcorr_allfreqs=corrcoef(roi1_all_freq_medium_ts);
@@ -1284,8 +1315,33 @@ set(gca,'YTickLabel',{'δ','θ', 'α','β1','β2','γ','HFB'},'Fontsize',12)
 title(['Cross-correlation of frequencies at' roi2])
 pause; close;
 
+% plot local HFB vs alpha (1 min of data) and correlation values
+roi1_HFB_alpha_corr=roi1_xcorr_allfreqs(7,3);
+roi2_HFB_alpha_corr=roi2_xcorr_allfreqs(7,3);
+
+roi1_HFB_alpha_60sec=corr(roi1_HFB_medium_ts_norm(1:60*iEEG_sampling),roi1_Alpha_medium_ts_norm(1:60*iEEG_sampling));
+roi2_HFB_alpha_60sec=corr(roi2_HFB_medium_ts_norm(1:60*iEEG_sampling),roi2_Alpha_medium_ts_norm(1:60*iEEG_sampling));
+
+time=(1:60000)/iEEG_sampling;
+FigHandle = figure('Position', [200, 600, 1200, 400]);
+plot(time,roi1_HFB_medium_ts_norm(1:60000),time,roi1_Alpha_medium_ts_norm(1:60000),'k','LineWidth',2);
+title({['HFB-Alpha correlation: r = ' num2str(roi1_HFB_alpha_corr) ' for ' roi1]} ,'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['Signal']);
+set(gcf,'color','w');
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+pause; close;
+
+FigHandle = figure('Position', [200, 600, 1200, 400]);
+plot(time,roi2_HFB_medium_ts_norm(1:60000),time,roi2_Alpha_medium_ts_norm(1:60000),'k','LineWidth',2);
+title({['HFB-Alpha correlation: r = ' num2str(roi2_HFB_alpha_corr) ' for ' roi2]} ,'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['Signal']);
+set(gcf,'color','w');
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+pause; close;
+
 % lag correlations for all frequencies on one plot
-FigHandle = figure('Position', [200, 600, 1200, 500]);
+cd([globalECoGDir '/Rest/' Patient '/Run' runs ])
+FigHandle = figure('Position', [200, 600, 1200, 400]);
 plot(lag_times,lag_corr_HFB_medium, ...
     lag_times, lag_corr_Alpha_medium, ...
     lag_times, lag_corr_Beta1_medium,...
@@ -1293,13 +1349,14 @@ plot(lag_times,lag_corr_HFB_medium, ...
     lag_times, lag_corr_Delta_medium,...
     lag_times, lag_corr_Theta_medium,...
     lag_times, lag_corr_Gamma_medium,...
-    'LineWidth',1);
+    'LineWidth',2);
 title({['iEEG (0.1-1 Hz) all frequencies'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
 xlim([lag_times(1),lag_times(end)]);
-set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gca,'Fontsize',16,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
-legend('HFB','α','β1','β2','δ','θ','γ','Location','northeast')
+legend('HFB','α','β1','β2','δ','θ','γ','Location','northeastoutside')
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_ECoG_figs/lag_corr_allfreq_' runnum roi1 roi2]));
 pause; close;
 
 % plot time series for window of interest
@@ -1315,9 +1372,11 @@ end
 time=1:length(roi1_window_ts_plot); time=time/iEEG_sampling;
 window_corr=num2str(corr(roi1_window_ts_plot,roi2_window_ts_plot));
 FigHandle = figure('Position', [200, 600, 1000, 400]);
-plot(time,roi1_window_ts_plot,'r',...
-    time,roi2_window_ts_plot,'b',...
-    'LineWidth',2);
+p=plot(time,roi1_window_ts_plot,...
+    time,roi2_window_ts_plot);
+p(1).LineWidth=3; p(1).Color=cdcol.portraitplum;
+p(2).LineWidth=3; p(2).Color=cdcol.vermilion;
+
 title({[freq_name ' (0.1-1 Hz): ' roi1 ' vs ' roi2];...
     ['Window ' num2str(iEEG_window_plot) ':  r = ' window_corr]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
@@ -1342,8 +1401,12 @@ xticks([1 2 3 4 5 6 7 8 9 10])
 xticklabels({'10','20','30','40','50','60','70','80','90','100'})
 
 pause; close;
+% save SWC values for subject
+cd([globalECoGDir '/Rest/' Patient '/Run' runs])
+save(['SWC_HFB_vs_Alpha_' roi1 roi2],['SWC_HFB_vs_Alpha_all']);
 end
 end
+
 
 
 if frequency=='p'
@@ -1398,4 +1461,3 @@ legend('HFB','α','β1','β2','δ','θ','γ','Location','northeast')
 pause; close;
 
 end
-
