@@ -100,15 +100,16 @@ set(gcf, 'PaperPositionMode', 'auto');
 hold on
 
 x=ones(size(allsubs_HFB_vs_alpha_local));
-a=0.995; b=1.005; % creat custom jitter
+a=0.995; b=1.005; % create custom jitter
 x=(b-a).*rand(size(x))+a;
 % plot data points with network and subject labelings
 for i=1:length(allsubs_HFB_vs_alpha_local)
     plot(x(i),allsubs_HFB_vs_alpha_local(i),[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',6,'MarkerEdgeColor',network_color(i,:));      
-
 end
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_vs_alpha_local_group']));
+pause; close;
 
 
 

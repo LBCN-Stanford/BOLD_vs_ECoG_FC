@@ -721,7 +721,7 @@ if frequency=='0'
         roi2_Delta_medium_ts_norm=(roi2_Delta_medium_ts-mean(roi2_Delta_medium_ts))/std(roi2_Delta_medium_ts);
         roi2_Gamma_medium_ts_norm=(roi2_Gamma_medium_ts-mean(roi2_Gamma_medium_ts))/std(roi2_Gamma_medium_ts);
     
-        % MTD: HFB vs Alpha
+        % MTD: HFB vs Alpha for selected window length
         if isnumeric(iEEG_window_duration)==1
     Alpha_mat=[roi1_Alpha_medium_ts_norm roi2_Alpha_medium_ts_norm];
     HFB_mat=[roi1_HFB_medium_ts_norm roi2_HFB_medium_ts_norm];
@@ -731,8 +731,25 @@ if frequency=='0'
     
     mtd_HFB=coupling(HFB_mat,iEEG_window_duration*iEEG_sampling);
     mtd_HFB=squeeze(mtd_HFB(1,2,:));
-        end
         
+        
+      % MTD: HFB vs Alpha for window lengths ranging from 500 ms to 3 sec
+      % (500 ms increments)
+      mtd_HFB_vs_alpha_allw=[];
+      for i=0.5:0.5:3
+      mtd_alpha_temp=coupling(Alpha_mat,i*iEEG_sampling);
+      mtd_alpha_temp=squeeze(mtd_alpha_temp(1,2,:));    
+      
+      mtd_HFB_temp=coupling(HFB_mat,i*iEEG_sampling);
+      mtd_HFB_temp=squeeze(mtd_HFB_temp(1,2,:));
+      
+      mtd_HFB_vs_alpha=corr(mtd_alpha_temp,mtd_HFB_temp);
+      mtd_HFB_vs_alpha_allw=[mtd_HFB_vs_alpha_allw mtd_HFB_vs_alpha];
+      end
+      pause
+      save(['mtd_HFB_vs_alpha_allw_' roi1 roi2],'mtd_HFB_vs_alpha_allw');
+        end
+      
     % Sliding window correlations for each frequency
      all_windows_HFB_medium_corr=[]; all_windows_HFB_medium_fisher=[];
      roi1_HFB_alpha_fisher_allwindows=[]; roi2_HFB_alpha_fisher_allwindows=[];
@@ -1325,12 +1342,13 @@ roi1_HFB_alpha_60sec=corr(roi1_HFB_medium_ts_norm(1:60*iEEG_sampling),roi1_Alpha
 roi2_HFB_alpha_60sec=corr(roi2_HFB_medium_ts_norm(1:60*iEEG_sampling),roi2_Alpha_medium_ts_norm(1:60*iEEG_sampling));
 
 time=(1:60000)/iEEG_sampling;
-FigHandle = figure('Position', [200, 600, 1200, 400]);
-plot(time,roi1_HFB_medium_ts_norm(1:60*iEEG_sampling),time,roi1_Alpha_medium_ts_norm(1:60*iEEG_sampling),'k','LineWidth',2);
+FigHandle = figure('Position', [200, 600, 800, 300]);
+plot(time,roi1_HFB_medium_ts_norm(1:60*iEEG_sampling),time,roi1_Alpha_medium_ts_norm(1:60*iEEG_sampling),'k','LineWidth',3);
 title({['HFB-Alpha correlation: r = ' num2str(roi1_HFB_alpha_60sec) ' for ' roi1]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gcf,'color','w');
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+legend('HFB','α','Location','southeast')
 pause; close;
 
 FigHandle = figure('Position', [200, 600, 1200, 400]);

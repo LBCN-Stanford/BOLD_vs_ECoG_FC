@@ -48,9 +48,9 @@ allsubs_HFB_vs_alpha_local_elec1=[allsubs_HFB_vs_alpha_local_elec1 HFB_alpha_loc
 allsubs_HFB_vs_alpha_local_elec2=[allsubs_HFB_vs_alpha_local_elec2 HFB_alpha_local_elec2.roi2_HFB_alpha_corr];
 end
 
-pause
 %% Stats - sign-rank test on HFB vs alpha values
-p_val=signrank[allsubs_HFB_vs_alpha_local];
+allsubs_HFB_vs_alpha_local=[allsubs_HFB_vs_alpha_local_elec1 allsubs_HFB_vs_alpha_local_elec2];
+p_val=signrank(allsubs_HFB_vs_alpha_local);
 
 %% Make plots
 cd([globalECoGDir '/Rest/Figs/DMN_Core']);
@@ -65,6 +65,8 @@ for i=1:length(networks)
         network_color(i,:)=cdcol.orange;
     end
 end
+network_color=[network_color; network_color]; % duplicate list (for 2 electrodes per network)
+
 % Subject marker coding
 for i=1:length(subject_nums)
     if subject_nums(i)==1
@@ -80,10 +82,12 @@ for i=1:length(subject_nums)
     end
 end
 
+subjectmarker=[subjectmarker; subjectmarker]; % duplicate list (for 2 electrodes per network)
 
 FigHandle = figure('Position', [400, 600, 150, 400]);
 figure(1)
 
+% plot SD + SE bars
 h=notBoxPlot(allsubs_HFB_vs_alpha_local,1,0.01); axis([0.99,1.01,-0.5,0.5]); set(gca, 'XTick', [],'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(h.data,'markersize',0.001,'markerfacecolor',[0 0 0]) 
  set(gca,'XTickLabel',{'',''})
@@ -96,14 +100,16 @@ set(gcf, 'PaperPositionMode', 'auto');
 hold on
 
 x=ones(size(allsubs_HFB_vs_alpha_local));
-a=0.995; b=1.005; % creat custom jitter
+a=0.995; b=1.005; % create custom jitter
 x=(b-a).*rand(size(x))+a;
+% plot data points with network and subject labelings
 for i=1:length(allsubs_HFB_vs_alpha_local)
     plot(x(i),allsubs_HFB_vs_alpha_local(i),[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',6,'MarkerEdgeColor',network_color(i,:));      
-
 end
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_vs_alpha_loca_group']));
+pause; close;
 
 
 
