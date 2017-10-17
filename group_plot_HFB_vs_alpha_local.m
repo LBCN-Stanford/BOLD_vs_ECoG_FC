@@ -30,22 +30,26 @@ run_num=list.data(:,2);
 networks=list.data(:,3);
 
 %% Loop through subjects and electrodes
-allsubs_HFB_vs_alpha_local=[];
+allsubs_HFB_vs_alpha_local_elec1=[];
+allsubs_HFB_vs_alpha_local_elec2=[];
 for sub=1:length(subjects)
     Patient=subjects{sub}
     run1=num2str(run_num(sub));
     elec1=roi1(sub);
     elec2=roi2(sub);
     network=networks(sub);
-%% Load HFB vs alpha local correlation
+%% Load HFB vs alpha local correlation for each electrode
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/figs/iEEG/Interfreq']);
-HFB_alpha_local=load([char(elec1) '_HFB_alpha_corr.mat']);
+HFB_alpha_local_elec1=load([char(elec1) '_HFB_alpha_corr.mat']);
+HFB_alpha_local_elec2=load([char(elec2) '_HFB_alpha_corr.mat']);
 
 %% concatenate across subjects
-allsubs_HFB_vs_alpha_local=[allsubs_HFB_vs_alpha_local HFB_alpha_local.roi1_HFB_alpha_corr];
+allsubs_HFB_vs_alpha_local_elec1=[allsubs_HFB_vs_alpha_local_elec1 HFB_alpha_local_elec1.roi1_HFB_alpha_corr];
+allsubs_HFB_vs_alpha_local_elec2=[allsubs_HFB_vs_alpha_local_elec2 HFB_alpha_local_elec2.roi2_HFB_alpha_corr];
 end
 
 %% Stats - sign-rank test on HFB vs alpha values
+allsubs_HFB_vs_alpha_local=[allsubs_HFB_vs_alpha_local_elec1 allsubs_HFB_vs_alpha_local_elec2];
 p_val=signrank(allsubs_HFB_vs_alpha_local);
 
 %% Make plots
@@ -61,6 +65,8 @@ for i=1:length(networks)
         network_color(i,:)=cdcol.orange;
     end
 end
+network_color=[network_color; network_color]; % duplicate list (for 2 electrodes per network)
+
 % Subject marker coding
 for i=1:length(subject_nums)
     if subject_nums(i)==1
@@ -76,10 +82,12 @@ for i=1:length(subject_nums)
     end
 end
 
+subjectmarker=[subjectmarker; subjectmarker]; % duplicate list (for 2 electrodes per network)
 
 FigHandle = figure('Position', [400, 600, 150, 400]);
 figure(1)
 
+% plot SD + SE bars
 h=notBoxPlot(allsubs_HFB_vs_alpha_local,1,0.01); axis([0.99,1.01,-0.5,0.5]); set(gca, 'XTick', [],'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(h.data,'markersize',0.001,'markerfacecolor',[0 0 0]) 
  set(gca,'XTickLabel',{'',''})
@@ -94,6 +102,7 @@ hold on
 x=ones(size(allsubs_HFB_vs_alpha_local));
 a=0.995; b=1.005; % creat custom jitter
 x=(b-a).*rand(size(x))+a;
+% plot data points with network and subject labelings
 for i=1:length(allsubs_HFB_vs_alpha_local)
     plot(x(i),allsubs_HFB_vs_alpha_local(i),[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
