@@ -746,7 +746,6 @@ if frequency=='0'
       mtd_HFB_vs_alpha=corr(mtd_alpha_temp,mtd_HFB_temp);
       mtd_HFB_vs_alpha_allw=[mtd_HFB_vs_alpha_allw mtd_HFB_vs_alpha];
       end
-      pause
       save(['mtd_HFB_vs_alpha_allw_' roi1 roi2],'mtd_HFB_vs_alpha_allw');
         end
       

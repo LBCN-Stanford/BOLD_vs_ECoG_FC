@@ -1,4 +1,4 @@
-% Plot HFB vs alpha sliding window correlations between pre-defined region
+% Plot HFB vs alpha MTD between pre-defined region
 % pairs for multiple window lengths in multiple subjects
 % Must first run plot_dFC_pair.m on all relevant pairs of interest
 % HFB_vs_alpha_pairs.txt file should contain subject name (column 1), electrode1 name (column 2),
@@ -39,10 +39,10 @@ for sub=1:length(subjects)
     network=networks(sub);
 %% Load corr values for each run
 cd([globalECoGDir '/Rest/' Patient '/Run' run1])
-HFB_vs_alpha_SWC=load(['SWC_HFB_vs_Alpha_' char(elec1) char(elec2) '.mat']);
+HFB_vs_alpha_SWC=load(['mtd_HFB_vs_alpha_allw_' char(elec1) char(elec2) '.mat']);
 
 %% concatenate across subjects
-allsubs_HFB_vs_alpha_SWC=[allsubs_HFB_vs_alpha_SWC HFB_vs_alpha_SWC];
+allsubs_HFB_vs_alpha_SWC=[allsubs_HFB_vs_alpha_SWC; HFB_vs_alpha_SWC'];
 end
 
 
@@ -78,15 +78,14 @@ end
 FigHandle = figure('Position', [400, 600, 800, 470]);
 figure(1)
 for i=1:length(allsubs_HFB_vs_alpha_SWC)
-    plot(1:size(allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} '-'], ...
+    plot(1:size(allsubs_HFB_vs_alpha_SWC(1).mtd_HFB_vs_alpha_allw,2),allsubs_HFB_vs_alpha_SWC(i).mtd_HFB_vs_alpha_allw,[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
     ylim([-1 1]);
-    xlim([0 10]);
+    xlim([0 6]);
        set(gca,'Xtick',0:1:6)
  set(gca,'XTickLabel',{'','10', '20'})
  set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
-  ylabel('BOLD-ECoG FC correlation (r)'); 
   
     hold on
    set(gca,'box','off'); 
@@ -96,8 +95,8 @@ set(gcf,'color','w');
   ylim([-1 1]);
   xlim([0 6]);
    set(gca,'Xtick',0:1:6)
- set(gca,'XTickLabel',{'', '10','20','30','40','50','60'})
-ylabel('HFB-Alpha FC Correlation (r)');
+ set(gca,'XTickLabel',{'', '0.5','1','1.5','2','2.5','3','3.5'})
+ylabel('HFB-Alpha MTD Correlation (r)');
 xlabel('Window Duration (sec)');
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_vs_alpha_SWC_group']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_vs_alpha_MTD_group']));
 end
