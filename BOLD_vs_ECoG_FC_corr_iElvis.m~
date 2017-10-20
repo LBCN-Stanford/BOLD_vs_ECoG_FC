@@ -1778,6 +1778,7 @@ Language_interval=DAN_interval+size(Language_BOLD_corr,1);
 end
 edge_color=[0.6 0.6 0.6];
 edge_width=2.5;
+
 %% Make plots
 mkdir BOLD_ECoG_figs
 cd BOLD_ECoG_figs
@@ -2453,6 +2454,7 @@ save('Gamma_medium_mat','Gamma_medium_mat');
 save('HFB_medium_mat','HFB_medium_mat');
 
 
+
 %% Plot ECoG vs BOLD for each seed electrode
 distances_nan=distances;
 distances_nan(find(distances_nan==0))=NaN;
@@ -2640,13 +2642,17 @@ for i=1:length(BOLD_mat);
     figure(3)
 scatter(curr_elec_BOLD,curr_elec_HFB_medium,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({[elec_name ': BOLD FC vs HFB (0.1-1Hz) FC']; ...
     ['r = ' num2str(elec_BOLD_HFB_medium_corr) '; rho = ' num2str(rho_elec_BOLD_HFB_medium_corr)]; ...
     ['distance-corrected r = ' num2str(elec_BOLD_HFB_medium_partialcorr) '; rho = ' num2str(rho_elec_BOLD_HFB_medium_partialcorr)]},'Fontsize',12);
-xlabel('BOLD FC');
-ylabel('HFB (0.1-1Hz) FC');
+xlabel('BOLD FC (z)');
+ylabel('ECoG-HFB FC (z)');
+    ylim([-0.2 0.6]);
+    xlim([-1 2]);
+       set(gca,'Ytick',[-0.2 0 0.2 0.4 0.6])
+       set(gca,'Xtick',[-1 -0.5 0 0.5 1 1.5 2])  
 set(gcf,'PaperPositionMode','auto');
 if BOLD_pipeline==1
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_medium_GSR']));

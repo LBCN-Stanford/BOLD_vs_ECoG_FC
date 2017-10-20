@@ -89,15 +89,11 @@ seed_Beta2_medium(bad_chans)=[]; seed_Beta2_medium(find(seed_Beta2_medium==1))=[
 seed_Theta_medium(bad_chans)=[]; seed_Theta_medium(find(seed_Theta_medium==1))=[];
 seed_Delta_medium(bad_chans)=[]; seed_Delta_medium(find(seed_Delta_medium==1))=[];
 seed_Gamma_medium(bad_chans)=[]; seed_Gamma_medium(find(seed_Gamma_medium==1))=[];
-seed_distances([elec; bad_chans])=[];
-
+seed_distances(ebad_chans)=[];
 % Inter-freq correlations
-
 HFB_alpha_corr(sub,:)=corr(seed_HFB_medium,seed_Alpha_medium);
-HFB_alpha_partialcorr(sub,:)=partialcorr(seed_HFB_medium,seed_Alpha_medium,seed_distances);
-end
 
-% HFB vs alpha plots
+end
 
 
 

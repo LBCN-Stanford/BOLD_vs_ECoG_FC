@@ -1778,6 +1778,10 @@ Language_interval=DAN_interval+size(Language_BOLD_corr,1);
 end
 edge_color=[0.6 0.6 0.6];
 edge_width=2.5;
+
+%% Save distance matrix (iElvis order)
+save('distances','distances');
+
 %% Make plots
 mkdir BOLD_ECoG_figs
 cd BOLD_ECoG_figs
@@ -2451,6 +2455,7 @@ save('beta1_medium_mat','beta1_medium_mat');
 save('beta2_medium_mat','beta2_medium_mat');
 save('Gamma_medium_mat','Gamma_medium_mat');
 save('HFB_medium_mat','HFB_medium_mat');
+
 
 
 %% Plot ECoG vs BOLD for each seed electrode
