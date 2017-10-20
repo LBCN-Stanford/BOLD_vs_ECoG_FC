@@ -10,7 +10,7 @@ roi1_ts_norm=roi1_ts_norm(1:60000);
 roi2_ts_norm=roi2_ts_norm(1:60000);
 FigHandle = figure('Position', [200, 600, 800, 300]);
 figure(1)
-%title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
+title({[BOLD ' ' freq ': ' roi1 ' vs ' roi2]; ['r = ' num2str(static_fc)]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gca,'Fontsize',18,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');

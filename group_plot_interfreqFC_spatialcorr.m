@@ -1,0 +1,97 @@
+% must first run BOLD_vs_ECoG_FC_corr_iElvis.m for each run used
+% dFC_replicate.txt file should contain subject name (column 1), sub number (column 2),
+% electrode number (column 3), and network identity (column 4), run numbers (columns 5+6) 
+% network identity: 1=DMN, 2=DAN, 3=FPCN
+
+%Patient=input('Patient: ','s');
+%bold_runname=input('BOLD Run (e.g. 2): ','s');
+%ecog_runname=input('ECoG Run (e.g. 2): ','s');
+% hemi=input('Hemisphere (r or l): ','s');
+%depth=input('depth(1) or subdural(0)? ','s');
+%region=input('Seed location (e.g. mPFC) ','s');
+%freq=input('HFB 0.1-1Hz (1) or alpha (2) or HFB <0.1Hz (3) or SCP (4) ','s');
+% depth=str2num(depth);
+%bold_run_num=['run1'];
+%bold_run_num=['run1' bold_runname];
+%ecog_run_num=['run' ecog_runname];
+load('cdcol.mat');
+depth='0';
+globalECoGDir=getECoGSubDir;
+cd([globalECoGDir '/Rest']);
+mkdir('Figs');
+cd Figs;
+mkdir('DMN_Core'); cd ..
+
+allsubs_HFB_vs_alpha_spatialcorr=[];
+
+%% Load subject, ECoG run numbers, and electrode list
+list=importdata('dFC_replicate.txt',' ');
+subjects=list.textdata(:,1);
+hemis=list.textdata(:,2);
+subject_nums=list.data(:,1);
+elecs=list.data(:,2);
+networks=list.data(:,3);
+ecog_run1=list.data(:,4); ecog_run2=list.data(:,5);
+%allsubs_seedcorr_allfreqs=NaN(length(subjects),7);
+
+
+%% Loop through subjects and electrodes
+allsubs_HFB_vs_alpha_local_elec1=[];
+allsubs_HFB_vs_alpha_local_elec2=[];
+for sub=1:length(subjects)
+    Patient=subjects{sub}
+    run1=num2str(ecog_run1(sub));
+    run2=num2str(ecog_run2(sub));
+    elec=elecs(sub);
+    network=networks(sub);
+    hemi=hemis{sub};
+
+    bad_chans=[]; all_bad_indices=[]; bad_iElvis=[];
+% Load correlation matrix for all frequencies and bad indices
+cd([globalECoGDir '/Rest/' Patient '/Run' run1]);
+load('HFB_medium_corr.mat');
+load('alpha_medium_corr.mat');
+load('Beta1_medium_corr.mat');
+load('Beta2_medium_corr.mat');
+load('Theta_medium_corr.mat');
+load('Delta_medium_corr.mat');
+load('Gamma_medium_corr.mat');
+load('all_bad_indices.mat');
+
+% convert from iEEG to iElvis order
+[iEEG_to_iElvis_chanlabel, iElvis_to_iEEG_chanlabel, chanlabels, channumbers_iEEG,elecNames] = iEEG_iElvis_transform(Patient,hemi,depth);
+
+% Convert bad indices to iElvis order
+ for i=1:length(all_bad_indices)
+    ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(i));
+    if isempty(ind_iElvis)~=1
+    bad_iElvis(i,:)=ind_iElvis;
+    end
+end
+bad_chans=bad_iElvis(find(bad_iElvis>0));
+
+% extract FC values from seed
+seed_HFB_medium=HFB_medium_corr(:,elec);
+seed_Alpha_medium=alpha_medium_corr(:,elec);
+seed_Beta1_medium=Beta1_medium_corr(:,elec);
+seed_Beta2_medium=Beta2_medium_corr(:,elec);
+seed_Theta_medium=Theta_medium_corr(:,elec);
+seed_Delta_medium=Delta_medium_corr(:,elec);
+seed_Gamma_medium=Gamma_medium_corr(:,elec);
+
+seed_HFB_medium(bad_chans)=[]; seed_HFB_medium(find(seed_HFB_medium==1))=[];
+seed_Alpha_medium(bad_chans)=[]; seed_Alpha_medium(find(seed_Alpha_medium==1))=[];
+seed_Beta1_medium(bad_chans)=[]; seed_Beta1_medium(find(seed_Beta1_medium==1))=[];
+seed_Beta2_medium(bad_chans)=[]; seed_Beta2_medium(find(seed_Beta2_medium==1))=[];
+seed_Theta_medium(bad_chans)=[]; seed_Theta_medium(find(seed_Theta_medium==1))=[];
+seed_Delta_medium(bad_chans)=[]; seed_Delta_medium(find(seed_Delta_medium==1))=[];
+seed_Gamma_medium(bad_chans)=[]; seed_Gamma_medium(find(seed_Gamma_medium==1))=[];
+
+% Inter-freq correlations
+HFB_alpha_corr(sub,:)=corr(seed_HFB_medium,seed_Alpha_medium);
+
+end
+
+
+
+
