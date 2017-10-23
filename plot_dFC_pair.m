@@ -1054,6 +1054,12 @@ lag_peak=lag_times(find(lag_corr==max(lag_corr)));
         [lag_corr_Gamma_medium,lag_times]=crosscorr(roi1_Gamma_medium_ts,roi2_Gamma_medium_ts_norm,60*iEEG_sampling);
         lag_times=lag_times/iEEG_sampling;
         
+     % get lag peaks
+     lag_peak_Alpha=lag_times(find(lag_corr_Alpha_medium==max(lag_corr_Alpha_medium)));
+     lag_peak_HFB=lag_times(find(lag_corr_HFB_medium==max(lag_corr_HFB_medium)));
+     save(['lag_peak_Alpha' roi1 roi2],'lag_peak_Alpha');
+     save(['lag_peak_HFB' roi1 roi2],'lag_peak_HFB');
+     
     elseif frequency=='p'
         roi1_HFB_ts_norm=(roi1_HFB_ts-mean(roi1_HFB_ts))/std(roi1_HFB_ts);
         roi1_Alpha_ts_norm=(roi1_Alpha_ts-mean(roi1_Alpha_ts))/std(roi1_Alpha_ts);
@@ -1376,6 +1382,22 @@ set(gca,'Fontsize',16,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 set(gcf,'color','w');
 legend('HFB','α','β1','β2','δ','θ','γ','Location','northeastoutside')
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_ECoG_figs/lag_corr_allfreq_' runnum roi1 roi2]));
+pause; close;
+
+% lag correlations for HFB vs alpha on one plot
+FigHandle = figure('Position', [200, 600, 1200, 400]);
+p=plot(lag_times,lag_corr_HFB_medium, ...
+    lag_times, lag_corr_Alpha_medium, ...   
+    'LineWidth',2);
+p(1).LineWidth=2; p(1).Color=cdcol.portraitplum;
+p(2).LineWidth=2; p(2).Color=cdcol.vermilion;
+title({['iEEG (0.1-1 Hz) all frequencies'] [roi1 ' vs ' roi2 ' lag correlations']},'Fontsize',10);
+xlabel(['Lag (sec)']); ylabel(['Correlation']);
+xlim([lag_times(1),lag_times(end)]);
+set(gca,'Fontsize',16,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+set(gcf,'color','w');
+legend('HFB','α','Location','northeastoutside')
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_ECoG_figs/lag_corr_HFB_alpha_' runnum roi1 roi2]));
 pause; close;
 
 % plot time series for window of interest
