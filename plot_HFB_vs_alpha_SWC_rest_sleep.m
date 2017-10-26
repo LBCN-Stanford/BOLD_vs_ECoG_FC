@@ -55,12 +55,13 @@ cd([globalECoGDir '/Sleep/' Patient '/Run' sleep_run])
 sleep_HFB_vs_alpha_SWC=load(['SWC_HFB_vs_Alpha_' char(elec1) char(elec2) '.mat']);
 
 %% concatenate across subjects
-run1_allsubs_HFB_vs_alpha_SWC=[run1_allsubs_HFB_vs_alpha_SWC run1_HFB_vs_alpha_SWC.SWC_HFB_vs_Alpha_all];
-run2_allsubs_HFB_vs_alpha_SWC=[run2_allsubs_HFB_vs_alpha_SWC run2_HFB_vs_alpha_SWC.SWC_HFB_vs_Alpha_all];
-sleep_allsubs_HFB_vs_alpha_SWC=[sleep_allsubs_HFB_vs_alpha_SWC sleep_HFB_vs_alpha_SWC.SWC_HFB_vs_Alpha_all];
+run1_allsubs_HFB_vs_alpha_SWC=[run1_allsubs_HFB_vs_alpha_SWC run1_HFB_vs_alpha_SWC];
+run2_allsubs_HFB_vs_alpha_SWC=[run2_allsubs_HFB_vs_alpha_SWC run2_HFB_vs_alpha_SWC];
+sleep_allsubs_HFB_vs_alpha_SWC=[sleep_allsubs_HFB_vs_alpha_SWC sleep_HFB_vs_alpha_SWC];
 end
 
-pause;
+run1_DMN=run1_allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all;
+
 %% Make plots
 cd([globalECoGDir '/Rest/Figs/DMN_Core']);
 
@@ -92,8 +93,8 @@ end
 % plot
 FigHandle = figure('Position', [400, 600, 800, 470]);
 figure(1)
-for i=1:length(allsubs_HFB_vs_alpha_SWC)
-    plot(1:size(allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} '-'], ...
+for i=1:length(run1_allsubs_HFB_vs_alpha_SWC)
+    plot(1:size(run1_allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),run1_allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
     ylim([-1 1]);
@@ -101,8 +102,18 @@ for i=1:length(allsubs_HFB_vs_alpha_SWC)
        set(gca,'Xtick',0:1:6)
  set(gca,'XTickLabel',{'','10', '20'})
  set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
-  ylabel('BOLD-ECoG FC correlation (r)'); 
+  %ylabel('BOLD-ECoG FC correlation (r)'); 
   
+  hold on
+    plot(1:size(run2_allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),run2_allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} '-'], ...
+        'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+        'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));  
+    
+   hold on
+    plot(1:size(sleep_allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),sleep_allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} '-'], ...
+        'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+        'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));  
+    
     hold on
    set(gca,'box','off'); 
 set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
@@ -114,5 +125,5 @@ set(gcf,'color','w');
  set(gca,'XTickLabel',{'', '10','20','30','40','50','60'})
 ylabel('HFB-Alpha FC Correlation (r)');
 xlabel('Window Duration (sec)');
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_vs_alpha_SWC_group']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_vs_alpha_SWC_rest_sleep']));
 end
