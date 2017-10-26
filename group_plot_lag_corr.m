@@ -46,8 +46,92 @@ lag_peak_HFB_allsubs(sub,:)=lag_peak_HFB.lag_peak_HFB;
 lag_peak_Alpha_allsubs(sub,:)=lag_peak_Alpha.lag_peak_Alpha;
 end
 
+%% Make plots
+cd([globalECoGDir '/Rest/Figs/DMN_Core']);
+
+% Network color coding
+for i=1:length(networks)
+    if networks(i)==1
+   network_color(i,:)=cdcol.cobaltblue;
+    elseif networks(i)==2
+        network_color(i,:)=cdcol.grassgreen;
+    elseif networks(i)==3
+        network_color(i,:)=cdcol.orange 
+    end
+end
+% Subject marker coding
+for i=1:length(subject_nums)
+    if subject_nums(i)==1
+   subjectmarker{i,:}='<';
+    elseif subject_nums(i)==2
+        subjectmarker{i,:}='s';
+    elseif subject_nums(i)==3
+        subjectmarker{i,:}='o';
+    elseif subject_nums(i)==4
+        subjectmarker{i,:}='>';
+    elseif subject_nums(i)==5
+        subjectmarker{i,:}='^'
+    end
+end
 
 
+FigHandle = figure('Position', [400, 600, 150, 400]);
+figure(1)
 
+% plot SD + SE bars
+h=notBoxPlot(lag_peak_HFB_allsubs,1,0.01); axis([0.99,1.01,-.2,0.2]); set(gca, 'XTick', [],'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(h.data,'markersize',0.001,'markerfacecolor',[0 0 0]) 
+ set(gca,'XTickLabel',{'',''})
+ylabel('Peak Lag of Correlation (sec)');
+set(gcf,'color','w');
+set(gcf,'color','w');
+%set(gcf,'Ytick',1:1:11)
+%set(gca,'YTickLabel',{'-0.5','-0.4','-0.3','-0.2','-0.1','0','0.1','0.2','0.3','0.4', '0.5'})
+%set(gcf,'Position',[500 500 100 450]);
+%title({['p= ' num2str(p_val) ]; [' ']},'Fontsize',18);
+set(gcf, 'PaperPositionMode', 'auto');
+hold on
+
+x=ones(size(lag_peak_HFB_allsubs));
+a=0.995; b=1.005; % create custom jitter
+x=(b-a).*rand(size(x))+a;
+% plot data points with network and subject labelings
+for i=1:length(lag_peak_HFB_allsubs)
+    plot(x(i),lag_peak_HFB_allsubs(i),[subjectmarker{i,:} '-'], ...
+        'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+        'MarkerSize',6,'MarkerEdgeColor',network_color(i,:));  
+end
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'lag_peak_HFB_group']));
+pause; close;
+
+% Remove outliers for alpha plot
+lag_peak_Alpha_allsubs(find(lag_peak_Alpha_allsubs>1))=[];
+
+FigHandle = figure('Position', [400, 600, 150, 400]);
+figure(1)
+
+% plot SD + SE bars
+h=notBoxPlot(lag_peak_Alpha_allsubs,1,0.01); axis([0.99,1.01,-0.2,0.2]); set(gca, 'XTick', [],'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(h.data,'markersize',0.001,'markerfacecolor',[0 0 0]) 
+ set(gca,'XTickLabel',{'',''})
+ylabel('Peak Lag of Correlation (sec)');
+set(gcf,'color','w');
+set(gcf,'color','w');
+%set(gcf,'Position',[500 500 100 450]);
+%title({['p= ' num2str(p_val) ]; [' ']},'Fontsize',18);
+set(gcf, 'PaperPositionMode', 'auto');
+hold on
+
+x=ones(size(lag_peak_Alpha_allsubs));
+a=0.995; b=1.005; % create custom jitter
+x=(b-a).*rand(size(x))+a;
+% plot data points with network and subject labelings
+for i=1:length(lag_peak_Alpha_allsubs)
+    plot(x(i),lag_peak_Alpha_allsubs(i),[subjectmarker{i,:} '-'], ...
+        'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+        'MarkerSize',6,'MarkerEdgeColor',network_color(i,:));      
+end
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'lag_peak_Alpha_group']));
+pause; close;
 
 

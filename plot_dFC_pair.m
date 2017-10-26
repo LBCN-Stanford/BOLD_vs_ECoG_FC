@@ -55,17 +55,19 @@ BOLD_run='run1';
 
 %% iEEG defaults
 iEEG_sampling=1000;
-iEEG_step=2000;
+
 if BOLD=='iEEG'
     if isnumeric(iEEG_window_duration)==1
+iEEG_step=(iEEG_window_duration*iEEG_sampling)/2;
 iEEG_window_size=iEEG_window_duration*iEEG_sampling;    
     else
         iEEG_window_sizes=[10 20 30 40 50 60 70 80 90 100]*iEEG_sampling;
         iEEG_window_size=30*iEEG_sampling; % example for plots
+        iEEG_step=5000;    
     end
 end
 %iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-iEEG_window_plot=[57]; % window to plot time series; set to zero to turn off
+iEEG_window_plot=[53]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Alpha
 %depth='0';
 
@@ -655,14 +657,14 @@ if BOLD=='iEEG'
     window50_Alpha_fisher(find(window50_Alpha_fisher==0))=[];
     window60_Alpha_fisher=all_windows_fisher(:,6);
     window60_Alpha_fisher(find(window60_Alpha_fisher==0))=[];
-    window70_Alpha_fisher=all_windows_fisher(:,7);
-    window70_Alpha_fisher(find(window70_Alpha_fisher==0))=[];
-    window80_Alpha_fisher=all_windows_fisher(:,8);
-    window80_Alpha_fisher(find(window80_Alpha_fisher==0))=[];
-    window90_Alpha_fisher=all_windows_fisher(:,9);
-    window90_Alpha_fisher(find(window90_Alpha_fisher==0))=[];
-    window100_Alpha_fisher=all_windows_fisher(:,10);
-    window100_Alpha_fisher(find(window100_Alpha_fisher==0))=[];
+%     window70_Alpha_fisher=all_windows_fisher(:,7);
+%     window70_Alpha_fisher(find(window70_Alpha_fisher==0))=[];
+%     window80_Alpha_fisher=all_windows_fisher(:,8);
+%     window80_Alpha_fisher(find(window80_Alpha_fisher==0))=[];
+%     window90_Alpha_fisher=all_windows_fisher(:,9);
+%     window90_Alpha_fisher(find(window90_Alpha_fisher==0))=[];
+%     window100_Alpha_fisher=all_windows_fisher(:,10);
+%     window100_Alpha_fisher(find(window100_Alpha_fisher==0))=[];
     
     
     % correlate Alpha vs HFB
@@ -673,13 +675,13 @@ if BOLD=='iEEG'
     SWC_HFB_vs_Alpha_40=corr(window40_HFB_fisher,window40_Alpha_fisher);
     SWC_HFB_vs_Alpha_50=corr(window50_HFB_fisher,window50_Alpha_fisher);
     SWC_HFB_vs_Alpha_60=corr(window60_HFB_fisher,window60_Alpha_fisher);
-    SWC_HFB_vs_Alpha_70=corr(window70_HFB_fisher,window70_Alpha_fisher);
-    SWC_HFB_vs_Alpha_80=corr(window80_HFB_fisher,window80_Alpha_fisher);
-    SWC_HFB_vs_Alpha_90=corr(window90_HFB_fisher,window90_Alpha_fisher);
-    SWC_HFB_vs_Alpha_100=corr(window100_HFB_fisher,window100_Alpha_fisher);
+%     SWC_HFB_vs_Alpha_70=corr(window70_HFB_fisher,window70_Alpha_fisher);
+%     SWC_HFB_vs_Alpha_80=corr(window80_HFB_fisher,window80_Alpha_fisher);
+%     SWC_HFB_vs_Alpha_90=corr(window90_HFB_fisher,window90_Alpha_fisher);
+%     SWC_HFB_vs_Alpha_100=corr(window100_HFB_fisher,window100_Alpha_fisher);
     
     SWC_HFB_vs_Alpha_all=[SWC_HFB_vs_Alpha_10; SWC_HFB_vs_Alpha_20; SWC_HFB_vs_Alpha_30; SWC_HFB_vs_Alpha_40; SWC_HFB_vs_Alpha_50; ...
-        SWC_HFB_vs_Alpha_60; SWC_HFB_vs_Alpha_70; SWC_HFB_vs_Alpha_80; SWC_HFB_vs_Alpha_90; SWC_HFB_vs_Alpha_100];
+        SWC_HFB_vs_Alpha_60];
      
     end
     
@@ -889,7 +891,7 @@ norm_all_windows_Delta_medium_fisher=(all_windows_Delta_medium_fisher-mean(all_w
 norm_all_windows_Theta_medium_fisher=(all_windows_Theta_medium_fisher-mean(all_windows_Theta_medium_fisher))/std(all_windows_Theta_medium_fisher);
 
 % lag correlations between coupling in different frequencies
-[lag_corr,lag_times]=crosscorr(all_windows_HFB_medium_fisher,all_windows_Alpha_medium_fisher,60); % 60 windows
+[lag_corr,lag_times]=crosscorr(all_windows_HFB_medium_fisher,all_windows_Alpha_medium_fisher,5); % 5 windows
 HFB_alpha_lag_corr=lag_corr; HFB_alpha_lag_times=lag_times;
 
 end
@@ -1247,19 +1249,21 @@ if iEEG_window_duration=='aa'
 end
 SWC_HFB_vs_alpha=corr(all_windows_HFB_medium_fisher,all_windows_Alpha_medium_fisher);
 
-    FigHandle = figure('Position', [200, 600, 1000, 400]);
+    FigHandle = figure('Position', [200, 600, 800, 300]);
 p=plot(1:length(all_windows_HFB_medium_fisher),norm_all_windows_HFB_medium_fisher,...
 1:length(all_windows_Alpha_medium_fisher),norm_all_windows_Alpha_medium_fisher);
 
 p(1).LineWidth=2; p(1).Color=[cdcol.scarlet];
 p(2).LineWidth=2; p(2).Color=[cdcol.turquoiseblue];
 
+%xlim([0 length(all_windows_HFB_medium_fisher)]);
+xlim([0 70]); ylim([-3.5 3.5]);
 title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec; r = ' num2str(SWC_HFB_vs_alpha)]} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
-legend('HFB','α','Location','southeast')
+%legend('HFB','α','Location','southeast')
 pause; close;
 
 % MTD for HFB vs alpha
@@ -1438,12 +1442,13 @@ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 set(gcf,'color','w');
 xlabel(['Sliding window duration (sec)']); 
 ylabel(['HFB-Alpha FC correlation (r)']);
-xticks([1 2 3 4 5 6 7 8 9 10])
-xticklabels({'10','20','30','40','50','60','70','80','90','100'})
+xticks([1 2 3 4 5 6])
+xticklabels({'10','20','30','40','50','60'})
 
 pause; close;
 % save SWC values for subject
 cd([globalECoGDir '/Rest/' Patient '/Run' runs])
+pause
 save(['SWC_HFB_vs_Alpha_' roi1 roi2],['SWC_HFB_vs_Alpha_all']);
 end
 end

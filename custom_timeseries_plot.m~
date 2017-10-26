@@ -1,7 +1,6 @@
 % Run on outputs from plot_dFC_pair.m
 % DAN: yellowgreen, emeraldgreen
 % DMN: cobaltblue, turquoiseblue
-% FPCN: orange, burntsienna
 
 % time series for 2 electrodes
 % 60 sec ECoG plot
@@ -47,8 +46,8 @@ window_corr=num2str(corr(roi1_window_ts_plot,roi2_window_ts_plot));
 FigHandle = figure('Position', [200, 600, 800, 250]);
 p=plot(time,roi1_window_ts_plot,...
     time,roi2_window_ts_plot);
-p(1).LineWidth=2; p(1).Color=cdcol.orange;
-p(2).LineWidth=2; p(2).Color=cdcol.burntsienna;
+p(1).LineWidth=2; p(1).Color=cdcol.yellowgreen;
+p(2).LineWidth=2; p(2).Color=cdcol.emeraldgreen;
 
 title({[freq_name ' (0.1-1 Hz): ' roi1 ' vs ' roi2];...
     ['Window ' num2str(iEEG_window_plot) ':  r = ' window_corr]} ,'Fontsize',12);

@@ -11,11 +11,13 @@ Patient=input('Patient: ','s'); sub=Patient;
 rest=input('Rest (1) or Sleep (2)? ','s');
 runname=input('Run (e.g. 2): ','s'); run=runname;
 TDT=input('TDT (1) or EDF (0): ','s');
+Cropping=input('Crop edges by (e.g. 20 for 20 sec): ','s');
 
 if TDT=='1'
     sampling_rate=input('sampling rate (Hz): ','s');
     sampling_rate=str2num(sampling_rate);
 end
+
 
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' sub]);
@@ -41,7 +43,7 @@ fname=spm_select;
 [D,DC]=LBCN_convert_NKnew(fname);
 
 elseif TDT=='1'
-    [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],1); % downsample to 1000 Hz   
+    [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],1); % downsample to 1000 Hz  (or keep sampling rate if raw is <1000) 
 end
 fname_spm = fullfile(D.path,D.fname);
 run_length=(D.nsamples/D.fsample)/60;
@@ -83,7 +85,9 @@ fname_spm_btf=['btf_aMpfff' D.fname];
 batch_AverageFreq(fname_spm_btf);
 
 %% Chop 20 sec from beginning
-cropping=20000; both=0;
+%cropping=20000; 
+both=0;
+cropping=str2num(Cropping)*sampling_rate;
 
 fname_HFB=['HFBbtf_aMpfff' D.fname];
 fname_Alpha=['Alphabtf_aMpfff' D.fname];
