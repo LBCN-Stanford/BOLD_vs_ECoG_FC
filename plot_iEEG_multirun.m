@@ -62,7 +62,7 @@ fsDir=getFsurfSubDir();
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
 
-%% Get BOLD-ECoG corr (fisher z) for electrode of interest
+%% Get ECoG vs ECoG corr (fisher z) for electrode of interest
 seed_rest1sleep1=rest1sleep1.allelecs_run1run2_corr(elec);
 seed_rest2sleep1=rest2sleep1.allelecs_run1run2_corr(elec);
 seed_rest1heaven1=rest1heaven1.allelecs_run1run2_corr(elec);

@@ -67,7 +67,7 @@ iEEG_window_size=iEEG_window_duration*iEEG_sampling;
     end
 end
 %iEEG_window_duration=iEEG_window_size/iEEG_sampling;
-iEEG_window_plot=[53]; % window to plot time series; set to zero to turn off
+iEEG_window_plot=[30]; % window to plot time series; set to zero to turn off
 freq_window_plot=[1 2]; % 1=HFB, 2=Alpha
 %depth='0';
 
@@ -1263,7 +1263,7 @@ title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 set(gcf,'color','w');
-%legend('HFB','α','Location','southeast')
+legend('HFB','α','Location','southeast')
 pause; close;
 
 % MTD for HFB vs alpha
@@ -1352,7 +1352,7 @@ roi2_HFB_alpha_60sec=corr(roi2_HFB_medium_ts_norm(1:60*iEEG_sampling),roi2_Alpha
 
 time=(1:60000)/iEEG_sampling;
 FigHandle = figure('Position', [200, 600, 800, 300]);
-plot(time,roi1_HFB_medium_ts_norm(1:60*iEEG_sampling),time,roi1_Alpha_medium_ts_norm(1:60*iEEG_sampling),'k','LineWidth',3);
+plot(time,roi1_HFB_medium_ts_norm(1:60*iEEG_sampling),time,roi1_Alpha_medium_ts_norm(1:60*iEEG_sampling),'k','LineWidth',2);
 title({['HFB-Alpha correlation: r = ' num2str(roi1_HFB_alpha_60sec) ' for ' roi1]} ,'Fontsize',12);
 xlabel(['Time (sec)']); ylabel(['Signal']);
 set(gcf,'color','w');
@@ -1447,8 +1447,11 @@ xticklabels({'10','20','30','40','50','60'})
 
 pause; close;
 % save SWC values for subject
+if rest=='1';
 cd([globalECoGDir '/Rest/' Patient '/Run' runs])
-pause
+elseif rest=='0';
+  cd([globalECoGDir '/Sleep/' Patient '/Run' runs])  
+end
 save(['SWC_HFB_vs_Alpha_' roi1 roi2],['SWC_HFB_vs_Alpha_all']);
 end
 end
