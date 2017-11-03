@@ -105,12 +105,12 @@ for i=1:length(run1_allsubs_HFB_vs_alpha_SWC)
   %ylabel('BOLD-ECoG FC correlation (r)'); 
   
   hold on
-    plot(1:size(run2_allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),run2_allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} '-'], ...
+    plot(1:size(run2_allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),run2_allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} '--'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));  
     
    hold on
-    plot(1:size(sleep_allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),sleep_allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} '-'], ...
+    plot(1:size(sleep_allsubs_HFB_vs_alpha_SWC(1).SWC_HFB_vs_Alpha_all(1:6)),sleep_allsubs_HFB_vs_alpha_SWC(i).SWC_HFB_vs_Alpha_all(1:6),[subjectmarker{i,:} ':'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));  
     
@@ -118,7 +118,7 @@ for i=1:length(run1_allsubs_HFB_vs_alpha_SWC)
    set(gca,'box','off'); 
 set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
-%title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
+legend
   ylim([-1 1]);
   xlim([0 6]);
    set(gca,'Xtick',0:1:6)

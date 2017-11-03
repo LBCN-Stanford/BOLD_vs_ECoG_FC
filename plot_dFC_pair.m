@@ -1344,6 +1344,8 @@ pause; close;
 % plot local HFB vs alpha (1 min of data) and correlation values
 roi1_HFB_alpha_corr=roi1_xcorr_allfreqs(7,3);
 roi2_HFB_alpha_corr=roi2_xcorr_allfreqs(7,3);
+save([roi1 '_interfreq_xcorr'],'roi1_xcorr_allfreqs');
+save([roi2 '_interfreq_xcorr'],'roi2_xcorr_allfreqs');
 save([roi1 '_HFB_alpha_corr'],'roi1_HFB_alpha_corr');
 save([roi2 '_HFB_alpha_corr'],'roi2_HFB_alpha_corr');
 

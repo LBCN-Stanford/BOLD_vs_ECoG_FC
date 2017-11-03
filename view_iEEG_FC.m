@@ -40,7 +40,9 @@ load('Delta_medium_corr.mat');
 load('Gamma_medium_corr.mat');
 load('SCP_medium_corr.mat');
 load('HFB_slow_corr.mat');
+if view_bad=='0'
 load('all_bad_indices.mat');
+end
 
 fsDir=getFsurfSubDir();
 cd([fsDir '/' Patient '/elec_recon']);

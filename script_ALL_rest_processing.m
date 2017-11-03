@@ -13,11 +13,10 @@ runname=input('Run (e.g. 2): ','s'); run=runname;
 TDT=input('TDT (1) or EDF (0): ','s');
 Cropping=input('Crop edges by (e.g. 20 for 20 sec): ','s');
 
-if TDT=='1'
     sampling_rate=input('sampling rate (Hz): ','s');
-    sampling_rate=str2num(sampling_rate);
-end
+    sampling_rate=str2num(sampling_rate);   
 
+    EDF_convert=input('EDF already converted (1) or not or TDT (0)? ','s');
 
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' sub]);
@@ -38,15 +37,37 @@ end
 
 %% Convert EDF to SPM .mat
 if TDT=='0';
+    if EDF_convert=='0'
 display(['Choose raw EDF data']);
 fname=spm_select;
 [D,DC]=LBCN_convert_NKnew(fname);
-
-elseif TDT=='1'
+    end
+end
+if TDT=='1'
     [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],1); % downsample to 1000 Hz  (or keep sampling rate if raw is <1000) 
 end
+if EDF_convert=='0'
 fname_spm = fullfile(D.path,D.fname);
 run_length=(D.nsamples/D.fsample)/60;
+end
+
+% if pre-converted from EDF: downsample pre-converted EDF to 1000 Hz
+if EDF_convert=='1'
+    
+    display(['Choose raw EDF-converted .mat data']);
+fname=spm_select;
+if sampling_rate~=1000
+S.D=[fname]; S.method='downsample'; S.fsample_new=1000;
+D=spm_eeg_downsample(S);
+fname_spm=[D.fname];
+run_length=(D.nsamples/D.fsample)/60;
+else
+    
+D=spm_eeg_load(fname);
+    fname_spm=[fname];
+    run_length=(D.nsamples/D.fsample)/60;
+end
+end
 
 %% Filter iEEG data and detect bad channels
 LBCN_filter_badchans(fname_spm,[],bad_chans,1,[]);

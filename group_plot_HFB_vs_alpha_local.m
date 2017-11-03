@@ -22,7 +22,7 @@ mkdir('dFC_analysis'); cd ..
 
 %% Load subject, ECoG run numbers, and electrode list
 cd(['dFC_analysis']);
-list=importdata('HFB_vs_alpha_local.txt',' ');
+list=importdata('HFB_vs_alpha_pairs.txt',' ');
 subjects=list.textdata(:,1);
 subject_nums=list.data(:,1);
 roi1=list.textdata(:,2); roi2=list.textdata(:,3);
@@ -33,6 +33,7 @@ networks=list.data(:,3);
 %% Loop through subjects and electrodes
 allsubs_HFB_vs_alpha_local_elec1=[];
 allsubs_HFB_vs_alpha_local_elec2=[];
+allsubs_interfreq_xcorr=[];
 for sub=1:length(subjects)
     Patient=subjects{sub}
     run1=num2str(run_num(sub));
@@ -43,10 +44,13 @@ for sub=1:length(subjects)
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/figs/iEEG/Interfreq']);
 HFB_alpha_local_elec1=load([char(elec1) '_HFB_alpha_corr.mat']);
 HFB_alpha_local_elec2=load([char(elec2) '_HFB_alpha_corr.mat']);
+interfreq_xcorr_elec1=load([char(elec1) '_interfreq_xcorr.mat']);
+interfreq_xcorr_elec2=load([char(elec2) '_interfreq_xcorr.mat']);
 
 %% concatenate across subjects
 allsubs_HFB_vs_alpha_local_elec1=[allsubs_HFB_vs_alpha_local_elec1 HFB_alpha_local_elec1.roi1_HFB_alpha_corr];
 allsubs_HFB_vs_alpha_local_elec2=[allsubs_HFB_vs_alpha_local_elec2 HFB_alpha_local_elec2.roi2_HFB_alpha_corr];
+allsubs_interfreq_xcorr=cat(3,allsubs_interfreq_xcorr,interfreq_xcorr_elec1.roi1_xcorr_allfreqs,interfreq_xcorr_elec2.roi2_xcorr_allfreqs)
 end
 
 %% Stats - sign-rank test on HFB vs alpha values
@@ -111,6 +115,28 @@ for i=1:length(allsubs_HFB_vs_alpha_local)
 end
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_vs_alpha_local_group']));
 pause; close;
+
+mean_all_interfreq=mean(allsubs_interfreq_xcorr,3);
+mean_all_interfreq=tril(mean_all_interfreq);
+
+load('redblue.m');
+
+FigHandle = figure(1);
+set(FigHandle,'Position',[50, 50, 800, 800]);
+set(gcf,'color','w');
+imagesc(mean_all_interfreq,[-1 1]);
+h=colorbar('northoutside'); colormap(flipud(redblue)/255);
+set(h,'fontsize',11);
+set(get(h,'title'),'string','r');
+set(gca,'box','off')
+xticks([1 2 3 4 5 6 7])
+yticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+yticks([1 2 3 4 5 6 7])
+xticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+set(gca,'Fontsize',24,'Fontweight','bold')
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,['Interfreq_local_temporal_corr_allsubs_mean']]));
+%title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
+
 
 
 
