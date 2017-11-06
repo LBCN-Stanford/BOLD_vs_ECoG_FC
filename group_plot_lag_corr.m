@@ -105,7 +105,7 @@ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'lag_peak_HFB_group']));
 pause; close;
 
 % Remove outliers for alpha plot
-lag_peak_Alpha_allsubs(find(lag_peak_Alpha_allsubs>1))=[];
+lag_peak_Alpha_allsubs(find(lag_peak_Alpha_allsubs>1))=NaN;
 
 FigHandle = figure('Position', [400, 600, 150, 400]);
 figure(1)

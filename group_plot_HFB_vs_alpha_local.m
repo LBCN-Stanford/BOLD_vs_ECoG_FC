@@ -125,7 +125,7 @@ FigHandle = figure(1);
 set(FigHandle,'Position',[50, 50, 800, 800]);
 set(gcf,'color','w');
 imagesc(mean_all_interfreq,[-1 1]);
-h=colorbar('northoutside'); colormap(flipud(redblue)/255);
+h=colorbar('eastoutside'); colormap(flipud(redblue)/255);
 set(h,'fontsize',11);
 set(get(h,'title'),'string','r');
 set(gca,'box','off')
