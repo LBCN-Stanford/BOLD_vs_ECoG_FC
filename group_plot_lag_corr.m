@@ -75,11 +75,11 @@ for i=1:length(subject_nums)
 end
 
 
-FigHandle = figure('Position', [400, 600, 150, 400]);
+FigHandle = figure('Position', [400, 600, 125, 400]);
 figure(1)
 
 % plot SD + SE bars
-h=notBoxPlot(lag_peak_HFB_allsubs,1,0.01); axis([0.99,1.01,-.2,0.2]); set(gca, 'XTick', [],'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+h=notBoxPlot(lag_peak_HFB_allsubs,1,0.01); axis([0.99,1.01,-.2,0.2]); set(gca, 'XTick', [],'Fontsize',12,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(h.data,'markersize',0.001,'markerfacecolor',[0 0 0]) 
  set(gca,'XTickLabel',{'',''})
 ylabel('Peak Lag of Correlation (sec)');

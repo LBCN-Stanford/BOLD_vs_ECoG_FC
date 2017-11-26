@@ -1257,7 +1257,7 @@ p(1).LineWidth=2; p(1).Color=[cdcol.scarlet];
 p(2).LineWidth=2; p(2).Color=[cdcol.turquoiseblue];
 
 %xlim([0 length(all_windows_HFB_medium_fisher)]);
-xlim([0 70]); ylim([-3.5 3.5]);
+xlim([0 25]); ylim([-3.5 3.5]);
 title({['Dynamic FC (0.1-1 Hz): ' roi1 ' vs ' roi2]; ...
     ['Step size = ' num2str(step_size) ' sec; r = ' num2str(SWC_HFB_vs_alpha)]} ,'Fontsize',12);
 xlabel(['Window number (' num2str(window_duration) ' sec windows)']); ylabel(['Normalized correlation (z)']);

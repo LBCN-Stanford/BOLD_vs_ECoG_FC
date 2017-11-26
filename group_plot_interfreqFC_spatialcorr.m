@@ -169,7 +169,7 @@ for i=1:length(subject_nums)
     elseif subject_nums(i)==4
         subjectmarker{i,:}='>';
     elseif subject_nums(i)==5
-        subjectmarker{i,:}='^';ear
+        subjectmarker{i,:}='^';
         
     end
 end

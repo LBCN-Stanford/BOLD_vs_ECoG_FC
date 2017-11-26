@@ -106,7 +106,7 @@ for i=1:length(subject_nums)
 end
 
 % plot HFB corr
-FigHandle = figure('Position', [400, 600, 400, 700]);
+FigHandle = figure('Position', [400, 600, 200, 600]);
 figure(1)
 for i=1:length(allsubs_seed_HFB_medium_allruns)
     plot(1:size(allsubs_seed_HFB_medium_allruns,1),allsubs_seed_HFB_medium_allruns(:,i),[subjectmarker{i,:} '-'], ...

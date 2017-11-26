@@ -102,7 +102,7 @@ for i=1:length(subject_nums)
 end
 
 % plot
-FigHandle = figure('Position', [400, 600, 400, 700]);
+FigHandle = figure('Position', [400, 600, 200, 350]);
 figure(1)
 for i=1:length(allsubs_seed_sleep)
     plot(1:size(allsubs_seed_sleep,1),allsubs_seed_sleep(:,i),[subjectmarker{i,:} '-'], ...

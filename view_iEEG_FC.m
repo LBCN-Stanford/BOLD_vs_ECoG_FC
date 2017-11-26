@@ -9,6 +9,10 @@ iEEG=input('iEEG only (1) or iEEG & BOLD (2) or iEEG & Yeo atlas (3) or iEEG & I
 view_bad=input('show bad channels (1) or hide (0)? ','s');
 depth=input('depth(1) or subdural(0)? ','s');
 freq=input('HFB 0.1-1Hz (1) alpha (2) beta1 (3) beta2 (4) Gamma (5) Delta (6) Theta (7) all (8) ','s');
+plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
+if plot_all=='0'
+    elec_number=input('electrode number (iElvis order): ','s');
+end
 depth=str2num(depth);
 bold_run_num=['run' bold_runname];
 ecog_run_num=['run' ecog_runname];
@@ -120,8 +124,17 @@ end
 
 cd electrode_spheres;
 
+if plot_all=='0'
+   coords=1;
+   elec=elec_number;
+end
+
 for elec=1:length(coords);
+    if plot_all=='0'
+        elec=str2num(elec_number);
+    end
    elec_num=num2str(elec);
+   
    
    if isempty(find(bad_chans==elec))==1 %only plot good chans
 
@@ -166,12 +179,14 @@ cfg.pullOut=3;
 cfg.title=[elec_name];  
 cfg.showLabels='n';
 cfg.elecNames=curr_elecNames;
-cfg.elecColorScale=[-0.1 0.4];
+%cfg.elecColorScale=[-0.1 0.4];
+cfg.elecColorScale='minmax';
 
 if freq=='1' || freq =='8'
 cfg.elecColors=elecColors_HFB_medium;
 cfg.elecColors(find(cfg.elecColors==1))=[];
-cfg.elecColorScale=[-0.1 0.4];
+%cfg.elecColorScale=[-0.1 0.4];
+cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 close;
@@ -179,15 +194,17 @@ end
 if freq=='2' || freq =='8'
    cfg.elecColors=elecColors_alpha_medium; 
    cfg.elecColors(find(cfg.elecColors==1))=[];
-   cfg.elecColorScale=[-0.1 0.4];
-   cfgOut=plotPialSurf(Patient,cfg);
+   %cfg.elecColorScale=[-0.1 0.4];
+   cfg.elecColorScale='minmax';
+   c
    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Alpha_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 close;
 end
 if freq=='3' || freq =='8'
     cfg.elecColors=elecColors_Beta1_medium;
     cfg.elecColors(find(cfg.elecColors==1))=[];
-    cfg.elecColorScale=[-0.1 0.4];    
+    %cfg.elecColorScale=[-0.1 0.4]; 
+    cfg.elecColorScale='minmax';
     cfgOut=plotPialSurf(Patient,cfg);
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Beta1_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 close;
@@ -195,7 +212,8 @@ end
 if freq=='4' || freq =='8'
     cfg.elecColors=elecColors_Beta2_medium;
     cfg.elecColors(find(cfg.elecColors==1))=[];
-    cfg.elecColorScale=[-0.1 0.4];
+    %cfg.elecColorScale=[-0.1 0.4];
+    cfg.elecColorScale='minmax';
     cfgOut=plotPialSurf(Patient,cfg);
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Beta2_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 close;
@@ -203,7 +221,8 @@ end
 if freq=='5' || freq=='8'
     cfg.elecColors=elecColors_Gamma_medium;
     cfg.elecColors(find(cfg.elecColors==1))=[];
-    cfg.elecColorScale=[-0.1 0.4];
+    %cfg.elecColorScale=[-0.1 0.4];
+    cfg.elecColorScale='minmax';
     cfgOut=plotPialSurf(Patient,cfg);
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Gamma_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 close;  
@@ -211,7 +230,8 @@ end
 if freq=='6' || freq=='8'
     cfg.elecColors=elecColors_Delta_medium;
     cfg.elecColors(find(cfg.elecColors==1))=[];
-    cfg.elecColorScale=[-0.1 0.4]; 
+    %cfg.elecColorScale=[-0.1 0.4]; 
+    cfg.elecColorScale='minmax';
     cfgOut=plotPialSurf(Patient,cfg);
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Delta_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 close;
@@ -219,7 +239,8 @@ end
 if freq=='7' || freq=='8'
     cfg.elecColors=elecColors_Theta_medium;
     cfg.elecColors(find(cfg.elecColors==1))=[];
-    cfg.elecColorScale=[-0.1 0.4];
+    %cfg.elecColorScale=[-0.1 0.4];
+    cfg.elecColorScale='minmax';
     cfgOut=plotPialSurf(Patient,cfg);
     print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Theta_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 close;
@@ -258,25 +279,32 @@ cfg.showLabels='n';
 cfg.elecNames=curr_elecNames;
 if freq=='1'
 cfg.elecColors=elecColors_HFB_medium;
-cfg.elecColorScale=[-0.1 0.4];
+%cfg.elecColorScale=[-0.1 0.4];
+cfg.elecColorScale='minmax';
 elseif freq=='2'
    cfg.elecColors=elecColors_alpha_medium; 
-   cfg.elecColorScale=[-0.1 0.4];
+   %cfg.elecColorScale=[-0.1 0.4];
+   cfg.elecColorScale='minmax';
 elseif freq=='3'
     cfg.elecColors=elecColors_Beta1_medium;
-    cfg.elecColorScale=[-0.1 0.4];    
+    %cfg.elecColorScale=[-0.1 0.4];    
+    cfg.elecColorScale='minmax';
 elseif freq=='4'
     cfg.elecColors=elecColors_Beta2_medium;
-    cfg.elecColorScale=[-0.1 0.4];
+    %cfg.elecColorScale=[-0.1 0.4];
+    cfg.elecColorScale='minmax';
 elseif freq=='5'
     cfg.elecColors=elecColors_Gamma_medium;
-    cfg.elecColorScale=[-0.1 0.4];
+    % cfg.elecColorScale=[-0.1 0.4];
+    cfg.elecColorScale='minmax';
    elseif freq=='6'
     cfg.elecColors=elecColors_Delta_medium;
-    cfg.elecColorScale=[0.2 0.8]; 
+    %cfg.elecColorScale=[0.2 0.8]; 
+    cfg.elecColorScale='minmax';
     elseif freq=='7'
     cfg.elecColors=elecColors_Theta_medium;
-    cfg.elecColorScale=[0.2 0.8];
+    %cfg.elecColorScale=[0.2 0.8];
+    cfg.elecColorScale='minmax';
 end
 cfg.elecColors(find(cfg.elecColors==1))=[];
 if iEEG=='2'
