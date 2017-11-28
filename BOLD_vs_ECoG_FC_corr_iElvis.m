@@ -2697,7 +2697,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2763,7 +2763,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_beta1_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_beta1',filesep,elec_name '_BOLD_beta1_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_beta1_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2796,7 +2796,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_beta2_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_beta2',filesep,elec_name '_BOLD_beta2_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_beta2_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2829,7 +2829,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Theta_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_Theta',filesep,elec_name '_BOLD_Theta_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Theta_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2862,7 +2862,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Delta_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_Delta',filesep,elec_name '_BOLD_Delta_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Delta_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2895,7 +2895,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Gamma_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_Gamma',filesep,elec_name '_BOLD_Gamma_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Gamma_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2928,7 +2928,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_SCP',filesep,elec_name '_BOLD_SCP_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2961,7 +2961,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2994,7 +2994,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_fast_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_fast_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_fast_aCompCor']));   
 end
 close;
  if use_elec==1
