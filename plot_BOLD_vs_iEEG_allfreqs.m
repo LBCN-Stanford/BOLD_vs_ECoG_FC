@@ -1,6 +1,6 @@
 % must first run BOLD_vs_ECoG_FC_corr_iElvis.m
 % dFC_preproc_list.txt file should contain subject name (column 1), sub number (column 2),
-% ECoG run number (column 3) electrode number (column 4), and network identity (column 5)
+% ECoG run1 number (column 3), ECoG run2 number (column 4), electrode number (column 5), and network identity (column 6)
 % network identity: 1=DMN, 2=DAN, 3=FPCN
 
 %Patient=input('Patient: ','s');
@@ -26,8 +26,8 @@ list=importdata('dFC_preproc_list.txt',' ');
 subjects=list.textdata;
 subject_nums=list.data(:,1);
 ecog_runs=list.data(:,2);
-elecs=list.data(:,3);
-networks=list.data(:,4);
+elecs=list.data(:,4);
+networks=list.data(:,5);
 allsubs_seedcorr_allfreqs=NaN(length(subjects),7);
 
 for sub=1:length(subjects)

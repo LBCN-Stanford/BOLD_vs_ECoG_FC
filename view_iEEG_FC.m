@@ -196,7 +196,7 @@ if freq=='2' || freq =='8'
    cfg.elecColors(find(cfg.elecColors==1))=[];
    %cfg.elecColorScale=[-0.1 0.4];
    cfg.elecColorScale='minmax';
-   c
+   cfgOut=plotPialSurf(Patient,cfg);
    print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'Alpha_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
 close;
 end

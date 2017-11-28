@@ -1062,6 +1062,18 @@ lag_peak=lag_times(find(lag_corr==max(lag_corr)));
      save(['lag_peak_Alpha' roi1 roi2],'lag_peak_Alpha');
      save(['lag_peak_HFB' roi1 roi2],'lag_peak_HFB');
      
+     % save static FC for each frequency range
+     Delta_staticFC=corr(roi1_Delta_medium_ts_norm,roi2_Delta_medium_ts_norm);
+     Theta_staticFC=corr(roi1_Theta_medium_ts_norm,roi2_Theta_medium_ts_norm);
+     Alpha_staticFC=corr(roi1_Alpha_medium_ts_norm,roi2_Alpha_medium_ts_norm);
+     Beta1_staticFC=corr(roi1_Beta1_medium_ts_norm,roi2_Beta1_medium_ts_norm);
+     Beta2_staticFC=corr(roi1_Beta2_medium_ts_norm,roi2_Beta2_medium_ts_norm);
+     Gamma_staticFC=corr(roi1_Gamma_medium_ts_norm,roi2_Gamma_medium_ts_norm);
+     HFB_staticFC=corr(roi1_HFB_medium_ts_norm,roi2_HFB_medium_ts_norm);
+     
+     StaticFC_allfreqs=[Delta_staticFC Theta_staticFC Alpha_staticFC Beta1_staticFC Beta2_staticFC Gamma_staticFC HFB_staticFC];
+     save('StaticFC_allfreqs','StaticFC_allfreqs');
+     
     elseif frequency=='p'
         roi1_HFB_ts_norm=(roi1_HFB_ts-mean(roi1_HFB_ts))/std(roi1_HFB_ts);
         roi1_Alpha_ts_norm=(roi1_Alpha_ts-mean(roi1_Alpha_ts))/std(roi1_Alpha_ts);
