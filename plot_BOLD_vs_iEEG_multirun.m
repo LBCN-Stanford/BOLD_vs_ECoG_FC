@@ -43,12 +43,14 @@ run1_HFB_medium=load('corr_BOLD_HFB_medium_allelecs.mat');
 run1_HFB_medium_partial=load('partialcorr_BOLD_HFB_medium_allelecs.mat');
 run1_alpha_medium=load('corr_BOLD_alpha_medium_allelecs.mat');
 run1_alpha_medium_partial=load('partialcorr_BOLD_alpha_medium_allelecs.mat');
+run1_HFB_slow=load('corr_BOLD_HFB_slow_allelecs.mat');
 
 cd([globalECoGDir '/Rest/' Patient '/Run' ecog_run2name '/BOLD_ECoG_figs/GSR']);
 run2_HFB_medium=load('corr_BOLD_HFB_medium_allelecs.mat');
 run2_HFB_medium_partial=load('partialcorr_BOLD_HFB_medium_allelecs.mat');
 run2_alpha_medium=load('corr_BOLD_alpha_medium_allelecs.mat');
 run2_alpha_medium_partial=load('partialcorr_BOLD_alpha_medium_allelecs.mat');
+run2_HFB_slow=load('corr_BOLD_HFB_slow_allelecs.mat');
 
 %% get elec names
 fsDir=getFsurfSubDir();
@@ -62,6 +64,9 @@ seed_HFB_medium_run2=run2_HFB_medium.corr_BOLD_HFB_medium_allelecs(elec);
 seed_HFB_medium_run1_partial=run1_HFB_medium_partial.partialcorr_BOLD_HFB_medium_allelecs(elec);
 seed_HFB_medium_run2_partial=run2_HFB_medium_partial.partialcorr_BOLD_HFB_medium_allelecs(elec);
 
+seed_HFB_slow_run1=run1_HFB_slow.corr_BOLD_HFB_slow_allelecs(elec);
+seed_HFB_slow_run2=run2_HFB_slow.corr_BOLD_HFB_slow_allelecs(elec);
+
 seed_alpha_medium_run1=run1_alpha_medium.corr_BOLD_alpha_medium_allelecs(elec);
 seed_alpha_medium_run2=run2_alpha_medium.corr_BOLD_alpha_medium_allelecs(elec);
 
@@ -71,6 +76,7 @@ seed_alpha_medium_run2_partial=run2_alpha_medium_partial.partialcorr_BOLD_alpha_
 %% concatenate across subjects
 allsubs_seed_HFB_medium_allruns(:,sub)=[seed_HFB_medium_run1 seed_HFB_medium_run2];
 allsubs_seed_HFB_medium_allruns_partial(:,sub)=[seed_HFB_medium_run1_partial seed_HFB_medium_run2_partial];
+allsubs_seed_HFB_slow_allruns(:,sub)=[seed_HFB_slow_run1 seed_HFB_slow_run2];
 
 allsubs_seed_alpha_medium_allruns(:,sub)=[seed_alpha_medium_run1 seed_alpha_medium_run2];
 allsubs_seed_alpha_medium_allruns_partial(:,sub)=[seed_alpha_medium_run1_partial seed_alpha_medium_run2_partial];
@@ -105,8 +111,8 @@ for i=1:length(subject_nums)
     end
 end
 
-% plot HFB corr
-FigHandle = figure('Position', [400, 600, 200, 600]);
+% plot HFB medium corr
+FigHandle = figure('Position', [400, 600, 400, 700]);
 figure(1)
 for i=1:length(allsubs_seed_HFB_medium_allruns)
     plot(1:size(allsubs_seed_HFB_medium_allruns,1),allsubs_seed_HFB_medium_allruns(:,i),[subjectmarker{i,:} '-'], ...
@@ -134,7 +140,36 @@ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_multirun_HFB']
 end
 pause; close;
 
-%plot HFB partial corr (distance-corrected)
+% plot HFB slow corr
+FigHandle = figure('Position', [400, 600, 400, 700]);
+figure(1)
+for i=1:length(allsubs_seed_HFB_slow_allruns)
+    plot(1:size(allsubs_seed_HFB_slow_allruns,1),allsubs_seed_HFB_slow_allruns(:,i),[subjectmarker{i,:} '-'], ...
+        'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
+        'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
+    ylim([-0.1 0.8]);
+    xlim([0.5 2.5]);
+       set(gca,'Xtick',1:1:3)
+ set(gca,'XTickLabel',{'','1', '2'})
+ set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
+  ylabel('BOLD-ECoG FC correlation (r)'); 
+  
+    hold on
+   set(gca,'box','off'); 
+set(gca,'Fontsize',18,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+%title({[elec_name ': BOLD FC vs iEEG FC']},'Fontsize',12);
+  ylim([-0.1 0.8]);
+  xlim([0.5 2.5]);
+   set(gca,'Xtick',0:1:8)
+ set(gca,'XTickLabel',{'', '1','2'})
+ylabel('Correlation with BOLD FC (r)');
+xlabel('ECoG Run');
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_multirun_HFB_slow']));
+end
+pause; close;
+
+%plot HFB-medium partial corr (distance-corrected)
 FigHandle = figure('Position', [400, 600, 400, 700]);
 figure(1)
 for i=1:length(allsubs_seed_HFB_medium_allruns)

@@ -990,29 +990,29 @@ Gamma_fast_allcorr=corrcoef(Gamma_fast_iElvis); Gamma_fast_column=Gamma_fast_all
 SCP_allcorr=corrcoef(SCP_medium_iElvis); SCP_column=SCP_allcorr(:);
 BOLD_allcorr=corrcoef(BOLD_iElvis); BOLD_column=BOLD_allcorr(:);
 
-slow_mat=slow_allcorr; slow_mat(find(slow_mat==1))=NaN; slow_mat(find(BOLD_allcorr==1))=NaN;
-medium_mat=medium_allcorr; medium_mat(find(medium_mat==1))=NaN; medium_mat(find(BOLD_allcorr==1))=NaN;
-alpha_mat=alpha_allcorr; alpha_mat(find(alpha_mat==1))=NaN; alpha_mat(find(BOLD_allcorr==1))=NaN;
-beta1_mat=beta1_allcorr; beta1_mat(find(beta1_mat==1))=NaN; beta1_mat(find(BOLD_allcorr==1))=NaN;
-beta2_mat=beta2_allcorr; beta2_mat(find(beta2_mat==1))=NaN; beta2_mat(find(BOLD_allcorr==1))=NaN;
-Theta_mat=Theta_allcorr; Theta_mat(find(Theta_mat==1))=NaN; Theta_mat(find(BOLD_allcorr==1))=NaN;
-Delta_mat=Delta_allcorr; Delta_mat(find(Delta_mat==1))=NaN; Delta_mat(find(BOLD_allcorr==1))=NaN;
-Gamma_mat=Gamma_allcorr; Gamma_mat(find(Gamma_mat==1))=NaN; Gamma_mat(find(BOLD_allcorr==1))=NaN;
-HFB_fast_mat=HFB_fast_allcorr; HFB_fast_mat(find(HFB_fast_mat==1))=NaN; HFB_fast_mat(find(BOLD_allcorr==1))=NaN;
-alpha_fast_mat=alpha_fast_allcorr; alpha_fast_mat(find(alpha_fast_mat==1))=NaN; alpha_fast_mat(find(BOLD_allcorr==1))=NaN;
-beta1_fast_mat=beta1_fast_allcorr; beta1_fast_mat(find(beta1_fast_mat==1))=NaN; beta1_fast_mat(find(BOLD_allcorr==1))=NaN;
-beta2_fast_mat=beta2_fast_allcorr; beta2_fast_mat(find(beta2_fast_mat==1))=NaN; beta2_fast_mat(find(BOLD_allcorr==1))=NaN;
-Theta_fast_mat=Theta_fast_allcorr; Theta_fast_mat(find(Theta_fast_mat==1))=NaN; Theta_fast_mat(find(BOLD_allcorr==1))=NaN;
-Delta_fast_mat=Delta_fast_allcorr; Delta_fast_mat(find(Delta_fast_mat==1))=NaN; Delta_fast_mat(find(BOLD_allcorr==1))=NaN;
-Gamma_fast_mat=Gamma_fast_allcorr; Gamma_fast_mat(find(Gamma_fast_mat==1))=NaN; Gamma_fast_mat(find(BOLD_allcorr==1))=NaN;
-HFB_mat=HFB_allcorr; HFB_mat(find(HFB_mat==1))=NaN; HFB_mat(find(BOLD_allcorr==1))=NaN;
+slow_mat=slow_allcorr; slow_mat(find(slow_mat==1))=NaN; slow_mat(find(BOLD_allcorr>0.999))=NaN;
+medium_mat=medium_allcorr; medium_mat(find(medium_mat==1))=NaN; medium_mat(find(BOLD_allcorr>0.999))=NaN;
+alpha_mat=alpha_allcorr; alpha_mat(find(alpha_mat==1))=NaN; alpha_mat(find(BOLD_allcorr>0.999))=NaN;
+beta1_mat=beta1_allcorr; beta1_mat(find(beta1_mat==1))=NaN; beta1_mat(find(BOLD_allcorr>0.999))=NaN;
+beta2_mat=beta2_allcorr; beta2_mat(find(beta2_mat==1))=NaN; beta2_mat(find(BOLD_allcorr>0.999))=NaN;
+Theta_mat=Theta_allcorr; Theta_mat(find(Theta_mat==1))=NaN; Theta_mat(find(BOLD_allcorr>0.999))=NaN;
+Delta_mat=Delta_allcorr; Delta_mat(find(Delta_mat==1))=NaN; Delta_mat(find(BOLD_allcorr>0.999))=NaN;
+Gamma_mat=Gamma_allcorr; Gamma_mat(find(Gamma_mat==1))=NaN; Gamma_mat(find(BOLD_allcorr>0.999))=NaN;
+HFB_fast_mat=HFB_fast_allcorr; HFB_fast_mat(find(HFB_fast_mat==1))=NaN; HFB_fast_mat(find(BOLD_allcorr>0.999))=NaN;
+alpha_fast_mat=alpha_fast_allcorr; alpha_fast_mat(find(alpha_fast_mat==1))=NaN; alpha_fast_mat(find(BOLD_allcorr>0.999))=NaN;
+beta1_fast_mat=beta1_fast_allcorr; beta1_fast_mat(find(beta1_fast_mat==1))=NaN; beta1_fast_mat(find(BOLD_allcorr>0.999))=NaN;
+beta2_fast_mat=beta2_fast_allcorr; beta2_fast_mat(find(beta2_fast_mat==1))=NaN; beta2_fast_mat(find(BOLD_allcorr>0.999))=NaN;
+Theta_fast_mat=Theta_fast_allcorr; Theta_fast_mat(find(Theta_fast_mat==1))=NaN; Theta_fast_mat(find(BOLD_allcorr>0.999))=NaN;
+Delta_fast_mat=Delta_fast_allcorr; Delta_fast_mat(find(Delta_fast_mat==1))=NaN; Delta_fast_mat(find(BOLD_allcorr>0.999))=NaN;
+Gamma_fast_mat=Gamma_fast_allcorr; Gamma_fast_mat(find(Gamma_fast_mat==1))=NaN; Gamma_fast_mat(find(BOLD_allcorr>0.999))=NaN;
+HFB_mat=HFB_allcorr; HFB_mat(find(HFB_mat==1))=NaN; HFB_mat(find(BOLD_allcorr>0.999))=NaN;
 alpha_medium_mat=alpha_medium_allcorr; alpha_medium_mat(find(alpha_medium_mat==1))=NaN; alpha_medium_mat(find(BOLD_allcorr==1))=NaN;
-beta1_medium_mat=beta1_medium_allcorr; beta1_medium_mat(find(beta1_medium_mat==1))=NaN; beta1_medium_mat(find(BOLD_allcorr==1))=NaN;
-beta2_medium_mat=beta2_medium_allcorr; beta2_medium_mat(find(beta2_medium_mat==1))=NaN; beta2_medium_mat(find(BOLD_allcorr==1))=NaN;
-Theta_medium_mat=Theta_medium_allcorr; Theta_medium_mat(find(Theta_medium_mat==1))=NaN; Theta_medium_mat(find(BOLD_allcorr==1))=NaN;
-Delta_medium_mat=Delta_medium_allcorr; Delta_medium_mat(find(Delta_medium_mat==1))=NaN; Delta_medium_mat(find(BOLD_allcorr==1))=NaN;
-Gamma_medium_mat=Gamma_medium_allcorr; Gamma_medium_mat(find(Gamma_medium_mat==1))=NaN; Gamma_medium_mat(find(BOLD_allcorr==1))=NaN;
-SCP_mat=SCP_allcorr; SCP_mat(find(SCP_mat==1))=NaN; SCP_mat(find(BOLD_allcorr==1))=NaN;
+beta1_medium_mat=beta1_medium_allcorr; beta1_medium_mat(find(beta1_medium_mat==1))=NaN; beta1_medium_mat(find(BOLD_allcorr==))=NaN;
+beta2_medium_mat=beta2_medium_allcorr; beta2_medium_mat(find(beta2_medium_mat==1))=NaN; beta2_medium_mat(find(BOLD_allcorr>0.999))=NaN;
+Theta_medium_mat=Theta_medium_allcorr; Theta_medium_mat(find(Theta_medium_mat==1))=NaN; Theta_medium_mat(find(BOLD_allcorr>0.999))=NaN;
+Delta_medium_mat=Delta_medium_allcorr; Delta_medium_mat(find(Delta_medium_mat==1))=NaN; Delta_medium_mat(find(BOLD_allcorr>0.999))=NaN;
+Gamma_medium_mat=Gamma_medium_allcorr; Gamma_medium_mat(find(Gamma_medium_mat==1))=NaN; Gamma_medium_mat(find(BOLD_allcorr>0.999))=NaN;
+SCP_mat=SCP_allcorr; SCP_mat(find(SCP_mat==1))=NaN; SCP_mat(find(BOLD_allcorr>0.999))=NaN;
 BOLD_mat=BOLD_allcorr; BOLD_mat(find(BOLD_mat==1))=NaN;
 
 % remove diagonal and lower triangle
@@ -1054,7 +1054,7 @@ for i = 1:size(vox,1)
      end
 end
 
-distances(find(BOLD_allcorr==1))=NaN;
+distances(find(BOLD_allcorr>0.999))=NaN;
 distance_column=distances(:);
 distance_column(find(BOLD_column_ones>0.999))=NaN; distance_column(isnan(distance_column))=[];
 
@@ -1778,6 +1778,9 @@ Language_interval=DAN_interval+size(Language_BOLD_corr,1);
 end
 edge_color=[0.6 0.6 0.6];
 edge_width=2.5;
+
+%% Save distance matrix (iElvis order)
+save('distances','distances');
 
 %% Make plots
 mkdir BOLD_ECoG_figs
@@ -2694,7 +2697,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_alpha',filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_alpha_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2760,7 +2763,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_beta1_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_beta1',filesep,elec_name '_BOLD_beta1_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_beta1_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2793,7 +2796,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_beta2_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_beta2',filesep,elec_name '_BOLD_beta2_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_beta2_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2826,7 +2829,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Theta_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_Theta',filesep,elec_name '_BOLD_Theta_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Theta_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2859,7 +2862,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Delta_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_Delta',filesep,elec_name '_BOLD_Delta_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Delta_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2892,7 +2895,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Gamma_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_Gamma',filesep,elec_name '_BOLD_Gamma_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_Gamma_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2925,7 +2928,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_SCP',filesep,elec_name '_BOLD_SCP_medium_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2958,7 +2961,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_aCompCor']));   
 end
 close;
  if use_elec==1
@@ -2991,7 +2994,7 @@ elseif BOLD_pipeline==2
 elseif BOLD_pipeline==3
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_fast_NoGSR']));
 elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,'all_elecs_HFB',filesep,elec_name '_BOLD_HFB_fast_aCompCor']));   
+    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_HFB_fast_aCompCor']));   
 end
 close;
  if use_elec==1
