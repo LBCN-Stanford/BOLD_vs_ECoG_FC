@@ -1072,7 +1072,7 @@ lag_peak=lag_times(find(lag_corr==max(lag_corr)));
      HFB_staticFC=corr(roi1_HFB_medium_ts_norm,roi2_HFB_medium_ts_norm);
      
      StaticFC_allfreqs=[Delta_staticFC Theta_staticFC Alpha_staticFC Beta1_staticFC Beta2_staticFC Gamma_staticFC HFB_staticFC];
-     save('StaticFC_allfreqs','StaticFC_allfreqs');
+     save(['StaticFC_allfreqs_' roi1 roi2],'StaticFC_allfreqs');
      
     elseif frequency=='p'
         roi1_HFB_ts_norm=(roi1_HFB_ts-mean(roi1_HFB_ts))/std(roi1_HFB_ts);
