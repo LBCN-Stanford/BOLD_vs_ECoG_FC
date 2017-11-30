@@ -139,6 +139,11 @@ allsubs_seedcorr_allfreqs_run1(:,sub)=corr_seed_allfreqs_run1;
 allsubs_seedcorr_allfreqs_run2(:,sub)=corr_seed_allfreqs_run2;
 allsubs_seedpartialcorr_allfreqs_run1(:,sub)=partialcorr_seed_allfreqs_run1;
 allsubs_seedpartialcorr_allfreqs_run2(:,sub)=partialcorr_seed_allfreqs_run2;
+
+% average across runs
+allsubs_seedcorr_allfreqs_allruns=(allsubs_seedcorr_allfreqs_run1+allsubs_seedcorr_allfreqs_run2)/2;
+allsubs_seedpartialcorr_allfreqs_allruns=(allsubs_seedpartialcorr_allfreqs_run1+allsubs_seedpartialcorr_allfreqs_run2)/2;
+allsubs_seedcorr_allpreproc_HFB_allruns=(allsubs_seedcorr_allpreproc_HFB_run1+allsubs_seedcorr_allpreproc_HFB_run2)/2;
 end
 
 %% Make plots
@@ -170,11 +175,11 @@ for i=1:length(subject_nums)
 end
 
 % plot
-% BOLD vs ECoG run1
+% BOLD vs ECoG run1+2 average
 FigHandle = figure('Position', [400, 600, 700, 300]);
 figure(1)
-for i=1:length(allsubs_seedcorr_allfreqs_run1)
-    plot(1:size(allsubs_seedcorr_allfreqs_run1,1),allsubs_seedcorr_allfreqs_run1(:,i),[subjectmarker{i,:} '-'], ...
+for i=1:length(allsubs_seedcorr_allfreqs_allruns)
+    plot(1:size(allsubs_seedcorr_allfreqs_allruns,1),allsubs_seedcorr_allfreqs_allruns(:,i),[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
     ylim([0 0.8]);
@@ -194,15 +199,15 @@ set(gcf,'color','w');
    set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'', 'δ','θ', 'α','β1','β2','γ','HFB'})
 ylabel({'BOLD-ECoG FC', 'Correlation (r)'}); 
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_run1_allfreqs']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_allfreqs_bothruns']));
 end
 pause; close;
 
-% BOLD vs ECoG run2
+% BOLD vs ECoG run1+2 average - partial corr
 FigHandle = figure('Position', [400, 600, 700, 300]);
 figure(1)
-for i=1:length(allsubs_seedcorr_allfreqs_run2)
-    plot(1:size(allsubs_seedcorr_allfreqs_run2,1),allsubs_seedcorr_allfreqs_run2(:,i),[subjectmarker{i,:} '-'], ...
+for i=1:length(allsubs_seedpartialcorr_allfreqs_allruns)
+    plot(1:size(allsubs_seedpartialcorr_allfreqs_allruns,1),allsubs_seedpartialcorr_allfreqs_allruns(:,i),[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
     ylim([0 0.8]);
@@ -222,15 +227,15 @@ set(gcf,'color','w');
    set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'', 'δ','θ', 'α','β1','β2','γ','HFB'})
 ylabel({'BOLD-ECoG FC', 'Correlation (r)'}); 
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_run2_allfreqs']));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_allfreqs_bothruns_partial']));
 end
 pause; close;
 
-% BOLD preproc vs ECoG run1
+% BOLD preproc vs ECoG run1+2 average
 FigHandle = figure('Position', [400, 600, 400, 700]);
 figure(1)
-for i=1:length(allsubs_seedcorr_allpreproc_HFB_run1)   
-    plot(1:size(allsubs_seedcorr_allpreproc_HFB_run1,1),allsubs_seedcorr_allpreproc_HFB_run1(:,i),[subjectmarker{i,:} '-'], ...
+for i=1:length(allsubs_seedcorr_allpreproc_HFB_allruns)   
+    plot(1:size(allsubs_seedcorr_allpreproc_HFB_allruns,1),allsubs_seedcorr_allpreproc_HFB_allruns(:,i),[subjectmarker{i,:} '-'], ...
         'LineWidth',1,'Color',network_color(i,:),'MarkerFaceColor',network_color(i,:), ...
         'MarkerSize',8,'MarkerEdgeColor',network_color(i,:));      
     ylim([0 0.8]);
