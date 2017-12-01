@@ -1,10 +1,13 @@
 % must first run BOLD_vs_ECoG_FC_corr_iElvis.m
-% dFC_preproc_list.txt file should contain subject name (column 1), sub number (column 2),
-% ECoG run1 number (column 3), ECoG run2 number (column 4), electrode number (column 5), and network identity (column 6)
+% dFC_preproc_list.txt file should contain subject name (column 1), electrode1 name (column2), 
+% electrode2 name (column 3), hemisphere (L or R; column 4),
+% subject number (column 5),
+% ECoG run1 number (column 6), ECoG run2 number (column 7), electrode number (column 8), 
+% and network identity (column 9)
 % network identity: 1=DMN, 2=DAN, 3=FPCN
 
 load('cdcol.mat');
-
+depth='0';
 globalECoGDir=getECoGSubDir;
 cd([globalECoGDir '/Rest']);
 mkdir('Figs');
@@ -17,13 +20,18 @@ subjects=list.textdata(:,1);
 subject_nums=list.data(:,1);
 elec1_name=list.textdata(:,2);
 elec2_name=list.textdata(:,3);
+hemi=list.textdata(:,4);
 ecog_run1=list.data(:,2);
 ecog_run2=list.data(:,3);
 elecs=list.data(:,4);
 networks=list.data(:,5);
 allsubs_seedcorr_allfreqs=NaN(length(subjects),7);
 
+
 for sub=1:length(subjects)
+    bad_chans_run1=[]; bad_chans_run2=[];
+run1_bad=[]; run2_bad=[]; bad_iElvis_run1=[]; bad_iElvis_run2=[];
+
     Patient=subjects{sub}
     ecog_run1name=num2str(ecog_run1(sub));
     ecog_run2name=num2str(ecog_run2(sub));
@@ -36,7 +44,7 @@ for sub=1:length(subjects)
     cd([globalECoGDir '/Rest/' Patient '/Run' ecog_run2name]);
     HFB_pair_corr_run2=load(['StaticFC_allfreqs_' elec1_name{sub} elec2_name{sub} '.mat']);
     
-%% Load corr/partial corr values for each freq
+%% Load BOLD corr/partial corr values for each ECoG freq
 cd([globalECoGDir '/Rest/' Patient '/Run' ecog_run1name '/BOLD_ECoG_figs/GSR']);
 BOLD_Delta_partial_run1=load('partialcorr_BOLD_Delta_medium_allelecs.mat');
 BOLD_Theta_partial_run1=load('partialcorr_BOLD_Theta_medium_allelecs.mat');
@@ -96,6 +104,96 @@ aCompCor_HFB_run1=load('corr_BOLD_HFB_medium_allelecs.mat');
 cd([globalECoGDir '/Rest/' Patient '/Run' ecog_run2name '/BOLD_ECoG_figs/aCompCor']);
 aCompCor_HFB_run2=load('corr_BOLD_HFB_medium_allelecs.mat');
 
+%% Load correlation matrix for each frequency, and bad chan indices
+cd([globalECoGDir '/Rest/' Patient '/Run' ecog_run1name]);
+run1_HFB_medium_corr=load('HFB_medium_corr.mat');
+run1_Alpha_medium_corr=load('alpha_medium_corr.mat');
+run1_Beta1_medium_corr=load('Beta1_medium_corr.mat');
+run1_Beta2_medium_corr=load('Beta2_medium_corr.mat');
+run1_Theta_medium_corr=load('Theta_medium_corr.mat');
+run1_Delta_medium_corr=load('Delta_medium_corr.mat');
+run1_Gamma_medium_corr=load('Gamma_medium_corr.mat');
+run1_bad=load('all_bad_indices.mat');
+
+cd([globalECoGDir '/Rest/' Patient '/Run' ecog_run2name]);
+run2_HFB_medium_corr=load('HFB_medium_corr.mat');
+run2_Alpha_medium_corr=load('alpha_medium_corr.mat');
+run2_Beta1_medium_corr=load('Beta1_medium_corr.mat');
+run2_Beta2_medium_corr=load('Beta2_medium_corr.mat');
+run2_Theta_medium_corr=load('Theta_medium_corr.mat');
+run2_Delta_medium_corr=load('Delta_medium_corr.mat');
+run2_Gamma_medium_corr=load('Gamma_medium_corr.mat');
+run2_bad=load('all_bad_indices.mat');
+
+%% convert from iEEG to iElvis order
+[iEEG_to_iElvis_chanlabel, iElvis_to_iEEG_chanlabel, chanlabels, channumbers_iEEG,elecNames] = iEEG_iElvis_transform(Patient,hemi{sub},depth);
+
+%% Convert bad indices to iElvis order
+ for i=1:length(run1_bad.all_bad_indices)
+    ind_iElvis=find(iElvis_to_iEEG_chanlabel==run1_bad.all_bad_indices(i));
+    if isempty(ind_iElvis)~=1
+    bad_iElvis_run1(i,:)=ind_iElvis;
+    end
+end
+bad_chans_run1=bad_iElvis_run1(find(bad_iElvis_run1>0));
+
+ for i=1:length(run2_bad.all_bad_indices)
+    ind_iElvis=find(iElvis_to_iEEG_chanlabel==run2_bad.all_bad_indices(i));
+    if isempty(ind_iElvis)~=1
+    bad_iElvis_run2(i,:)=ind_iElvis;
+    end
+end
+bad_chans_run2=bad_iElvis_run2(find(bad_iElvis_run2>0));
+
+
+% Get FC values for seed and remove bad chans
+parcOut=elec2Parc_v2([Patient],'DK',0);
+roi1_num=strmatch(elec1_name{sub},parcOut(:,1),'exact');
+
+seed_HFB_medium_run1=run1_HFB_medium_corr.HFB_medium_corr(:,roi1_num);
+seed_Alpha_medium_run1=run1_Alpha_medium_corr.alpha_medium_corr(:,roi1_num);
+seed_Beta1_medium_run1=run1_Beta1_medium_corr.Beta1_medium_corr(:,roi1_num);
+seed_Beta2_medium_run1=run1_Beta2_medium_corr.Beta2_medium_corr(:,roi1_num);
+seed_Theta_medium_run1=run1_Theta_medium_corr.Theta_medium_corr(:,roi1_num);
+seed_Delta_medium_run1=run1_Delta_medium_corr.Delta_medium_corr(:,roi1_num);
+seed_Gamma_medium_run1=run1_Gamma_medium_corr.Gamma_medium_corr(:,roi1_num);
+
+seed_HFB_medium_run1(bad_chans_run1)=[]; seed_HFB_medium_run1(find(seed_HFB_medium_run1==1))=[];
+seed_Alpha_medium_run1(bad_chans_run1)=[]; seed_Alpha_medium_run1(find(seed_Alpha_medium_run1==1))=[];
+seed_Beta1_medium_run1(bad_chans_run1)=[]; seed_Beta1_medium_run1(find(seed_Beta1_medium_run1==1))=[];
+seed_Beta2_medium_run1(bad_chans_run1)=[]; seed_Beta2_medium_run1(find(seed_Beta2_medium_run1==1))=[];
+seed_Theta_medium_run1(bad_chans_run1)=[]; seed_Theta_medium_run1(find(seed_Theta_medium_run1==1))=[];
+seed_Delta_medium_run1(bad_chans_run1)=[]; seed_Delta_medium_run1(find(seed_Delta_medium_run1==1))=[];
+seed_Gamma_medium_run1(bad_chans_run1)=[]; seed_Gamma_medium_run1(find(seed_Gamma_medium_run1==1))=[];
+
+seed_HFB_medium_run2=run2_HFB_medium_corr.HFB_medium_corr(:,roi1_num);
+seed_Alpha_medium_run2=run2_Alpha_medium_corr.alpha_medium_corr(:,roi1_num);
+seed_Beta1_medium_run2=run2_Beta1_medium_corr.Beta1_medium_corr(:,roi1_num);
+seed_Beta2_medium_run2=run2_Beta2_medium_corr.Beta2_medium_corr(:,roi1_num);
+seed_Theta_medium_run2=run2_Theta_medium_corr.Theta_medium_corr(:,roi1_num);
+seed_Delta_medium_run2=run2_Delta_medium_corr.Delta_medium_corr(:,roi1_num);
+seed_Gamma_medium_run2=run2_Gamma_medium_corr.Gamma_medium_corr(:,roi1_num);
+
+seed_HFB_medium_run2(bad_chans_run2)=[]; seed_HFB_medium_run2(find(seed_HFB_medium_run2==1))=[];
+seed_Alpha_medium_run2(bad_chans_run2)=[]; seed_Alpha_medium_run2(find(seed_Alpha_medium_run2==1))=[];
+seed_Beta1_medium_run2(bad_chans_run2)=[]; seed_Beta1_medium_run2(find(seed_Beta1_medium_run2==1))=[];
+seed_Beta2_medium_run2(bad_chans_run2)=[]; seed_Beta2_medium_run2(find(seed_Beta2_medium_run2==1))=[];
+seed_Theta_medium_run2(bad_chans_run2)=[]; seed_Theta_medium_run2(find(seed_Theta_medium_run2==1))=[];
+seed_Delta_medium_run2(bad_chans_run2)=[]; seed_Delta_medium_run2(find(seed_Delta_medium_run2==1))=[];
+seed_Gamma_medium_run2(bad_chans_run2)=[]; seed_Gamma_medium_run2(find(seed_Gamma_medium_run2==1))=[];
+
+%% Inter-freq correlation matrix
+allfreq_FC_run1=[seed_Delta_medium_run1 seed_Theta_medium_run1 seed_Alpha_medium_run1 ...
+    seed_Beta1_medium_run1 seed_Beta2_medium_run1 seed_Gamma_medium_run1 seed_HFB_medium_run1];
+interfreq_FC_corr_run1=corrcoef(allfreq_FC_run1);
+
+allfreq_FC_run2=[seed_Delta_medium_run2 seed_Theta_medium_run2 seed_Alpha_medium_run2 ...
+    seed_Beta1_medium_run2 seed_Beta2_medium_run2 seed_Gamma_medium_run2 seed_HFB_medium_run2];
+interfreq_FC_corr_run2=corrcoef(allfreq_FC_run2);
+
+interfreq_FC_corr_allruns=(interfreq_FC_corr_run1+interfreq_FC_corr_run2)/2;
+
+%% Get BOLD vs ECoG corr values 
 partialcorr_allseeds_allfreqs_run1=[BOLD_Delta_partial_run1.partialcorr_BOLD_Delta_medium_allelecs BOLD_Theta_partial_run1.partialcorr_BOLD_Theta_medium_allelecs ...
     BOLD_Alpha_partial_run1.partialcorr_BOLD_alpha_medium_allelecs BOLD_Beta1_partial_run1.partialcorr_BOLD_beta1_medium_allelecs ...
     BOLD_Beta2_partial_run1.partialcorr_BOLD_beta2_medium_allelecs BOLD_Gamma_partial_run1.partialcorr_BOLD_Gamma_medium_allelecs ... 
@@ -152,7 +250,7 @@ allsubs_seedcorr_allfreqs_allruns=(allsubs_seedcorr_allfreqs_run1+allsubs_seedco
 allsubs_seedpartialcorr_allfreqs_allruns=(allsubs_seedpartialcorr_allfreqs_run1+allsubs_seedpartialcorr_allfreqs_run2)/2;
 allsubs_seedcorr_allpreproc_HFB_allruns=(allsubs_seedcorr_allpreproc_HFB_run1+allsubs_seedcorr_allpreproc_HFB_run2)/2;
 allsubs_HFB_pair_fisher_allruns=(allsubs_HFB_pair_fisher_run1+allsubs_HFB_pair_fisher_run2)/2;
-allsubs_seed_corr
+allsubs_seed_corr_allruns_fisher=(allsubs_seedcorr_allfreqs_run1_fisher+allsubs_seedcorr_allfreqs_run2_fisher)/2;
 end
 
 %% Make plots
@@ -203,7 +301,7 @@ for i=1:length(allsubs_HFB_pair_corr_allruns)+1
        set(gca,'Xtick',0:1:8)
  set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
  set(gca,'Fontsize',16,'FontWeight','bold','LineWidth',2,'TickDir','out');
-  ylabel({'ECoG-HFB envelope FC', 'Correlation (r)'}); 
+  ylabel({'Envelope FC', 'Correlation (r)'}); 
   
     hold on
    set(gca,'box','off'); 
@@ -318,6 +416,26 @@ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'BOLD_vs_ECoG_allruns_allpre
 end
 pause; close;
 
+%% Plot inter-frequency spatial correlation matrix (Mean across group)
+
+interfreq_lowertri=tril(interfreq_FC_corr_allruns);
+load('redblue.m');
+
+FigHandle = figure(1);
+set(FigHandle,'Position',[50, 50, 800, 800]);
+imagesc(interfreq_lowertri,[0 1]); h=colorbar('northoutside'); colormap(flipud(redblue)/255)
+set(gcf,'color','w');
+set(h,'fontsize',24);
+set(get(h,'title'),'string','r');
+set(gca,'box','off')
+xticks([1 2 3 4 5 6 7])
+yticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+yticks([1 2 3 4 5 6 7])
+xticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+set(gca,'Fontsize',30,'Fontweight','bold')
+%title(['Inter-frequency Spatial FC Correlation'])
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'Group_Interfreq_spatial_corr']));
+pause; close
 
 
 
