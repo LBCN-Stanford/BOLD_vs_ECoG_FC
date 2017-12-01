@@ -438,5 +438,18 @@ print('-opengl','-r300','-dpng',strcat([pwd,filesep,'Group_Interfreq_spatial_cor
 pause; close
 
 
+%% Correlate intra-network between-pair ECoG connectivity versus
+%% ECoG-BOLD correlation across all frequencies, networks, subjects
+
+[r,p]=corr(allsubs_HFB_pair_fisher_allruns(:),allsubs_seed_corr_allruns_fisher(:));
+scatter(allsubs_HFB_pair_fisher_allruns(:),allsubs_seed_corr_allruns_fisher(:), ...
+    'MarkerEdgeColor','k','MarkerFaceColor','k'); 
+h=lsline; set(h(1),'color',[1 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title(['r = ' num2str(r) ' p = ' num2str(p)],'Fontsize',12);
+xlabel('Within-network ECoG FC');
+ylabel('BOLD-ECoG correlation (z)');
+
 
 

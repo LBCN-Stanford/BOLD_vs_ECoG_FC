@@ -88,7 +88,7 @@ plot(lag_times,lag_corr_allsubs(i).lag_corr,'Color',network_color(i,:),'LineWidt
 %title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Peak = ' num2str(lag_peak)]},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
 xlim([lag_times(1),lag_times(end)]);
-set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',0.5,'TickDir','out','box','off');
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',1,'TickDir','out','box','off');
 hold on
 end
 pause; close;

@@ -1195,12 +1195,16 @@ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 pause; close; 
 
 % Plot iEEG lag correlation
+lag_times=lag_times(20000:100000);
+lag_corr=lag_corr(20000:100000);
 plot(lag_times,lag_corr,'r','LineWidth',2);
 title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Peak = ' num2str(lag_peak)]},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
 xlim([lag_times(1),lag_times(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
+save('lag_times','lag_times');
+save(['lag_corr_' roi1 roi2],'lag_corr');
 
 % Plot a zoom-in of selected window
 time=1:length(roi1_window_ts_plot); time=time/iEEG_sampling;
