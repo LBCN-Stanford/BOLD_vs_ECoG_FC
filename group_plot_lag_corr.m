@@ -91,6 +91,7 @@ xlim([lag_times(1),lag_times(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',0.5,'TickDir','out','box','off');
 hold on
 end
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'lag_ts_HFB_group']));
 pause; close;
 
 FigHandle = figure('Position', [400, 600, 125, 400]);

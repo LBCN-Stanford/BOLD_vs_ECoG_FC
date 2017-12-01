@@ -191,7 +191,7 @@ allfreq_FC_run2=[seed_Delta_medium_run2 seed_Theta_medium_run2 seed_Alpha_medium
     seed_Beta1_medium_run2 seed_Beta2_medium_run2 seed_Gamma_medium_run2 seed_HFB_medium_run2];
 interfreq_FC_corr_run2=corrcoef(allfreq_FC_run2);
 
-interfreq_FC_corr_allruns=(interfreq_FC_corr_run1+interfreq_FC_corr_run2)/2;
+interfreq_FC_corr_allruns_allsubs(:,:,sub)=(interfreq_FC_corr_run1+interfreq_FC_corr_run2)/2;
 
 %% Get BOLD vs ECoG corr values 
 partialcorr_allseeds_allfreqs_run1=[BOLD_Delta_partial_run1.partialcorr_BOLD_Delta_medium_allelecs BOLD_Theta_partial_run1.partialcorr_BOLD_Theta_medium_allelecs ...
@@ -252,6 +252,10 @@ allsubs_seedcorr_allpreproc_HFB_allruns=(allsubs_seedcorr_allpreproc_HFB_run1+al
 allsubs_HFB_pair_fisher_allruns=(allsubs_HFB_pair_fisher_run1+allsubs_HFB_pair_fisher_run2)/2;
 allsubs_seed_corr_allruns_fisher=(allsubs_seedcorr_allfreqs_run1_fisher+allsubs_seedcorr_allfreqs_run2_fisher)/2;
 end
+
+% average Inter-freq correlation matrices across subjects
+
+mean_interfreq_FC_corr_allruns_allsubs=mean(interfreq_FC_corr_allruns_allsubs,3);
 
 %% Make plots
 cd([globalECoGDir '/Rest/Figs/DMN_Core']);
@@ -418,8 +422,10 @@ pause; close;
 
 %% Plot inter-frequency spatial correlation matrix (Mean across group)
 
-interfreq_lowertri=tril(interfreq_FC_corr_allruns);
+interfreq_lowertri=tril(mean_interfreq_FC_corr_allruns_allsubs);
 load('redblue.m');
+
+interfreq_lowertri(find(interfreq_lowertri==0))=.5;
 
 FigHandle = figure(1);
 set(FigHandle,'Position',[50, 50, 800, 800]);
@@ -444,12 +450,37 @@ pause; close
 [r,p]=corr(allsubs_HFB_pair_fisher_allruns(:),allsubs_seed_corr_allruns_fisher(:));
 scatter(allsubs_HFB_pair_fisher_allruns(:),allsubs_seed_corr_allruns_fisher(:), ...
     'MarkerEdgeColor','k','MarkerFaceColor','k'); 
-h=lsline; set(h(1),'color',[1 0 0],'LineWidth',3);
+h=lsline; set(h(1),'color','k','LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title(['r = ' num2str(r) ' p = ' num2str(p)],'Fontsize',12);
-xlabel('Within-network ECoG FC');
-ylabel('BOLD-ECoG correlation (z)');
+xlabel('Within-network ECoG FC (z)');
+ylabel('BOLD-ECoG FC correlation (z)');
+
+%% Individual spatial correlations
+for sub=1:length(subject_nums)
+interfreq_lowertri=tril(interfreq_FC_corr_allruns_allsubs(:,:,sub));
+load('redblue.m');
+
+interfreq_lowertri(find(interfreq_lowertri==0))=.5;
+
+FigHandle = figure(1);
+set(FigHandle,'Position',[50, 50, 800, 800]);
+imagesc(interfreq_lowertri,[0 1]); h=colorbar('northoutside'); colormap(flipud(redblue)/255)
+set(gcf,'color','w');
+set(h,'fontsize',22);
+set(get(h,'title'),'string','r');
+set(gca,'box','off')
+xticks([1 2 3 4 5 6 7])
+yticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+yticks([1 2 3 4 5 6 7])
+xticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
+set(gca,'Fontsize',30,'Fontweight','bold')
+%title(['Inter-frequency Spatial FC Correlation'])
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'S' num2str(subject_nums(sub)) '_Network' num2str(networks(sub)) '_Interfreq_spatial_corr']));
+pause; close
+
+end
 
 
 
