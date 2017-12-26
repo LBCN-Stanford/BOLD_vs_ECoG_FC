@@ -5,6 +5,7 @@ Patient=input('Patient: ','s');
 hemi=input('Hemisphere (r or l): ','s');
 runs=input('iEEG run (e.g. 1): ','s');
 rest=input('Rest(1) or Sleep(0)? ','s');
+frequency=input('HFB (1) delta (2) theta (3) alpha (4) beta1 (5) beta2 (6) gamma (7) ', 's');
 Window_dur=input('Window duration (in sec): ','s'); 
 states=input('number of k-states (2 or 3): ','s'); states=str2num(states);
 roi1=input('Seed (e.g. AFS9): ','s');
@@ -31,9 +32,22 @@ end
     
 cd([globalECoGDir '/Rest/' Patient '/Run1']);    
     BOLD=load([roi1 '_' Window_dur 'sec_windows_BOLD.mat']);
-    cd([globalECoGDir '/Rest/' Patient '/Run' runs]);  
-    iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG.mat']);
-     
+    cd([globalECoGDir '/Rest/' Patient '/Run' runs]); 
+    if frequency=='1'
+    iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_HFB_medium.mat']);
+    elseif frequency=='2'
+     iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Delta_medium.mat']);
+    elseif frequency=='3'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Theta_medium.mat']); 
+       elseif frequency=='4'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Alpha_medium.mat']); 
+       elseif frequency=='5'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Beta1_medium.mat']); 
+       elseif frequency=='6'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Beta2_medium.mat']); 
+       elseif frequency=='7'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Gamma_medium.mat']); 
+    end
  %% Get seed and target index numbers
  roi1_num=strmatch(roi1,elecNames,'exact');
 roi2_num=strmatch(roi2,elecNames,'exact');

@@ -58,6 +58,7 @@ iEEG_sampling=1000;
 
 if BOLD=='iEEG'
     if isnumeric(iEEG_window_duration)==1
+        iEEG_step_kmeans=2000;
 iEEG_step=(iEEG_window_duration*iEEG_sampling)/2;
 iEEG_window_size=iEEG_window_duration*iEEG_sampling;    
     else
@@ -529,7 +530,7 @@ if seed=='1'
     cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
     if BOLD=='iEEG';
 seed_allwindows_fisher=[];
-  for i=1:iEEG_step:length(roi1_ts)-iEEG_window_size;
+  for i=1:iEEG_step_kmeans:length(roi1_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     ALL_window_ts=iEEG_ts_iElvis(i:a,:);
     ALL_window_corr=corrcoef(ALL_window_ts);
@@ -537,9 +538,24 @@ seed_allwindows_fisher=[];
     seed_window_fisher=ALL_window_fisher(:,roi1_num);
     seed_allwindows_fisher=[seed_allwindows_fisher seed_window_fisher];
   end  
-  if iEEG_step==2000
+  if iEEG_step_kmeans==2000
    windowsize=num2str(iEEG_window_size/iEEG_sampling);
-      save([roi1 '_' windowsize 'sec_windows_iEEG'],'seed_allwindows_fisher');
+   
+   if frequency=='2'
+      save([roi1 '_' windowsize 'sec_windows_iEEG_HFB_medium'],'seed_allwindows_fisher');
+   elseif frequency=='3'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Alpha_medium'],'seed_allwindows_fisher');
+   elseif frequency=='4'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Beta1_medium'],'seed_allwindows_fisher');
+   elseif frequency=='5'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Beta2_medium'],'seed_allwindows_fisher');
+   elseif frequency=='6'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Theta_medium'],'seed_allwindows_fisher');
+   elseif frequency=='7'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Delta_medium'],'seed_allwindows_fisher');
+   elseif frequency=='8'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Gamma_medium'],'seed_allwindows_fisher');          
+   end
   end
     end
   if BOLD=='BOLD'
