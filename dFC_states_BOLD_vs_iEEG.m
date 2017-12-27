@@ -17,6 +17,23 @@ getECoGSubDir; global globalECoGDir;
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
 
+if frequency=='1'
+    freq='HFB'
+elseif frequency=='2'
+    freq='Delta'
+elseif frequency=='3'
+    freq='Theta'
+elseif frequency=='4'
+    freq='Alpha'
+elseif frequency=='5'
+    freq='Beta1'
+elseif frequency=='6'
+    freq='Beta2'
+elseif frequency=='7'
+    freq='Gamma'
+ 
+end
+
  %% Load distance
  cd([fsDir '/' Patient '/elec_recon']);
 vox=dlmread([Patient '.PIAL'],' ',2,0);
@@ -273,6 +290,12 @@ BOLD_vs_iEEG_change_corr=r;
 %% Correlate between k-state changes: BOLD vs iEEG
 [r,p]=corr(BOLD_k1_minus_k2,iEEG_k1_minus_k2);
 k1k2BOLD_vs_k1k2iEEG_change_corr=r; k1k2BOLD_vs_k1k2iEEG_change_p=p;
+k1k2BOLD_vs_iEEG_change=[k1k2BOLD_vs_k1k2iEEG_change_corr k1k2BOLD_vs_k1k2iEEG_change_p];
+% save r and p (for k=2)
+
+cd([globalECoGDir '/Rest/' Patient '/Run' runs]); 
+save(['k1k2BOLD_vs_iEEG_change_' freq],'k1k2BOLD_vs_iEEG_change')
+cd([fsDir '/' Patient '/elec_recon']);
 if states==3
     [r,p]=corr(BOLD_k1_minus_k2,iEEG_k1_minus_k3);
     k1k2BOLD_vs_k1k3iEEG_change_corr=r; k1k2BOLD_vs_k1k3iEEG_change_p=p;

@@ -5,6 +5,7 @@ Patient=input('Patient: ','s');
 hemi=input('Hemisphere (r or l): ','s');
 runs=input('iEEG run (e.g. 1): ','s');
 rest=input('Rest(1) or Sleep(0)? ','s');
+frequency=input('HFB (1) delta (2) theta (3) alpha (4) beta1 (5) beta2 (6) gamma (7) ', 's');
 Window_dur=input('Window duration (in sec): ','s'); 
 states=input('number of k-states (2 or 3): ','s'); states=str2num(states);
 roi1=input('Seed (e.g. AFS9): ','s');
@@ -15,6 +16,18 @@ fsDir=getFsurfSubDir();
 getECoGSubDir; global globalECoGDir;
 parcOut=elec2Parc_v2([Patient],'DK',0);
 elecNames = parcOut(:,1);
+
+if frequency=='1'
+    freq='HFB'
+elseif frequency=='2'
+    freq='Delta'
+elseif frequency=='3'
+    freq='Theta'
+elseif frequency=='4'
+    freq='Alpha'
+elseif frequency=='5'
+    freq
+end
 
  %% Load distance
  cd([fsDir '/' Patient '/elec_recon']);
@@ -31,9 +44,22 @@ end
     
 cd([globalECoGDir '/Rest/' Patient '/Run1']);    
     BOLD=load([roi1 '_' Window_dur 'sec_windows_BOLD.mat']);
-    cd([globalECoGDir '/Rest/' Patient '/Run' runs]);  
-    iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG.mat']);
-     
+    cd([globalECoGDir '/Rest/' Patient '/Run' runs]); 
+    if frequency=='1'
+    iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_HFB_medium.mat']);
+    elseif frequency=='2'
+     iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Delta_medium.mat']);
+    elseif frequency=='3'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Theta_medium.mat']); 
+       elseif frequency=='4'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Alpha_medium.mat']); 
+       elseif frequency=='5'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Beta1_medium.mat']); 
+       elseif frequency=='6'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Beta2_medium.mat']); 
+       elseif frequency=='7'
+       iEEG=load([roi1 '_' Window_dur 'sec_windows_iEEG_Gamma_medium.mat']); 
+    end
  %% Get seed and target index numbers
  roi1_num=strmatch(roi1,elecNames,'exact');
 roi2_num=strmatch(roi2,elecNames,'exact');
@@ -259,6 +285,12 @@ BOLD_vs_iEEG_change_corr=r;
 %% Correlate between k-state changes: BOLD vs iEEG
 [r,p]=corr(BOLD_k1_minus_k2,iEEG_k1_minus_k2);
 k1k2BOLD_vs_k1k2iEEG_change_corr=r; k1k2BOLD_vs_k1k2iEEG_change_p=p;
+k1k2BOLD_vs_iEEG_change=[k1k2BOLD_vs_k1k2iEEG_change_corr k1k2BOLD_vs_k1k2iEEG_change_p];
+% save r and p (for k=2)
+
+cd([globalECoGDir '/Rest/' Patient '/Run' runs]); 
+save(['k1k2BOLD_vs_iEEG_change_' freq],'k1k2BOLD_vs_iEEG_change')
+cd([fsDir '/' Patient '/elec_recon']);
 if states==3
     [r,p]=corr(BOLD_k1_minus_k2,iEEG_k1_minus_k3);
     k1k2BOLD_vs_k1k3iEEG_change_corr=r; k1k2BOLD_vs_k1k3iEEG_change_p=p;
@@ -465,15 +497,17 @@ end
 % absolute
 if states==2
     if k1k2BOLD_vs_k1k2iEEG_change_corr<0
-       BOLD_change= 
+       BOLD_change=-BOLD_k1_minus_k2;
+    else
+        BOLD_change=BOLD_k1_minus_k2;
     end
         
-    scatter(BOLD_k1_minus_k2,iEEG_k1_minus_k2,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+    scatter(BOLD_change,iEEG_k1_minus_k2,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
 h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
 set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
 set(gcf,'color','w');
 title({['kstate 1 vs 2: ' Window_dur ' sec windows']; ...
-    ['r = ' num2str(k1k2BOLD_vs_k1k2iEEG_change_corr) ' p = ' num2str(k1k2BOLD_vs_k1k2iEEG_change_p)]},'Fontsize',12); 
+    ['r = ' num2str(abs(k1k2BOLD_vs_k1k2iEEG_change_corr)) ' p = ' num2str(k1k2BOLD_vs_k1k2iEEG_change_p)]},'Fontsize',12); 
 xlabel('BOLD FC change');
 ylabel('iEEG FC change');
 set(gcf,'PaperPositionMode','auto');
