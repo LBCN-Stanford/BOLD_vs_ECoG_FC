@@ -294,7 +294,7 @@ k1k2BOLD_vs_iEEG_change=[k1k2BOLD_vs_k1k2iEEG_change_corr k1k2BOLD_vs_k1k2iEEG_c
 % save r and p (for k=2)
 
 cd([globalECoGDir '/Rest/' Patient '/Run' runs]); 
-save(['k1k2BOLD_vs_iEEG_change_' freq],'k1k2BOLD_vs_iEEG_change')
+save([roi1 '_k1k2BOLD_vs_iEEG_change_' freq '_' Window_dur],'k1k2BOLD_vs_iEEG_change')
 cd([fsDir '/' Patient '/elec_recon']);
 if states==3
     [r,p]=corr(BOLD_k1_minus_k2,iEEG_k1_minus_k3);
@@ -450,7 +450,7 @@ set(gcf,'color','w');
    set(gca,'XTickLabel',{'','BOLD1-iEEG1', 'BOLD1-iEEG2','BOLD2-iEEG1','BOLD2-iEEG2','BOLD2-'})
    xtickangle(90)
 ylabel('BOLD vs iEEG state correlation (r)'); 
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,['k2_' roi1 '_BOLD_vs_iEEG_states_' Window_dur]]));
+%print('-opengl','-r300','-dpng',strcat([pwd,filesep,'electrode_spheres/SBCA',filesep,'figs',filesep,'kstates',filesep,['k2_' roi1 '_BOLD_vs_iEEG_states_' Window_dur]]));
 pause; close; 
 end
 

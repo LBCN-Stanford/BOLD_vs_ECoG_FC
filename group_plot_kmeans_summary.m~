@@ -1,0 +1,52 @@
+% must first run plot_dFC_pair.m and then dFC_states_BOLD_vs_iEEG.m for each seed, subject and frequency
+
+% network identity: 1=DMN, 2=DAN, 3=FPCN
+
+% kmeans_summary.txt file should contain subject name (column 1), electrode1 name (column 2),
+% electrode2 name (column 3), subject number (4) run number (5), network number
+% (6),
+
+load('cdcol.mat');
+fsDir=getFsurfSubDir();
+globalECoGDir=getECoGSubDir;
+cd([globalECoGDir '/Rest']);
+mkdir('Figs');
+cd Figs;
+mkdir('dFC_analysis'); cd ..
+
+%% Load subject, ECoG run numbers, and electrode list
+cd(['dFC_analysis']);
+list=importdata('kmeans_summary.txt',' ');
+subjects=list.textdata(:,1);
+subject_nums=list.data(:,1);
+roi1=list.textdata(:,2); roi2=list.textdata(:,3);
+run_num=list.data(:,2);
+networks=list.data(:,3);
+
+%% Loop through subjects and electrodes
+%allsubs_HFB=[];
+
+for sub=1:length(subjects)
+    Patient=subjects{sub}
+    run1=num2str(run_num(sub));
+    elec1=roi1(sub);
+    elec2=roi2(sub);
+    network=networks(sub);
+%% Load BOLD vs ECoG between-state change correlations for each freqeuency
+cd([globalECoGDir '/Rest/' Patient '/Run' run1]);
+HFB_k2_30sec=load([char(elec1) '_k1k2BOLD_vs_iEEG_change_HFB_30.mat']);
+Delta_k2_30sec=load([char(elec1) '_k1k2BOLD_vs_iEEG_change_Delta_30.mat']);
+Theta_k2_30sec=load([char(elec1) '_k1k2BOLD_vs_iEEG_change_Theta_30.mat']);
+Alpha_k2_30sec=load([char(elec1) '_k1k2BOLD_vs_iEEG_change_Alpha_30.mat']);
+Beta1_k2_30sec=load([char(elec1) '_k1k2BOLD_vs_iEEG_change_Beta1_30.mat']);
+Beta2_k2_30sec=load([char(elec1) '_k1k2BOLD_vs_iEEG_change_Beta2_30.mat']);
+Gamma_k2_30sec=load([char(elec1) '_k1k2BOLD_vs_iEEG_change_Gamma_30.mat']);
+
+%% Extract r value and concatenate frequencies
+
+end
+
+
+
+
+
