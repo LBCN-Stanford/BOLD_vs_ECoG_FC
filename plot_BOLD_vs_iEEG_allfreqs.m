@@ -429,7 +429,7 @@ interfreq_lowertri(find(interfreq_lowertri==0))=.5;
 
 FigHandle = figure(1);
 set(FigHandle,'Position',[50, 50, 800, 800]);
-imagesc(interfreq_lowertri,[0 1]); h=colorbar('northoutside'); colormap(flipud(redblue)/255)
+imagesc(interfreq_lowertri,[0 1]); h=colorbar('northoutside'); colormap('copper')
 set(gcf,'color','w');
 set(h,'fontsize',22);
 set(get(h,'title'),'string','r');
