@@ -11,6 +11,7 @@ Patient=input('Patient: ','s'); sub=Patient;
 rest=input('Rest (1) or Sleep (2)? ','s');
 runname=input('Run (e.g. 2): ','s'); run=runname;
 TDT=input('TDT (1) or EDF (0): ','s');
+Crop_ts=input('Crop time series (1) or not (0)? ','s');
 Cropping=input('Crop edges by (e.g. 20 for 20 sec): ','s');
 
     sampling_rate=input('sampling rate (Hz): ','s');
@@ -79,9 +80,13 @@ A=spm_eeg_load(['ff' D.fname]);
 delete([A.fname]); delete([A.fnamedat]); A=[];
 
 %% Chop 2 sec from edges (beginning and end) - to deal with flat line effects
+if Crop_ts=='1'
 cropping=2000; both=1;
 crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both);
 fname_spm_pfff=['pfff' D.fname];
+else
+    fname_spm_pfff=['fff' D.fname];
+end
 
 %% Plot power spectrum for manual removal of outlier channels
 display(['Run length is ' num2str(run_length) ' mins']);
@@ -89,18 +94,18 @@ LBCN_plot_power_spectrum(fname_spm_pfff);
 
 %% Common average re-referencing
 LBCN_montage(fname_spm_pfff);
-fname_spm_fffM=['Mpfff' D.fname];
+fname_spm_fffM=['M' fname_spm_pfff];
 
 %% Filter to slow cortical potential range (<1Hz)
 batch_lowpass_medium(fname_spm_fffM);
 
 %% TF decomposition
 batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
-fname_spm_tf=['tf_aMpfff' D.fname];
+fname_spm_tf=['tf_aM' fname_spm_pfff];
 
 %% LogR transform (normalize)
 LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
-fname_spm_btf=['btf_aMpfff' D.fname];
+fname_spm_btf=['btf_aM' fname_spm_pfff];
 
 %% Frequency band averaging
 batch_AverageFreq(fname_spm_btf);
@@ -110,14 +115,15 @@ batch_AverageFreq(fname_spm_btf);
 both=0;
 cropping=str2num(Cropping)*sampling_rate;
 
-fname_HFB=['HFBbtf_aMpfff' D.fname];
-fname_Alpha=['Alphabtf_aMpfff' D.fname];
-fname_Delta=['Deltabtf_aMpfff' D.fname];
-fname_Theta=['Thetabtf_aMpfff' D.fname];
-fname_Beta1=['Beta1btf_aMpfff' D.fname];
-fname_Beta2=['Beta2btf_aMpfff' D.fname];
-fname_Gamma=['Gammabtf_aMpfff' D.fname];
+fname_HFB=['HFBbtf_aMp' fname_spm_pfff];
+fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
+fname_Delta=['Deltabtf_aM' fname_spm_pfff];
+fname_Theta=['Thetabtf_aM' fname_spm_pfff];
+fname_Beta1=['Beta1btf_aM' fname_spm_pfff];
+fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
+fname_Gamma=['Gammabtf_aM' fname_spm_pfff];
 
+if Crop_ts=='1'
 crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both);
 crop_edges_postTF_func(Patient,runname,fname_Alpha,cropping,both);
 crop_edges_postTF_func(Patient,runname,fname_Delta,cropping,both);
@@ -125,15 +131,26 @@ crop_edges_postTF_func(Patient,runname,fname_Theta,cropping,both);
 crop_edges_postTF_func(Patient,runname,fname_Beta1,cropping,both);
 crop_edges_postTF_func(Patient,runname,fname_Beta2,cropping,both);
 crop_edges_postTF_func(Patient,runname,fname_Gamma,cropping,both);
+end
 
-fname_HFB=['pHFBbtf_aMpfff' D.fname];
-fname_Alpha=['pAlphabtf_aMpfff' D.fname];
-fname_Delta=['pDeltabtf_aMpfff' D.fname];
-fname_Theta=['pThetabtf_aMpfff' D.fname];
-fname_Beta1=['pBeta1btf_aMpfff' D.fname];
-fname_Beta2=['pBeta2btf_aMpfff' D.fname];
-fname_Gamma=['pGammabtf_aMpfff' D.fname];
-
+if Crop_ts=='1'
+fname_HFB=['pHFBbtf_aM' fname_spm_pfff];
+fname_Alpha=['pAlphabtf_aM' fname_spm_pfff];
+fname_Delta=['pDeltabtf_aM' fname_spm_pfff];
+fname_Theta=['pThetabtf_aM' fname_spm_pfff];
+fname_Beta1=['pBeta1btf_aM' fname_spm_pfff];
+fname_Beta2=['pBeta2btf_aM' fname_spm_pfff];
+fname_Gamma=['pGammabtf_aM' fname_spm_pfff];
+else
+  fname_HFB=['HFBbtf_aM' fname_spm_pfff];
+fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
+fname_Delta=['Deltabtf_aM' fname_spm_pfff];
+fname_Theta=['Thetabtf_aM' fname_spm_pfff];
+fname_Beta1=['Beta1btf_aM' fname_spm_pfff];
+fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
+fname_Gamma=['Gammabtf_aM' fname_spm_pfff];  
+    
+end
 %% Temporal filtering: 0.1-1Hz, <0.1Hz, >1Hz
 batch_bandpass_medium(fname_HFB);
 batch_bandpass_medium(fname_Alpha);

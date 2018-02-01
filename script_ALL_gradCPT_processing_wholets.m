@@ -8,11 +8,13 @@
 
 %% Set patient name and run number
 Patient=input('Patient: ','s'); sub=Patient;
-rest=input('Rest (1) or Sleep (2)? ','s');
+rest=input('gradCPT (1)','s');
 runname=input('Run (e.g. 2): ','s'); run=runname;
-TDT=input('TDT (1) or EDF (0): ','s');
-Crop_ts=input('Crop time series (1) or not (0)? ','s');
-Cropping=input('Crop edges by (e.g. 20 for 20 sec): ','s');
+Windows=input('Windows (1) or Mac (0)? ','s');
+China=input('China (1) or Stanford (0)? ','s');
+Sampling=input('Sampling rate: ','s'); Sampling=str2num(Sampling);
+EDF_convert=input('EDF already converted (1) or not (0)? ','s');
+%Cropping=input('Crop edges by (e.g. 20 for 20 sec): ','s');
 
     sampling_rate=input('sampling rate (Hz): ','s');
     sampling_rate=str2num(sampling_rate);   
@@ -80,13 +82,9 @@ A=spm_eeg_load(['ff' D.fname]);
 delete([A.fname]); delete([A.fnamedat]); A=[];
 
 %% Chop 2 sec from edges (beginning and end) - to deal with flat line effects
-if Crop_ts=='1'
 cropping=2000; both=1;
 crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both);
 fname_spm_pfff=['pfff' D.fname];
-else
-    fname_spm_pfff=['fff' D.fname];
-end
 
 %% Plot power spectrum for manual removal of outlier channels
 display(['Run length is ' num2str(run_length) ' mins']);
@@ -94,18 +92,18 @@ LBCN_plot_power_spectrum(fname_spm_pfff);
 
 %% Common average re-referencing
 LBCN_montage(fname_spm_pfff);
-fname_spm_fffM=['M' fname_spm_pfff];
+fname_spm_fffM=['Mpfff' D.fname];
 
 %% Filter to slow cortical potential range (<1Hz)
 batch_lowpass_medium(fname_spm_fffM);
 
 %% TF decomposition
 batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
-fname_spm_tf=['tf_aM' fname_spm_pfff];
+fname_spm_tf=['tf_aMpfff' D.fname];
 
 %% LogR transform (normalize)
 LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
-fname_spm_btf=['btf_aM' fname_spm_pfff];
+fname_spm_btf=['btf_aMpfff' D.fname];
 
 %% Frequency band averaging
 batch_AverageFreq(fname_spm_btf);
@@ -115,9 +113,9 @@ batch_AverageFreq(fname_spm_btf);
 both=0;
 cropping=str2num(Cropping)*sampling_rate;
 
-fname_HFB=['HFBbtf_aMp' fname_spm_pfff];
-fname_Alpha=['Alphabtf_aM' D.fname];
-fname_Delta=['Deltabtf_aM' D.fname];
+fname_HFB=['HFBbtf_aMpfff' D.fname];
+fname_Alpha=['Alphabtf_aMpfff' D.fname];
+fname_Delta=['Deltabtf_aMpfff' D.fname];
 fname_Theta=['Thetabtf_aMpfff' D.fname];
 fname_Beta1=['Beta1btf_aMpfff' D.fname];
 fname_Beta2=['Beta2btf_aMpfff' D.fname];
