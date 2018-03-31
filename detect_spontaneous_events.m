@@ -1,0 +1,61 @@
+%% Detect spontaneous activation events at an electrode
+
+%% Defaults
+act_prctile=5; % percentile for activation definition
+cluster_size=10; % minimum number of consecutive samples (i.e., msecs) needed for event definition
+time_gap=500; % minimum number of msec between consecutive events
+
+%% Load electrode time series
+electrode=input('Electrode number: ','s');
+electrode=str2num(electrode);
+D=spm_eeg_load;
+elec_ts=D(electrode,:);
+
+%% Detect top act_prctile time points
+act_peaks=find(elec_ts>prctile(elec_ts,100-act_prctile));
+act_peaks_to_plot=NaN(length(elec_ts),1);
+act_peaks_to_plot(act_peaks)=0;
+
+%% Define clusters of activation time points
+diff_act_peaks=diff(act_peaks);
+
+% find cluster onsets
+for i=1:length(diff_act_peaks) 
+    if i==1
+        onsets(i)=NaN;
+    elseif diff_act_peaks(i)==1 && diff_act_peaks(i-1)~=1
+        onsets(i)=1;
+    else
+        onsets(i)=NaN;
+    end
+end
+% pad the onsets time series with NaNs at the end
+diff_act_peaks=[diff_act_peaks NaN(1,cluster_size)];
+
+% remove short clusters (using cluster_size)
+for i=1:length(onsets)
+    if onsets(i)==1
+      cluster_check=diff_act_peaks(i:i+cluster_size-1); 
+      if sum(cluster_check)==cluster_size;
+          cluster_onsets(i)=1;
+      else
+          cluster_onsets(i)=NaN;
+      end
+    else
+        cluster_onsets(i)=NaN;
+    end
+end
+
+% remove clusters that are too close in time (using time_gap)
+cluster_onsets_time=act_peaks(cluster_onsets==1);
+cluster_distances=diff(cluster_onsets_time);
+isolated_cluster_ind=find(cluster_distances>time_gap);
+isolated_cluster_onsets=cluster_onsets_time(isolated_cluster_ind+1);
+
+n_events=length(isolated_cluster_onsets)
+
+% save onsets to events.mat file for epoching
+
+% plot some example events
+
+
