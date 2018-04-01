@@ -70,6 +70,14 @@ events.categories(1).stimNum=1:length(event_onsets);
 save_name=(['events_' elec_name]);
 save(save_name,'events');
 
-% plot some example events
-
-
+% plot 10 random example events
+example_events=randsample(isolated_cluster_onsets,10);
+for i=1:length(example_events)
+    plot_start=example_events(i)-10;
+    plot_end=example_events(i)+200;
+    %subplot
+    plot(elec_ts(plot_start:plot_end));
+    hold on;
+    plot(act_peaks_to_plot(plot_start:plot_end),'r');
+    pause; close;
+end
