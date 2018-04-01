@@ -4,13 +4,18 @@
 act_prctile=5; % percentile for activation definition
 cluster_size=10; % minimum number of consecutive samples (i.e., msecs) needed for event definition
 time_gap=500; % minimum number of msec between consecutive events
+srate=1000; % sampling rate (Hz)
+getECoGSubDir; global globalECoGDir;
 
 %% Load electrode time series
+sub=input('Patient: ','s');
+run_num=input('Run (e.g. 1): ','s');
 electrode=input('Electrode number: ','s');
 electrode=str2num(electrode);
+cd([globalECoGDir filesep 'Rest' filesep sub filesep 'Run' run_num]);
 D=spm_eeg_load;
 elec_ts=D(electrode,:);
-
+elec_name=char(D.chanlabels(electrode));
 %% Detect top act_prctile time points
 act_peaks=find(elec_ts>prctile(elec_ts,100-act_prctile));
 act_peaks_to_plot=NaN(length(elec_ts),1);
@@ -55,6 +60,15 @@ isolated_cluster_onsets=cluster_onsets_time(isolated_cluster_ind+1);
 n_events=length(isolated_cluster_onsets)
 
 % save onsets to events.mat file for epoching
+event_onsets=isolated_cluster_onsets/srate;
+events.categories(1).name=[elec_name ' Activations'];
+events.categories(1).categNum=1;
+events.categories(1).numEvents=length(event_onsets);
+events.categories(1).start=event_onsets;
+events.categories(1).duration=[ones(length(event_onsets),1)*.05]'; % Set all durations to .05 sec
+events.categories(1).stimNum=1:length(event_onsets);
+save_name=(['events_' elec_name]);
+save(save_name,'events');
 
 % plot some example events
 
