@@ -75,9 +75,9 @@ example_events=randsample(isolated_cluster_onsets,10);
 for i=1:length(example_events)
     plot_start=example_events(i)-10;
     plot_end=example_events(i)+200;
-    %subplot
+    subplot(2,5,i)
     plot(elec_ts(plot_start:plot_end));
     hold on;
     plot(act_peaks_to_plot(plot_start:plot_end),'r');
-    pause; close;
+    hold on;
 end
