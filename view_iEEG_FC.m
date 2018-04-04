@@ -10,6 +10,7 @@ view_bad=input('show bad channels (1) or hide (0)? ','s');
 depth=input('depth(1) or subdural(0)? ','s');
 freq=input('HFB 0.1-1Hz (1) alpha (2) beta1 (3) beta2 (4) Gamma (5) Delta (6) Theta (7) all (8) ','s');
 plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
+inflated=input('Pial (1) or Inflated (2) surface? ','s');
 if plot_all=='0'
     elec_number=input('electrode number (iElvis order): ','s');
 end
@@ -172,7 +173,12 @@ if iEEG=='1'
       if view_bad=='0'
  cfg.ignoreChans=ignoreChans;
       end   
-
+if inflated=='2'
+   cfg.surfType='inflated';
+   cfg.elecSize=10;
+   %cfg.olayThresh=10;
+end
+      
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='r';
 cfg.pullOut=3;
@@ -265,12 +271,18 @@ elseif iEEG=='2' || iEEG=='3' || iEEG=='4'
     elseif depth==1
         elec_ts=load([fsDir '/' Patient '/elec_recon/electrode_spheres/elec' elec_num bold_run_num '_ts_FSL.txt']);
         end    
-          
+     
     if elec_ts(1)~=0
      cfg=[];
       if view_bad=='0'
  cfg.ignoreChans=ignoreChans;
-      end   
+      end    
+  
+          if inflated=='2'
+   cfg.surfType='inflated';
+   cfg.elecSize=10;
+   cfg.olayThresh=5;
+end          
 cfg.view=[hemi 'omni'];
 cfg.elecUnits='r';
 cfg.pullOut=3;

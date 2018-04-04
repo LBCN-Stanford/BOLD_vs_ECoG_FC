@@ -17,8 +17,8 @@ set(gca,'Fontsize',18,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 set(gcf,'color','w');
 hold on;
 p=plot(time,roi1_ts_norm,time,roi2_ts_norm);
-p(1).LineWidth=2; p(1).Color=cdcol.orange;
-p(2).LineWidth=2; p(2).Color=cdcol.burntsienna;
+p(1).LineWidth=2; p(1).Color=cdcol.cobaltblue;
+p(2).LineWidth=2; p(2).Color=cdcol.turquoiseblue;
 xlim([0,time(end)]);
 ylim([-6 6]);
 % legend([roi1],[roi2]);

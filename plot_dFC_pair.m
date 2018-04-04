@@ -1340,7 +1340,7 @@ yticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
 yticks([1 2 3 4 5 6 7])
 xticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
 set(gca,'Fontsize',24,'Fontweight','bold')
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,[roi1 'Interfreq_temporal_corr_' num2str(window_duration) '_' roi1 roi2]]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,[roi1 'Interfreq_temporal_corr_' num2str(window_duration) '_' roi1 roi2 '_run' runs]]));
 %title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
 pause; close
 

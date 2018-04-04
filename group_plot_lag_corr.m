@@ -84,10 +84,10 @@ end
 FigHandle = figure('Position', [200, 600, 1000, 400]);
 figure(1)
 for i=1:length(lag_corr_allsubs);
-plot(lag_times,lag_corr_allsubs(i).lag_corr,'Color',network_color(i,:),'LineWidth',2);
+plot(lag_times(35002:45002),lag_corr_allsubs(i).lag_corr(35002:45002),'Color',network_color(i,:),'LineWidth',2);
 %title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Peak = ' num2str(lag_peak)]},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
-xlim([lag_times(1),lag_times(end)]);
+xlim([lag_times(35002),lag_times(45002)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',0.5,'TickDir','out','box','off');
 hold on
 end

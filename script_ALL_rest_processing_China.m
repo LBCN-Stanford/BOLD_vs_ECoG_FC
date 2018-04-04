@@ -60,10 +60,10 @@ LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
 fname_spm_btf=['btf_aMfff' D.fname];
 
 %% Frequency band averaging
-batch_AverageFreq(fname_spm_tf);
+batch_AverageFreq(fname_spm_btf);
 
 %% Chop 2 sec from edges (beginning and end)
-crop_edges_postTF_func(Patient,runname,fname_spm_tf);
+crop_edges_postTF_func(Patient,runname,fname_spm_tf,);
 fname_HFB=['pHFBtf_aMfff' D.fname];
 fname_Alpha=['pAlphatf_aMfff' D.fname];
 fname_Delta=['pDeltatf_aMfff' D.fname];

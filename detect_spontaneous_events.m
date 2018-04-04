@@ -1,7 +1,7 @@
 %% Detect spontaneous activation events at an electrode
 
 %% Defaults
-act_prctile=5; % percentile for activation definition
+act_prctile=1; % percentile for activation definition
 cluster_size=10; % minimum number of consecutive samples (i.e., msecs) needed for event definition
 time_gap=500; % minimum number of msec between consecutive events
 srate=1000; % sampling rate (Hz)
@@ -70,6 +70,11 @@ events.categories(1).stimNum=1:length(event_onsets);
 save_name=(['events_' elec_name]);
 save(save_name,'events');
 
+% Epoch
+events_file=['events_' elec_name '.mat'];
+epoch_name=['e' elec_name];
+LBCN_epoch_bc(D,events_file,[],'start',[-1000 1500],0,[],[],epoch_name);
+
 % plot 10 random example events
 example_events=randsample(isolated_cluster_onsets,10);
 for i=1:length(example_events)
@@ -81,3 +86,4 @@ for i=1:length(example_events)
     plot(act_peaks_to_plot(plot_start:plot_end),'r');
     hold on;
 end
+
