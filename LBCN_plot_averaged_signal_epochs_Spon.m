@@ -1,4 +1,4 @@
-function LBCN_plot_averaged_signal_epochs(fname,indchan,conds,timewin, save,suffix,colors,labels)
+function [mean_sd]= LBCN_plot_averaged_signal_epochs(fname,indchan,conds,timewin, save,suffix,colors,labels)
 
 % Function to plot the mean and standard error of the signal for each
 % condition, on one channel.
@@ -175,7 +175,7 @@ for i=1:length(indchan)
        print('-opengl','-r300','-dpng',strcat(['figs',filesep,char(chanlabels(D,indchan(i))),'_',suffix]));
         delete(hfig)
     end
-    
+  mean_sd=[mcond; stdcond];  
 end
 fprintf('\n')
 disp('Done: Plot average and standard error for each channel')

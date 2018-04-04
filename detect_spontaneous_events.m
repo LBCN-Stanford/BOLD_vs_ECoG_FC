@@ -2,7 +2,7 @@
 
 %% Defaults
 act_prctile=1; % percentile for activation definition
-cluster_size=10; % minimum number of consecutive samples (i.e., msecs) needed for event definition
+cluster_size=100; % minimum number of consecutive samples (i.e., msecs) needed for event definition
 time_gap=500; % minimum number of msec between consecutive events
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;

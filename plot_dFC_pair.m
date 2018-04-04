@@ -3,7 +3,7 @@
 Patient=input('Patient: ','s');
 BOLD=input('BOLD (1) or iEEG (2): ','s');
 if BOLD=='2'
-    filter=input('filter range: unfiltered (1) 0.1-1 Hz (2) <0.1 Hz (3) ','s');
+    filter=input('filter range: unfiltered (1) 0.1-1 Hz (2) <0.1 Hz (3) smoothed (4) ','s');
     if filter=='2'
    frequency=input('all 0.1-1Hz (0), HFB (2), alpha (3), beta1 (4), beta2 (5), Theta (6), Delta(7), Gamma (8)','s'); 
     end
@@ -12,6 +12,9 @@ if BOLD=='2'
     end
     if filter=='3'
        frequency=input('HFB (1)','s'); 
+    end
+    if filter=='4'
+        frequency=input('HFB (h)','s');
     end
 else
     frequency=' ';
@@ -140,6 +143,10 @@ if frequency=='0'
     HFB_slow=iEEG_data; iEEG_data=[];
 end
     end
+    if frequency=='h' 
+iEEG_data=spm_eeg_load(['SpHFB' Mfile]); freq=['HFB (smoothed)'];
+    end
+    
     if frequency=='2' || frequency=='0'
 iEEG_data=spm_eeg_load(['bptf_mediumpHFB' Mfile]); freq=['HFB (0.1-1 Hz)'];
 if frequency=='0'
@@ -234,6 +241,7 @@ if frequency=='0'
     HFB_slow=iEEG_data; iEEG_data=[];
 end
 end
+
 if frequency=='2' || frequency=='0'
 iEEG_data=spm_eeg_load(['bptf_mediumHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
 if frequency=='0'
@@ -1036,6 +1044,7 @@ pspec_roi2=pwelch(roi2_ts_norm,iEEG_sampling,0,1:170,iEEG_sampling,'power');
 [lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60*iEEG_sampling); % 60 sec lags
 lag_times=lag_times/iEEG_sampling;
 lag_peak=lag_times(find(lag_corr==max(lag_corr)));
+lag_min_peak=lag_times(find(lag_corr==min(lag_corr)));
 
 %% calculate dynamic conditional correlations
 %[H,R,Theta,X]=DCC_X([roi1_ts_norm roi2_ts_norm],0,0);
@@ -1211,12 +1220,16 @@ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 pause; close; 
 
 % Plot iEEG lag correlation
-lag_times=lag_times(20000:100000);
-lag_corr=lag_corr(20000:100000);
-plot(lag_times,lag_corr,'r','LineWidth',2);
-title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Peak = ' num2str(lag_peak)]},'Fontsize',10);
+lag_times_plot=lag_times(55000:65000);
+lag_corr_plot=lag_corr(55000:65000);
+lag_peak_plot=lag_times_plot(find(lag_corr_plot==max(lag_corr_plot)));
+lag_min_peak_plot=lag_times_plot(find(lag_corr_plot==min(lag_corr_plot)));
+
+plot(lag_times_plot,lag_corr_plot,'r','LineWidth',2);
+title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Max Peak = ' num2str(lag_peak_plot)];...
+    ['Min Peak = ' num2str(lag_min_peak_plot)]},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
-xlim([lag_times(1),lag_times(end)]);
+xlim([lag_times_plot(1),lag_times_plot(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
 save('lag_times','lag_times');

@@ -11,6 +11,7 @@ Patient=input('Patient: ','s'); sub=Patient;
 rest=input('Rest (1) or Sleep (2)? ','s');
 runname=input('Run (e.g. 2): ','s'); run=runname;
 TDT=input('TDT (1) or EDF (0): ','s');
+China=input('China (1) or Stanford (0)? ','s');
 Crop_ts=input('Crop time series (1) or not (0)? ','s');
 Cropping=input('Crop edges by (e.g. 20 for 20 sec): ','s');
 
@@ -71,7 +72,11 @@ end
 end
 
 %% Filter iEEG data and detect bad channels
+if China=='0'
 LBCN_filter_badchans(fname_spm,[],bad_chans,1,[]);
+elseif China=='1'
+LBCN_filter_badchans_China(fname_spm,[],bad_chans,1,[]); 
+end
 fname_spm_fff=['fff' D.fname];
 
 A=spm_eeg_load(['f' D.fname]);
@@ -115,7 +120,7 @@ batch_AverageFreq(fname_spm_btf);
 both=0;
 cropping=str2num(Cropping)*sampling_rate;
 
-fname_HFB=['HFBbtf_aMp' fname_spm_pfff];
+fname_HFB=['HFBbtf_aM' fname_spm_pfff];
 fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
 fname_Delta=['Deltabtf_aM' fname_spm_pfff];
 fname_Theta=['Thetabtf_aM' fname_spm_pfff];
