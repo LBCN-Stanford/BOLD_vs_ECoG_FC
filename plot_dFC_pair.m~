@@ -1,9 +1,9 @@
-% plot sliding-window dFC for a pair of regions - BOLD
+% plot sliding-window dFC for a pair of regions - BOLD or iEEG
 
 Patient=input('Patient: ','s');
 BOLD=input('BOLD (1) or iEEG (2): ','s');
 if BOLD=='2'
-    filter=input('filter range: unfiltered (1) 0.1-1 Hz (2) <0.1 Hz (3) ','s');
+    filter=input('filter range: unfiltered (1) 0.1-1 Hz (2) <0.1 Hz (3) smoothed (4) ','s');
     if filter=='2'
    frequency=input('all 0.1-1Hz (0), HFB (2), alpha (3), beta1 (4), beta2 (5), Theta (6), Delta(7), Gamma (8)','s'); 
     end
@@ -12,6 +12,9 @@ if BOLD=='2'
     end
     if filter=='3'
        frequency=input('HFB (1)','s'); 
+    end
+    if filter=='4'
+        frequency=input('HFB (h)','s');
     end
 else
     frequency=' ';
@@ -58,6 +61,7 @@ iEEG_sampling=1000;
 
 if BOLD=='iEEG'
     if isnumeric(iEEG_window_duration)==1
+        iEEG_step_kmeans=2000;
 iEEG_step=(iEEG_window_duration*iEEG_sampling)/2;
 iEEG_window_size=iEEG_window_duration*iEEG_sampling;    
     else
@@ -139,6 +143,10 @@ if frequency=='0'
     HFB_slow=iEEG_data; iEEG_data=[];
 end
     end
+    if frequency=='h' 
+iEEG_data=spm_eeg_load(['SpHFB' Mfile]); freq=['HFB (smoothed)'];
+    end
+    
     if frequency=='2' || frequency=='0'
 iEEG_data=spm_eeg_load(['bptf_mediumpHFB' Mfile]); freq=['HFB (0.1-1 Hz)'];
 if frequency=='0'
@@ -233,6 +241,7 @@ if frequency=='0'
     HFB_slow=iEEG_data; iEEG_data=[];
 end
 end
+
 if frequency=='2' || frequency=='0'
 iEEG_data=spm_eeg_load(['bptf_mediumHFB' Mfile]); freq=['HFB (<0.1 Hz)'];
 if frequency=='0'
@@ -387,6 +396,7 @@ roi2_num=strmatch(roi2,parcOut(:,1),'exact');
 
 %% Convert iEEG numbers to names
 if BOLD=='iEEG'
+    
 % create iEEG to iElvis chanlabel transformation vector
 for i=1:length(chanlabels)
     iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
@@ -529,7 +539,7 @@ if seed=='1'
     cd([globalECoGDir '/Rest/' Patient '/Run' runs]);
     if BOLD=='iEEG';
 seed_allwindows_fisher=[];
-  for i=1:iEEG_step:length(roi1_ts)-iEEG_window_size;
+  for i=1:iEEG_step_kmeans:length(roi1_ts)-iEEG_window_size;
     a=i+iEEG_window_size;
     ALL_window_ts=iEEG_ts_iElvis(i:a,:);
     ALL_window_corr=corrcoef(ALL_window_ts);
@@ -537,9 +547,24 @@ seed_allwindows_fisher=[];
     seed_window_fisher=ALL_window_fisher(:,roi1_num);
     seed_allwindows_fisher=[seed_allwindows_fisher seed_window_fisher];
   end  
-  if iEEG_step==2000
+  if iEEG_step_kmeans==2000
    windowsize=num2str(iEEG_window_size/iEEG_sampling);
-      save([roi1 '_' windowsize 'sec_windows_iEEG'],'seed_allwindows_fisher');
+   
+   if frequency=='2'
+      save([roi1 '_' windowsize 'sec_windows_iEEG_HFB_medium'],'seed_allwindows_fisher');
+   elseif frequency=='3'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Alpha_medium'],'seed_allwindows_fisher');
+   elseif frequency=='4'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Beta1_medium'],'seed_allwindows_fisher');
+   elseif frequency=='5'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Beta2_medium'],'seed_allwindows_fisher');
+   elseif frequency=='6'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Theta_medium'],'seed_allwindows_fisher');
+   elseif frequency=='7'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Delta_medium'],'seed_allwindows_fisher');
+   elseif frequency=='8'
+       save([roi1 '_' windowsize 'sec_windows_iEEG_Gamma_medium'],'seed_allwindows_fisher');          
+   end
   end
     end
   if BOLD=='BOLD'
@@ -1020,6 +1045,7 @@ pspec_roi2=pwelch(roi2_ts_norm,iEEG_sampling,0,1:170,iEEG_sampling,'power');
 [lag_corr,lag_times]=crosscorr(roi1_ts_norm,roi2_ts_norm,60*iEEG_sampling); % 60 sec lags
 lag_times=lag_times/iEEG_sampling;
 lag_peak=lag_times(find(lag_corr==max(lag_corr)));
+lag_min_peak=lag_times(find(lag_corr==min(lag_corr)));
 
 %% calculate dynamic conditional correlations
 %[H,R,Theta,X]=DCC_X([roi1_ts_norm roi2_ts_norm],0,0);
@@ -1063,7 +1089,16 @@ lag_peak=lag_times(find(lag_corr==max(lag_corr)));
      save(['lag_peak_HFB' roi1 roi2],'lag_peak_HFB');
      
      % save static FC for each frequency range
-     c
+     Delta_staticFC=corr(roi1_Delta_medium_ts_norm,roi2_Delta_medium_ts_norm);
+     Theta_staticFC=corr(roi1_Theta_medium_ts_norm,roi2_Theta_medium_ts_norm);
+     Alpha_staticFC=corr(roi1_Alpha_medium_ts_norm,roi2_Alpha_medium_ts_norm);
+     Beta1_staticFC=corr(roi1_Beta1_medium_ts_norm,roi2_Beta1_medium_ts_norm);
+     Beta2_staticFC=corr(roi1_Beta2_medium_ts_norm,roi2_Beta2_medium_ts_norm);
+     Gamma_staticFC=corr(roi1_Gamma_medium_ts_norm,roi2_Gamma_medium_ts_norm);
+     HFB_staticFC=corr(roi1_HFB_medium_ts_norm,roi2_HFB_medium_ts_norm);
+     
+     StaticFC_allfreqs=[Delta_staticFC Theta_staticFC Alpha_staticFC Beta1_staticFC Beta2_staticFC Gamma_staticFC HFB_staticFC];
+     save(['StaticFC_allfreqs_' roi1 roi2],'StaticFC_allfreqs');
      
     elseif frequency=='p'
         roi1_HFB_ts_norm=(roi1_HFB_ts-mean(roi1_HFB_ts))/std(roi1_HFB_ts);
@@ -1186,12 +1221,20 @@ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','o
 pause; close; 
 
 % Plot iEEG lag correlation
-plot(lag_times,lag_corr,'r','LineWidth',2);
-title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Peak = ' num2str(lag_peak)]},'Fontsize',10);
+lag_times_plot=lag_times(55000:65000);
+lag_corr_plot=lag_corr(55000:65000);
+lag_peak_plot=lag_times_plot(find(lag_corr_plot==max(lag_corr_plot)));
+lag_min_peak_plot=lag_times_plot(find(lag_corr_plot==min(lag_corr_plot)));
+
+plot(lag_times_plot,lag_corr_plot,'r','LineWidth',2);
+title({['iEEG ' freq ': ' roi1  ' vs'  roi2 ' lag correlations']; ['Max Peak = ' num2str(lag_peak_plot)];...
+    ['Min Peak = ' num2str(lag_min_peak_plot)]},'Fontsize',10);
 xlabel(['Lag (sec)']); ylabel(['Correlation']);
-xlim([lag_times(1),lag_times(end)]);
+xlim([lag_times_plot(1),lag_times_plot(end)]);
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 pause; close;
+save('lag_times','lag_times');
+save(['lag_corr_' roi1 roi2],'lag_corr');
 
 % Plot a zoom-in of selected window
 time=1:length(roi1_window_ts_plot); time=time/iEEG_sampling;
@@ -1311,7 +1354,7 @@ yticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
 yticks([1 2 3 4 5 6 7])
 xticklabels({'δ','θ', 'α','β1','β2','γ','HFB'})
 set(gca,'Fontsize',24,'Fontweight','bold')
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,[roi1 'Interfreq_temporal_corr_' num2str(window_duration) '_' roi1 roi2]]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,[roi1 'Interfreq_temporal_corr_' num2str(window_duration) '_' roi1 roi2 '_run' runs]]));
 %title(['Dynamic FC (0.1-1 Hz) cross-correlation of frequencies'])
 pause; close
 

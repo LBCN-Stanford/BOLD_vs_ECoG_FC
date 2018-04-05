@@ -102,31 +102,31 @@ else
     Mfile=Mfile(2,1).name;
 end
 %Load channel name-number mapping
-cd([fsDir '/' Patient '/elec_recon']);
-[channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+% cd([fsDir '/' Patient '/elec_recon']);
+% [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
 end
 
 %% For iEEG, load channel names (in freesurfer/elec recon order)
-if BOLD=='iEEG'
-    cd([fsDir '/' Patient '/elec_recon']);
-chan_names=importdata([Patient '.electrodeNames'],' ');
-fs_chanlabels={};
-
-for chan=3:length(chan_names)
-    chan_name=chan_names(chan); chan_name=char(chan_name);
-    [a b]=strtok(chan_name); 
-    bsize=size(strfind(b,' '),2);
-    if bsize==2
-    [c d]=strtok(b); 
-    fs_chanlabels{chan,1}=[d(2) a];
-    elseif bsize==3
-    [c d]=strtok(b); [e f]=strtok(d);
-    fs_chanlabels{chan,1}=[f(2) a c];
-    end
-end
-fs_chanlabels=fs_chanlabels(3:end);
-
-end
+% if BOLD=='iEEG'
+%     cd([fsDir '/' Patient '/elec_recon']);
+% chan_names=importdata([Patient '.electrodeNames'],' ');
+% fs_chanlabels={};
+% 
+% for chan=3:length(chan_names)
+%     chan_name=chan_names(chan); chan_name=char(chan_name);
+%     [a b]=strtok(chan_name); 
+%     bsize=size(strfind(b,' '),2);
+%     if bsize==2
+%     [c d]=strtok(b); 
+%     fs_chanlabels{chan,1}=[d(2) a];
+%     elseif bsize==3
+%     [c d]=strtok(b); [e f]=strtok(d);
+%     fs_chanlabels{chan,1}=[f(2) a c];
+%     end
+% end
+% fs_chanlabels=fs_chanlabels(3:end);
+% 
+% end
 
 %% Load iEEG data
 if BOLD=='iEEG'
@@ -333,133 +333,134 @@ if frequency=='g' || frequency=='p'
     end
 end 
 end
-
-
-if frequency ~='0' && frequency~='p'
-for iEEG_chan=1:size(iEEG_data,1)
-    iEEG_ts(:,iEEG_chan)=iEEG_data(iEEG_chan,:)';      
-end
 end
 
-if frequency=='0'
-    for iEEG_chan=1:size(HFB_medium,1)
-    HFB_medium_ts(:,iEEG_chan)=HFB_medium(iEEG_chan,:)';      
-    end
-     for iEEG_chan=1:size(HFB_medium,1)
-    Alpha_medium_ts(:,iEEG_chan)=Alpha_medium(iEEG_chan,:)';      
-     end   
-    for iEEG_chan=1:size(HFB_medium,1)
-    Beta1_medium_ts(:,iEEG_chan)=Beta1_medium(iEEG_chan,:)';      
-end
-      for iEEG_chan=1:size(HFB_medium,1)
-    Beta2_medium_ts(:,iEEG_chan)=Beta2_medium(iEEG_chan,:)';      
-      end
-    for iEEG_chan=1:size(HFB_medium,1)
-    Theta_medium_ts(:,iEEG_chan)=Theta_medium(iEEG_chan,:)';      
-end
-       for iEEG_chan=1:size(HFB_medium,1)
-    Delta_medium_ts(:,iEEG_chan)=Delta_medium(iEEG_chan,:)';      
-       end
-    for iEEG_chan=1:size(HFB_medium,1)
-    Gamma_medium_ts(:,iEEG_chan)=Gamma_medium(iEEG_chan,:)';      
-end
-end
+% if frequency ~='0' && frequency~='p'
+% for iEEG_chan=1:size(iEEG_data,1)
+%     iEEG_ts(:,iEEG_chan)=iEEG_data(iEEG_chan,:)';      
+% end
+% end
+% 
+% if frequency=='0'
+%     for iEEG_chan=1:size(HFB_medium,1)
+%     HFB_medium_ts(:,iEEG_chan)=HFB_medium(iEEG_chan,:)';      
+%     end
+%      for iEEG_chan=1:size(HFB_medium,1)
+%     Alpha_medium_ts(:,iEEG_chan)=Alpha_medium(iEEG_chan,:)';      
+%      end   
+%     for iEEG_chan=1:size(HFB_medium,1)
+%     Beta1_medium_ts(:,iEEG_chan)=Beta1_medium(iEEG_chan,:)';      
+% end
+%       for iEEG_chan=1:size(HFB_medium,1)
+%     Beta2_medium_ts(:,iEEG_chan)=Beta2_medium(iEEG_chan,:)';      
+%       end
+%     for iEEG_chan=1:size(HFB_medium,1)
+%     Theta_medium_ts(:,iEEG_chan)=Theta_medium(iEEG_chan,:)';      
+% end
+%        for iEEG_chan=1:size(HFB_medium,1)
+%     Delta_medium_ts(:,iEEG_chan)=Delta_medium(iEEG_chan,:)';      
+%        end
+%     for iEEG_chan=1:size(HFB_medium,1)
+%     Gamma_medium_ts(:,iEEG_chan)=Gamma_medium(iEEG_chan,:)';      
+% end
+% end
+% 
+% if frequency =='p'
+%      for iEEG_chan=1:size(HFB,1)
+%     HFB_ts(:,iEEG_chan)=HFB(iEEG_chan,:)';      
+%     end
+%      for iEEG_chan=1:size(HFB,1)
+%     Alpha_ts(:,iEEG_chan)=Alpha(iEEG_chan,:)';      
+%      end   
+%     for iEEG_chan=1:size(HFB,1)
+%     Beta1_ts(:,iEEG_chan)=Beta1(iEEG_chan,:)';      
+% end
+%       for iEEG_chan=1:size(HFB,1)
+%     Beta2_ts(:,iEEG_chan)=Beta2(iEEG_chan,:)';      
+%       end
+%     for iEEG_chan=1:size(HFB,1)
+%     Theta_ts(:,iEEG_chan)=Theta(iEEG_chan,:)';      
+% end
+%        for iEEG_chan=1:size(HFB,1)
+%     Delta_ts(:,iEEG_chan)=Delta(iEEG_chan,:)';      
+%        end
+%     for iEEG_chan=1:size(HFB,1)
+%     Gamma_ts(:,iEEG_chan)=Gamma(iEEG_chan,:)';      
+% end       
+% end
+% end
 
-if frequency =='p'
-     for iEEG_chan=1:size(HFB,1)
-    HFB_ts(:,iEEG_chan)=HFB(iEEG_chan,:)';      
-    end
-     for iEEG_chan=1:size(HFB,1)
-    Alpha_ts(:,iEEG_chan)=Alpha(iEEG_chan,:)';      
-     end   
-    for iEEG_chan=1:size(HFB,1)
-    Beta1_ts(:,iEEG_chan)=Beta1(iEEG_chan,:)';      
-end
-      for iEEG_chan=1:size(HFB,1)
-    Beta2_ts(:,iEEG_chan)=Beta2(iEEG_chan,:)';      
-      end
-    for iEEG_chan=1:size(HFB,1)
-    Theta_ts(:,iEEG_chan)=Theta(iEEG_chan,:)';      
-end
-       for iEEG_chan=1:size(HFB,1)
-    Delta_ts(:,iEEG_chan)=Delta(iEEG_chan,:)';      
-       end
-    for iEEG_chan=1:size(HFB,1)
-    Gamma_ts(:,iEEG_chan)=Gamma(iEEG_chan,:)';      
-end       
-end
-end
 
 %% Convert ROI names to numbers (iElvis space)
-roi1_num=strmatch(roi1,parcOut(:,1),'exact');
-roi2_num=strmatch(roi2,parcOut(:,1),'exact');
-
-%% Convert iEEG numbers to names
-if BOLD=='iEEG'
-% create iEEG to iElvis chanlabel transformation vector
-for i=1:length(chanlabels)
-    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
-end
-
-    for i=1:length(chanlabels)
-iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
-    end
-
-end
+% roi1_num=strmatch(roi1,parcOut(:,1),'exact');
+% roi2_num=strmatch(roi2,parcOut(:,1),'exact');
+% 
+% %% Convert iEEG numbers to names
+% if BOLD=='iEEG'
+% % create iEEG to iElvis chanlabel transformation vector
+% for i=1:length(chanlabels)
+%     iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
+% end
+% 
+%     for i=1:length(chanlabels)
+% iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
+%     end
+% 
+% end
 
 %% Transform time series from iEEG to iElvis order
-if BOLD=='iEEG'
-    if frequency~='0' && frequency~='p'
-iEEG_ts_iElvis=NaN(size(iEEG_ts,1),length(chanlabels));
-for i=1:length(chanlabels);
-    curr_iEEG_chan=channumbers_iEEG(i);
-    new_ind=iEEG_to_iElvis_chanlabel(i);
-    iEEG_ts_iElvis(:,new_ind)=iEEG_ts(:,curr_iEEG_chan);
-end
-
-    elseif frequency=='0'
-HFB_medium_ts_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));  
-Alpha_medium_ts_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
-Beta1_medium_ts_iElvis=NaN(size(Beta1_medium_ts,1),length(chanlabels));
-Beta2_medium_ts_iElvis=NaN(size(Beta2_medium_ts,1),length(chanlabels));
-Theta_medium_ts_iElvis=NaN(size(Theta_medium_ts,1),length(chanlabels));
-Delta_medium_ts_iElvis=NaN(size(Delta_medium_ts,1),length(chanlabels));
-Gamma_medium_ts_iElvis=NaN(size(Gamma_medium_ts,1),length(chanlabels));
-
-for i=1:length(chanlabels);
-    curr_iEEG_chan=channumbers_iEEG(i);
-    new_ind=iEEG_to_iElvis_chanlabel(i);
-    HFB_medium_ts_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
-    Alpha_medium_ts_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
-    Beta1_medium_ts_iElvis(:,new_ind)=Beta1_medium_ts(:,curr_iEEG_chan);
-    Beta2_medium_ts_iElvis(:,new_ind)=Beta2_medium_ts(:,curr_iEEG_chan);
-    Theta_medium_ts_iElvis(:,new_ind)=Theta_medium_ts(:,curr_iEEG_chan);
-    Delta_medium_ts_iElvis(:,new_ind)=Delta_medium_ts(:,curr_iEEG_chan);
-    Gamma_medium_ts_iElvis(:,new_ind)=Gamma_medium_ts(:,curr_iEEG_chan);
-end
-
-    elseif frequency=='p'
-HFB_ts_iElvis=NaN(size(HFB_ts,1),length(chanlabels));  
-Alpha_ts_iElvis=NaN(size(Alpha_ts,1),length(chanlabels));
-Beta1_ts_iElvis=NaN(size(Beta1_ts,1),length(chanlabels));
-Beta2_ts_iElvis=NaN(size(Beta2_ts,1),length(chanlabels));
-Theta_ts_iElvis=NaN(size(Theta_ts,1),length(chanlabels));
-Delta_ts_iElvis=NaN(size(Delta_ts,1),length(chanlabels));
-Gamma_ts_iElvis=NaN(size(Gamma_ts,1),length(chanlabels));
-
-for i=1:length(chanlabels);
-    curr_iEEG_chan=channumbers_iEEG(i);
-    new_ind=iEEG_to_iElvis_chanlabel(i);
-    HFB_ts_iElvis(:,new_ind)=HFB_ts(:,curr_iEEG_chan);
-    Alpha_ts_iElvis(:,new_ind)=Alpha_ts(:,curr_iEEG_chan);
-    Beta1_ts_iElvis(:,new_ind)=Beta1_ts(:,curr_iEEG_chan);
-    Beta2_ts_iElvis(:,new_ind)=Beta2_ts(:,curr_iEEG_chan);
-    Theta_ts_iElvis(:,new_ind)=Theta_ts(:,curr_iEEG_chan);
-    Delta_ts_iElvis(:,new_ind)=Delta_ts(:,curr_iEEG_chan);
-    Gamma_ts_iElvis(:,new_ind)=Gamma_ts(:,curr_iEEG_chan);
-end
-    end  
-end
+% if BOLD=='iEEG'
+%     if frequency~='0' && frequency~='p'
+% iEEG_ts_iElvis=NaN(size(iEEG_ts,1),length(chanlabels));
+% for i=1:length(chanlabels);
+%     curr_iEEG_chan=channumbers_iEEG(i);
+%     new_ind=iEEG_to_iElvis_chanlabel(i);
+%     iEEG_ts_iElvis(:,new_ind)=iEEG_ts(:,curr_iEEG_chan);
+% end
+% 
+%     elseif frequency=='0'
+% HFB_medium_ts_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));  
+% Alpha_medium_ts_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
+% Beta1_medium_ts_iElvis=NaN(size(Beta1_medium_ts,1),length(chanlabels));
+% Beta2_medium_ts_iElvis=NaN(size(Beta2_medium_ts,1),length(chanlabels));
+% Theta_medium_ts_iElvis=NaN(size(Theta_medium_ts,1),length(chanlabels));
+% Delta_medium_ts_iElvis=NaN(size(Delta_medium_ts,1),length(chanlabels));
+% Gamma_medium_ts_iElvis=NaN(size(Gamma_medium_ts,1),length(chanlabels));
+% 
+% for i=1:length(chanlabels);
+%     curr_iEEG_chan=channumbers_iEEG(i);
+%     new_ind=iEEG_to_iElvis_chanlabel(i);
+%     HFB_medium_ts_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
+%     Alpha_medium_ts_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
+%     Beta1_medium_ts_iElvis(:,new_ind)=Beta1_medium_ts(:,curr_iEEG_chan);
+%     Beta2_medium_ts_iElvis(:,new_ind)=Beta2_medium_ts(:,curr_iEEG_chan);
+%     Theta_medium_ts_iElvis(:,new_ind)=Theta_medium_ts(:,curr_iEEG_chan);
+%     Delta_medium_ts_iElvis(:,new_ind)=Delta_medium_ts(:,curr_iEEG_chan);
+%     Gamma_medium_ts_iElvis(:,new_ind)=Gamma_medium_ts(:,curr_iEEG_chan);
+% end
+% 
+%     elseif frequency=='p'
+% HFB_ts_iElvis=NaN(size(HFB_ts,1),length(chanlabels));  
+% Alpha_ts_iElvis=NaN(size(Alpha_ts,1),length(chanlabels));
+% Beta1_ts_iElvis=NaN(size(Beta1_ts,1),length(chanlabels));
+% Beta2_ts_iElvis=NaN(size(Beta2_ts,1),length(chanlabels));
+% Theta_ts_iElvis=NaN(size(Theta_ts,1),length(chanlabels));
+% Delta_ts_iElvis=NaN(size(Delta_ts,1),length(chanlabels));
+% Gamma_ts_iElvis=NaN(size(Gamma_ts,1),length(chanlabels));
+% 
+% for i=1:length(chanlabels);
+%     curr_iEEG_chan=channumbers_iEEG(i);
+%     new_ind=iEEG_to_iElvis_chanlabel(i);
+%     HFB_ts_iElvis(:,new_ind)=HFB_ts(:,curr_iEEG_chan);
+%     Alpha_ts_iElvis(:,new_ind)=Alpha_ts(:,curr_iEEG_chan);
+%     Beta1_ts_iElvis(:,new_ind)=Beta1_ts(:,curr_iEEG_chan);
+%     Beta2_ts_iElvis(:,new_ind)=Beta2_ts(:,curr_iEEG_chan);
+%     Theta_ts_iElvis(:,new_ind)=Theta_ts(:,curr_iEEG_chan);
+%     Delta_ts_iElvis(:,new_ind)=Delta_ts(:,curr_iEEG_chan);
+%     Gamma_ts_iElvis(:,new_ind)=Gamma_ts(:,curr_iEEG_chan);
+% end
+%     end  
+% end
 
 %% Load time series for ROI pair
 if BOLD=='BOLD'
@@ -483,12 +484,13 @@ end
 end
 
 if BOLD=='iEEG'
-    roi1_iEEG_num=iElvis_to_iEEG_chanlabel(roi1_num);
-    roi2_iEEG_num=iElvis_to_iEEG_chanlabel(roi2_num);
-
+    %chan_num=indchannel(iEEG_data,electrode_effect);
+    roi1_iEEG_num=indchannel(iEEG_data,roi1);
+    roi2_iEEG_num=indchannel(iEEG_data,roi2);
+    
     if frequency ~='0' && frequency ~='p'
-    roi1_ts=iEEG_ts_iElvis(:,roi1_num);   
-    roi2_ts=iEEG_ts_iElvis(:,roi2_num);   
+    roi1_ts=iEEG_data(roi1_iEEG_num,:)';   
+    roi2_ts=iEEG_data(roi2_iEEG_num,:)';
      elseif frequency=='0'
          roi1_HFB_medium_ts=HFB_medium_ts(:,roi1_iEEG_num);
          roi1_Alpha_medium_ts=Alpha_medium_ts(:,roi1_iEEG_num);
