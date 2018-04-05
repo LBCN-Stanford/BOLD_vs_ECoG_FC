@@ -1,5 +1,6 @@
 % plot sliding-window dFC for a pair of regions - BOLD or iEEG
 
+%% inputs
 Patient=input('Patient: ','s');
 BOLD=input('BOLD (1) or iEEG (2): ','s');
 if BOLD=='2'
@@ -32,7 +33,8 @@ rest=input('Rest(1) or Sleep(0)? ','s');
 roi1=input('ROI 1 (e.g. AFS9): ','s');
 roi2=input('ROI 2 (e.g. PIHS4): ','s');
 seed=input('seed (ROI1) to all else (1)? ','s');
-depth=input('depth (1) or subdural (0)? ','s');
+%depth=input('depth (1) or subdural (0)? ','s');
+chop_sec=input('Seconds to chop from beginning ','s'); chop_sec=str2num(chop_sec);
 
 load('cdcol.mat');
 
@@ -488,9 +490,15 @@ if BOLD=='iEEG'
     roi1_iEEG_num=indchannel(iEEG_data,roi1);
     roi2_iEEG_num=indchannel(iEEG_data,roi2);
     
+    if chop_sec~=0
+    chop_samples=chop_sec*iEEG_sampling;
+    else
+        chop_samples=1;
+    end
     if frequency ~='0' && frequency ~='p'
-    roi1_ts=iEEG_data(roi1_iEEG_num,:)';   
-    roi2_ts=iEEG_data(roi2_iEEG_num,:)';
+        
+    roi1_ts=iEEG_data(roi1_iEEG_num,chop_samples:size(iEEG_data,2))';   
+    roi2_ts=iEEG_data(roi2_iEEG_num,chop_samples:size(iEEG_data,2))';
      elseif frequency=='0'
          roi1_HFB_medium_ts=HFB_medium_ts(:,roi1_iEEG_num);
          roi1_Alpha_medium_ts=Alpha_medium_ts(:,roi1_iEEG_num);
