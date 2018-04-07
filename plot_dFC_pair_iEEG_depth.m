@@ -12,7 +12,7 @@ if BOLD=='2'
    frequency=input('all unfiltered (p), HFB (9), alpha (b), beta1 (c), beta2 (d), Theta (e), Delta(f), Gamma (g)','s');
     end
     if filter=='3'
-       frequency=input('HFB (1)','s'); 
+       frequency=input('HFB (1)','s'); freq='HFB';
     end
     if filter=='4'
         frequency=input('HFB (h)','s');
