@@ -99,7 +99,7 @@ else
     fname_spm_pfff=['fff' D.fname];
 end
 %[D]=crop_gradCPT_raw(sub,runname,fname,cropping_start,cropping_end);
-run_length=(D.nsamples/D.fsample)/60;
+run_length=D.nsamples/D.fsample;
 
 %% Plot power spectrum for manual removal of outlier channels
 display(['Run length is ' num2str(run_length) ' mins']);
@@ -107,18 +107,18 @@ LBCN_plot_power_spectrum(fname_spm_pfff);
 
 %% Common average re-referencing
 LBCN_montage(fname_spm_pfff);
-fname_spm_pfffM=['M' D.fname];
+fname_spm_fffM=['M' fname_spm_pfff];
 
 %% Filter to slow cortical potential range (<1Hz)
-batch_lowpass_medium(fname_spm_pfffM);
+batch_lowpass_medium(fname_spm_fffM);
 
 %% TF decomposition
-batch_ArtefactRejection_TF_norescale(fname_spm_pfffM);
-fname_spm_tf=['tf_aM' D.fname];
+batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
+fname_spm_tf=['tf_aM' fname_spm_pfff];
 
 %% LogR transform (normalize)
 LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
-fname_spm_btf=['btf_aM' D.fname];
+fname_spm_btf=['btf_aM' fname_spm_pfff];
 
 %% Frequency band averaging
 batch_AverageFreq(fname_spm_btf);
@@ -128,13 +128,13 @@ batch_AverageFreq(fname_spm_btf);
 both=0;
 cropping=str2num(Cropping)*sampling_rate;
 
-fname_HFB=['HFBbtf_aM' D.fname];
-fname_Alpha=['Alphabtf_aM' D.fname];
-fname_Delta=['Deltabtf_aM' D.fname];
-fname_Theta=['Thetabtf_aM' D.fname];
-fname_Beta1=['Beta1btf_aM' D.fname];
-fname_Beta2=['Beta2btf_aM' D.fname];
-fname_Gamma=['Gammabtf_aM' D.fname];
+fname_HFB=['HFBbtf_aM' fname_spm_pfff];
+fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
+fname_Delta=['Deltabtf_aM' fname_spm_pfff];
+fname_Theta=['Thetabtf_aM' fname_spm_pfff];
+fname_Beta1=['Beta1btf_aM' fname_spm_pfff];
+fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
+fname_Gamma=['Gammabtf_aM' fname_spm_pfff];
 
 if Crop_ts=='1'
 crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both);
@@ -147,21 +147,21 @@ crop_edges_postTF_func(Patient,runname,fname_Gamma,cropping,both);
 end
 
 if Crop_ts=='1'
-fname_HFB=['pHFBbtf_aM' D.fname];
-fname_Alpha=['pAlphabtf_aM' D.fname];
-fname_Delta=['pDeltabtf_aM' D.fname];
-fname_Theta=['pThetabtf_aM' D.fname];
-fname_Beta1=['pBeta1btf_aM' D.fname];
-fname_Beta2=['pBeta2btf_aM' D.fname];
-fname_Gamma=['pGammabtf_aM' D.fname];
+fname_HFB=['pHFBbtf_aM' fname_spm_pfff];
+fname_Alpha=['pAlphabtf_aM' fname_spm_pfff];
+fname_Delta=['pDeltabtf_aM' fname_spm_pfff];
+fname_Theta=['pThetabtf_aM' fname_spm_pfff];
+fname_Beta1=['pBeta1btf_aM' fname_spm_pfff];
+fname_Beta2=['pBeta2btf_aM' fname_spm_pfff];
+fname_Gamma=['pGammabtf_aM' fname_spm_pfff];
 else
-  fname_HFB=['HFBbtf_aM' D.fname];
-fname_Alpha=['Alphabtf_aM' D.fname];
-fname_Delta=['Deltabtf_aM' D.fname];
-fname_Theta=['Thetabtf_aM' D.fname];
-fname_Beta1=['Beta1btf_aM' D.fname];
-fname_Beta2=['Beta2btf_aM' D.fname];
-fname_Gamma=['Gammabtf_aM' D.fname];  
+  fname_HFB=['HFBbtf_aM' fname_spm_pfff];
+fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
+fname_Delta=['Deltabtf_aM' fname_spm_pfff];
+fname_Theta=['Thetabtf_aM' fname_spm_pfff];
+fname_Beta1=['Beta1btf_aM' fname_spm_pfff];
+fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
+fname_Gamma=['Gammabtf_aM' fname_spm_pfff];  
     
 end
 %% Temporal filtering: 0.1-1Hz, <0.1Hz, >1Hz
