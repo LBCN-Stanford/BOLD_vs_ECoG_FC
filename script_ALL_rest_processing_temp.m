@@ -13,7 +13,12 @@ runname=input('Run (e.g. 2): ','s'); run=runname;
 TDT=input('TDT (1) or EDF (0): ','s');
 China=input('China (1) or Stanford (0)? ','s');
 Crop_ts=input('Crop time series (1) or not (0)? ','s');
-Cropping=input('Crop edges by (e.g. 20 for 20 sec): ','s');
+if Crop_ts=='1'
+    crop_start=input('Crop from beginning (e.g. 20 for 20 sec): ','s');
+    crop_end=input('Crop from end: ','s');
+end
+
+Cropping=input('Crop edges in TF domain by (e.g. 20 for 20 sec): ','s');
 
     sampling_rate=input('sampling rate (Hz): ','s');
     sampling_rate=str2num(sampling_rate);   
