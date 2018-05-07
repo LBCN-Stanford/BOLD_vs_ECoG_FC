@@ -9,7 +9,7 @@ elseif condition=='2'
     condition='gradCPT';
 end
 %% Defaults
-chop_sec=60; % number of seconds to chop from beginning of time series (to avoid filter edge effect)
+chop_sec=30; % number of seconds to chop from beginning of time series (to avoid filter edge effect)
 window_length=100; % number of seconds per independent windows
 act_prctile=5; % percentile for activation definition
 cluster_size=20; % minimum number of consecutive samples (i.e., msecs) needed for event definition
@@ -118,31 +118,34 @@ isolated_cluster_ind=find(cluster_distances>time_gap);
 isolated_cluster_onsets=cluster_onsets_time(isolated_cluster_ind+1);
 
 n_events=length(isolated_cluster_onsets)
-pause;
+
 %% Get clusters that are within low FC correlation segments for <0.1 Hz FC
 lowFC_act_indices=[];
 for i=1:length(lowFC_starts) 
     lowFC_ind=(lowFC_starts(i):lowFC_starts(i)+samples_per_window-1)'; % get list of indicies within low FC segments
-    lowFC_=find(ismember(lowFC_ind,isolated_cluster_onsets)==1);
-    lowFC_ind=low
+    lowFC_act_ind_segment=find(ismember(lowFC_ind,isolated_cluster_onsets)==1);
+    lowFC_ind=lowFC_ind(lowFC_act_ind_segment);
     lowFC_act_indices=[lowFC_act_indices; lowFC_ind];
 end
 
+%% shift indices to account for cutting 30-sec from beginning
+lowFC_act_indices=lowFC_act_indices+chop_samples;
+
 % save onsets to events.mat file for epoching
-event_onsets=isolated_cluster_onsets/srate;
-events.categories(1).name=[elec_name ' Activations'];
+event_onsets=lowFC_act_indices/srate;
+events.categories(1).name=[elec_name ' Activations_LowFC'];
 events.categories(1).categNum=1;
 events.categories(1).numEvents=length(event_onsets);
-events.categories(1).start=event_onsets;
+events.categories(1).start=event_onsets';
 events.categories(1).duration=[ones(length(event_onsets),1)*.05]'; % Set all durations to .05 sec
 events.categories(1).stimNum=1:length(event_onsets);
-save_name=(['events_' elec_name]);
+save_name=(['events_' elec_name '_LowFC']);
 save(save_name,'events');
 
 % Epoch
-events_file=['events_' elec_name '.mat'];
-epoch_name=['e' elec_name];
-LBCN_epoch_bc(D,events_file,[],'start',[-1000 1500],0,[],[],epoch_name);
+events_file=['events_' elec_name '_LowFC.mat'];
+epoch_name=['eLowFC' elec_name];
+LBCN_epoch_bc(D.fname,events_file,[],'start',[-1000 1500],0,[],[],epoch_name);
 
 % plot 10 random example events
 example_events=randsample(isolated_cluster_onsets,10);
