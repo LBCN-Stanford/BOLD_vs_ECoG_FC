@@ -1,8 +1,14 @@
 %% Detect spontaneous activation events at an electrode
+condition=input('Rest (1) gradCPT (2): ','s');
 
+if condition=='1'
+    condition='Rest'
+elseif condition=='2'
+    condition='gradCPT'
+end
 %% Defaults
-act_prctile=1; % percentile for activation definition
-cluster_size=100; % minimum number of consecutive samples (i.e., msecs) needed for event definition
+act_prctile=5; % percentile for activation definition
+cluster_size=20; % minimum number of consecutive samples (i.e., msecs) needed for event definition
 time_gap=500; % minimum number of msec between consecutive events
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
@@ -12,7 +18,7 @@ sub=input('Patient: ','s');
 run_num=input('Run (e.g. 1): ','s');
 electrode=input('Electrode number: ','s');
 electrode=str2num(electrode);
-cd([globalECoGDir filesep 'Rest' filesep sub filesep 'Run' run_num]);
+cd([globalECoGDir filesep condition filesep sub filesep 'Run' run_num]);
 D=spm_eeg_load;
 elec_ts=D(electrode,:);
 elec_name=char(D.chanlabels(electrode));
@@ -78,7 +84,7 @@ LBCN_epoch_bc(D,events_file,[],'start',[-1000 1500],0,[],[],epoch_name);
 % plot 10 random example events
 example_events=randsample(isolated_cluster_onsets,10);
 for i=1:length(example_events)
-    plot_start=example_events(i)-10;
+    plot_start=example_events(i)-10; % start plot at 10 data points before cluster onset
     plot_end=example_events(i)+200;
     subplot(2,5,i)
     plot(elec_ts(plot_start:plot_end));
@@ -86,4 +92,5 @@ for i=1:length(example_events)
     plot(act_peaks_to_plot(plot_start:plot_end),'r');
     hold on;
 end
+pause; close;
 

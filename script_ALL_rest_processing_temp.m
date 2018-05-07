@@ -25,6 +25,8 @@ Cropping=input('Crop edges in TF domain by (e.g. 20 for 20 sec): ','s');
 
     EDF_convert=input('EDF already converted (1) or not or TDT (0)? ','s');
 
+    crop_start=str2num(crop_start);
+    crop_end=str2num(crop_end);
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' sub]);
 
@@ -91,8 +93,8 @@ delete([A.fname]); delete([A.fnamedat]); A=[];
 
 %% Chop 2 sec from edges (beginning and end) - to deal with flat line effects
 if Crop_ts=='1'
-crop_start=200000;
-crop_end=D.nsamples-200000;
+crop_start=crop_start*D.fsample;
+crop_end=D.nsamples-crop_end*D.fsample;
 [D]=crop_gradCPT_raw(Patient,runname,fname_spm_fff,crop_start,crop_end);
 D=struct(D);
 D.timeOnset=0; %% reset onset time to zero after cropping
@@ -130,7 +132,7 @@ batch_AverageFreq(fname_spm_btf);
 
 %% Chop 20 sec from beginning
 %cropping=20000; 
-both=0;
+both=1;
 cropping=str2num(Cropping)*sampling_rate;
 
 fname_HFB=['HFBbtf_aM' D.fname];
