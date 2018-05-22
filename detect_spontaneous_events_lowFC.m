@@ -1,12 +1,14 @@
 %% Detect spontaneous activation events at an electrode
 %% Do it seprately for independent 100-sec windows that are classified as low/high FC within run based on <0.1 Hz HFB FC
 
-condition=input('Rest (1) gradCPT (2): ','s');
+condition=input('Rest (1) gradCPT (2) Sleep (3): ','s');
 
 if condition=='1'
     condition='Rest';
 elseif condition=='2'
     condition='gradCPT';
+elseif condition=='3'
+    condition='Sleep';
 end
 %% Defaults
 chop_sec=30; % number of seconds to chop from beginning of time series (to avoid filter edge effect)
@@ -61,6 +63,7 @@ cd([globalECoGDir filesep condition filesep sub filesep 'Run' run_num]);
  
  %% Get start indices of windows with low FC (lower than median value)
  lowFC_starts=window_start_indices(find(window_FC<median(window_FC)));
+ window_FC
  
 %% Load smoothed HFB (unfiltered) time series for electrode to use for spActivations
     filenames=dir('SHFB*');
@@ -117,7 +120,7 @@ cluster_distances=diff(cluster_onsets_time);
 isolated_cluster_ind=find(cluster_distances>time_gap);
 isolated_cluster_onsets=cluster_onsets_time(isolated_cluster_ind+1);
 
-n_events=length(isolated_cluster_onsets)
+
 
 %% Get clusters that are within low FC correlation segments for <0.1 Hz FC
 lowFC_act_indices=[];
@@ -127,7 +130,7 @@ for i=1:length(lowFC_starts)
     lowFC_ind=lowFC_ind(lowFC_act_ind_segment);
     lowFC_act_indices=[lowFC_act_indices; lowFC_ind];
 end
-
+n_events=length(lowFC_act_indices)
 %% shift indices to account for cutting 30-sec from beginning
 lowFC_act_indices=lowFC_act_indices+chop_samples;
 
