@@ -8,7 +8,7 @@ elseif condition=='2'
 end
 %% Defaults
 act_prctile=5; % percentile for activation definition
-cluster_size=20; % minimum number of consecutive samples (i.e., msecs) needed for event definition
+cluster_size=50; % minimum number of consecutive samples (i.e., msecs) needed for event definition
 time_gap=500; % minimum number of msec between consecutive events
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
@@ -64,7 +64,7 @@ isolated_cluster_ind=find(cluster_distances>time_gap);
 isolated_cluster_onsets=cluster_onsets_time(isolated_cluster_ind+1);
 
 n_events=length(isolated_cluster_onsets)
-
+pause
 % save onsets to events.mat file for epoching
 event_onsets=isolated_cluster_onsets/srate;
 events.categories(1).name=[elec_name ' Activations'];

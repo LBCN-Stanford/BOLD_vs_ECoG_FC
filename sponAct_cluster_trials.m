@@ -58,12 +58,16 @@ silh=evalclusters(trial_ts,'kmeans','silhouette','klist',[2:20]);
   %% Number of trials classified per cluster
  for i=1:k
    nTrials_clusters(i)=length(find(IDX==i)); 
-end 
+ end 
   
+for i=1:max(M)
+   nTrials_clusters_louvain(i)=length(find(M==i)); 
+end
+ 
   %% plot cluster time courses
   % Louvain
    figure1=figure('Position', [100, 100, 1024, 500]);
-  for i=1:k
+  for i=1:max(M)
    plot(D.time,louvain_cluster_ts_mean(:,i),'LineWidth',2,'Color',color_options(i,:));
  set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
  ylabel('HFB Power');
