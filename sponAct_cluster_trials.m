@@ -7,8 +7,8 @@ elseif condition=='2'
 end
 
 %% Defaults
-k=2; % Number of kmeans clusters
-k_perm=100; % Number of kmeans repetitions
+k=3; % Number of kmeans clusters
+k_perm=1000; % Number of kmeans repetitions
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
 sub=input('Patient: ','s');
@@ -28,11 +28,26 @@ for i=1:size(D,3)
    trial_ts=[trial_ts; D(elec_num,:,i)];     
 end
 
+%% clustering based on Louvain algorithm
+trial_ts_vert=trial_ts';
+trial_mat=corrcoef(trial_ts_vert);
+[M,Q]=community_louvain(trial_mat,[],[],'negative_asym');
+
+%% silhouette values for different k solutions
+silh=evalclusters(trial_ts,'kmeans','silhouette','klist',[2:20]);
+
 %% kmeans clustering
 [IDX,C]=kmeans(trial_ts,k,'distance','sqEuclidean','display','final','replicate',k_perm,'maxiter',250);
 
-%% Get clusters' average time courses
-trial_ts_vert=trial_ts';
+%% Get Louvain clusters' average time courses
+  for i=1:max(M)
+      louvain_cluster_ts=[];
+      louvain_cluster_ts=trial_ts_vert(:,find(M==i));
+      louvain_cluster_ts_mean(:,i)=mean(louvain_cluster_ts,2);  
+      louvain_cluster_ts_SE(:,i)=std(louvain_cluster_ts')/sqrt(size(find(M==i),1));
+  end
+  
+%% Get kmeans clusters' average time courses
   for i=1:k
       cluster_ts=[];
       cluster_ts=trial_ts_vert(:,find(IDX==i));
@@ -46,6 +61,23 @@ trial_ts_vert=trial_ts';
 end 
   
   %% plot cluster time courses
+  % Louvain
+   figure1=figure('Position', [100, 100, 1024, 500]);
+  for i=1:k
+   plot(D.time,louvain_cluster_ts_mean(:,i),'LineWidth',2,'Color',color_options(i,:));
+ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+ ylabel('HFB Power');
+ xlim([D.time(1) D.time(end)]);
+  line([D.time(1) D.time(end)],[0 0],'LineWidth',1,'Color','k');
+ hold on;
+ 
+    shadedErrorBar(D.time,louvain_cluster_ts_mean(:,i),louvain_cluster_ts_SE(:,i),{'linewidth',2,'Color',color_options(i,:)},0.8);
+    h=vline(0,'k-');
+    title(['Louvain clusters']);
+ hold on;
+  end
+  
+  % kmeans
  figure1=figure('Position', [100, 100, 1024, 500]);
   for i=1:k
    plot(D.time,cluster_ts_mean(:,i),'LineWidth',2,'Color',color_options(i,:));
@@ -57,6 +89,11 @@ end
  
     shadedErrorBar(D.time,cluster_ts_mean(:,i),cluster_ts_SE(:,i),{'linewidth',2,'Color',color_options(i,:)},0.8);
     h=vline(0,'k-');
+    title(['kmeans clusters']);
  hold on;
- 
   end
+  
+  
+  
+  
+  
