@@ -7,9 +7,10 @@
 % end
 
 %% Defaults
-run_kmeans=0; % set to 1 to run kmeans clustering
+run_kmeans=1; % set to 1 to run kmeans clustering
 k=3; % Number of kmeans clusters
 k_perm=1000; % Number of kmeans repetitions
+distance_metric='correlation'; % distance metric for kmeans cluster (e.g. sqeuclidean, correlation)
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
 sub=input('Patient: ','s');
@@ -32,14 +33,14 @@ end
 %% clustering based on Louvain algorithm
 trial_ts_vert=trial_ts';
 trial_mat=corrcoef(trial_ts_vert);
-[M,Q]=community_louvain(trial_mat,[],[],'negative_asym');
+[M,Q]=community_louvain(trial_mat,[],[],'negative_sym');
 
 %% silhouette values for different k solutions
 silh=evalclusters(trial_ts,'kmeans','silhouette','klist',[2:20]);
 
 %% kmeans clustering
 if run_kmeans==1
-[IDX,C]=kmeans(trial_ts,k,'distance','sqEuclidean','display','final','replicate',k_perm,'maxiter',250);
+[IDX,C]=kmeans(trial_ts,k,'distance',distance_metric,'display','final','replicate',k_perm,'maxiter',250);
 end
 
 %% Get Louvain clusters' average time courses
