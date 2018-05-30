@@ -2,7 +2,7 @@
 conditions={'gradCPT'; 'Sleep'};
 
 %% Defaults
-run_kmeans=0; % set to 1 to run kmeans clustering
+run_kmeans=1; % set to 1 to run kmeans clustering
 k=3; % Number of kmeans clusters
 k_perm=1000; % Number of kmeans repetitions
 distance_metric='correlation'; % distance metric for kmeans cluster (e.g. sqeuclidean, correlation)
@@ -53,7 +53,50 @@ for i=1:max(M_cond1)
    nTrials_clusters_louvain_cond1(i)=length(find(M_cond1==i)); 
 end
 
+%% silhouette values for different k solutions
+silh_cond1=evalclusters(trial_ts_cond1,'kmeans','silhouette','klist',[2:20]);
+
+%% kmeans clustering
+if run_kmeans==1
+[IDX_cond1,C_cond1]=kmeans(trial_ts_cond1,k,'distance',distance_metric,'display','final','replicate',k_perm,'maxiter',250);
+end
+
+%% Get kmeans clusters' average time courses
+if run_kmeans==1
+  for i=1:k
+      cluster_ts_cond1=[];
+      cluster_ts_cond1=trial_ts_vert_cond1(:,find(IDX_cond1==i));
+      cluster_ts_mean_cond1(:,i)=mean(cluster_ts_cond1,2);  
+      cluster_ts_SE_cond1(:,i)=std(cluster_ts_cond1')/sqrt(size(find(IDX_cond1==i),1));
+  end
+end
+
+  %% Number of trials classified per cluster
+  if run_kmeans==1
+ for i=1:k
+   nTrials_clusters_cond1(i)=length(find(IDX_cond1==i)); 
+ end 
+  end
+
   %% plot cluster time courses
+   % kmeans
+  if run_kmeans==1
+ figure1=figure('Position', [100, 100, 1024, 500]);
+  for i=1:k
+   plot(D.time,cluster_ts_mean(:,i),'LineWidth',2,'Color',color_options(i,:));
+ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+ ylabel('HFB Power');
+ xlim([D.time(1) D.time(end)]);
+  line([D.time(1) D.time(end)],[0 0],'LineWidth',1,'Color','k');
+ hold on;
+ 
+    shadedErrorBar(D.time,cluster_ts_mean(:,i),cluster_ts_SE(:,i),{'linewidth',2,'Color',color_options(i,:)},0.8);
+    h=vline(0,'k-');
+    title([curr_cond ': kmeans clusters']);
+ hold on;
+  end
+  end
+  
   % Louvain
   figure1=figure('Position', [100, 100, 1024, 500]);
   for i=1:max(M_cond1)
