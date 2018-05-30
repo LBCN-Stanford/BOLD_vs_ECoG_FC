@@ -1,12 +1,13 @@
 %% kmeans clustering of trials at target electrode for spontaneous activation events at a seed electrode
-condition=input('Rest (1) gradCPT (2): ','s');
-if condition=='1'
-    condition='Rest'
-elseif condition=='2'
-    condition='gradCPT'
-end
+% condition=input('Rest (1) gradCPT (2): ','s');
+% if condition=='1'
+%     condition='Rest'
+% elseif condition=='2'
+%     condition='gradCPT'
+% end
 
 %% Defaults
+run_kmeans=0; % set to 1 to run kmeans clustering
 k=3; % Number of kmeans clusters
 k_perm=1000; % Number of kmeans repetitions
 srate=1000; % sampling rate (Hz)
@@ -37,7 +38,9 @@ trial_mat=corrcoef(trial_ts_vert);
 silh=evalclusters(trial_ts,'kmeans','silhouette','klist',[2:20]);
 
 %% kmeans clustering
+if run_kmeans==1
 [IDX,C]=kmeans(trial_ts,k,'distance','sqEuclidean','display','final','replicate',k_perm,'maxiter',250);
+end
 
 %% Get Louvain clusters' average time courses
   for i=1:max(M)
@@ -48,17 +51,21 @@ silh=evalclusters(trial_ts,'kmeans','silhouette','klist',[2:20]);
   end
   
 %% Get kmeans clusters' average time courses
+if run_kmeans==1
   for i=1:k
       cluster_ts=[];
       cluster_ts=trial_ts_vert(:,find(IDX==i));
       cluster_ts_mean(:,i)=mean(cluster_ts,2);  
       cluster_ts_SE(:,i)=std(cluster_ts')/sqrt(size(find(IDX==i),1));
   end
+end
 
   %% Number of trials classified per cluster
+  if run_kmeans==1
  for i=1:k
    nTrials_clusters(i)=length(find(IDX==i)); 
  end 
+  end
   
 for i=1:max(M)
    nTrials_clusters_louvain(i)=length(find(M==i)); 
@@ -82,6 +89,7 @@ end
   end
   
   % kmeans
+  if run_kmeans==1
  figure1=figure('Position', [100, 100, 1024, 500]);
   for i=1:k
    plot(D.time,cluster_ts_mean(:,i),'LineWidth',2,'Color',color_options(i,:));
@@ -96,7 +104,7 @@ end
     title(['kmeans clusters']);
  hold on;
   end
-  
+  end
   
   
   
