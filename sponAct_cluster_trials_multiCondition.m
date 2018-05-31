@@ -1,16 +1,17 @@
 %% kmeans clustering of trials at target electrode for spontaneous activation events at a seed electrode
-conditions={'gradCPT'; 'Rest'};
+conditions={'gradCPT'; 'Sleep'};
 
 %% Defaults
 run_louvain=0; % set to 1 to run Louvain clustering
 run_kmeans=1; % set to 1 to run kmeans clustering
-k=3; % Number of kmeans clusters
+k=4; % Number of kmeans clusters
 k_perm=1000; % Number of kmeans repetitions
 distance_metric='correlation'; % distance metric for kmeans cluster (e.g. sqeuclidean, correlation)
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
 sub=input('Patient: ','s');
-elec_name=input('Target electrode name: ','s');
+seed_name=input('Seed electrode name: ','s');
+target_name=input('Target electrode name: ','s');
 load('cdcol.mat');
 color_options=[cdcol.orange; cdcol.cobaltblue; cdcol.grassgreen; cdcol.russet; cdcol.brown; cdcol.periwinkleblue; cdcol.lightolive; ...
     cdcol.metalicdarkgold; cdcol.purple; cdcol.portraitdarkflesh5; cdcol.lightcadmium; cdcol.darkulamarine; cdcol.pink];
@@ -28,14 +29,17 @@ merge_dir=['mRun' runs_string];
 cd([globalECoGDir filesep curr_cond filesep sub filesep merge_dir]);
 display(['Select file for ' curr_cond]);
 D=spm_eeg_load;
-elec_num=indchannel(D,elec_name);
+seed_num=indchannel(D,seed_name);
+target_num=indchannel(D,target_name);
 
 %% Extract trials and prepare for clustering
-trial_ts_cond1=[];
+trial_ts_cond1=[]; seed_ts_cond1=[];
 
 for i=1:size(D,3)
-   trial_ts_cond1=[trial_ts_cond1; D(elec_num,:,i)];     
+   trial_ts_cond1=[trial_ts_cond1; D(target_num,:,i)];
+   seed_ts_cond1=[seed_ts_cond1; D(seed_num,:,i)];
 end
+seed_ts_vert_cond1=seed_ts_cond1';
 trial_ts_vert_cond1=trial_ts_cond1';
 trial_mat_cond1=corrcoef(trial_ts_vert_cond1);
 
@@ -69,6 +73,10 @@ silh_cond1=evalclusters(trial_ts_cond1,'kmeans','silhouette','klist',[2:20]);
       cluster_ts_cond1=trial_ts_vert_cond1(:,find(IDX_cond1==i));
       cluster_ts_mean_cond1(:,i)=mean(cluster_ts_cond1,2);  
       cluster_ts_SE_cond1(:,i)=std(cluster_ts_cond1')/sqrt(size(find(IDX_cond1==i),1));
+      seed_cluster_ts_cond1=[];
+      seed_cluster_ts_cond1=seed_ts_vert_cond1(:,find(IDX_cond1==i));
+      seed_cluster_ts_mean_cond1(:,i)=mean(seed_cluster_ts_cond1,2);  
+      seed_cluster_ts_SE_cond1(:,i)=std(seed_cluster_ts_cond1')/sqrt(size(find(IDX_cond1==i),1));
   end
 
   %% Number of trials classified per cluster
@@ -128,15 +136,18 @@ merge_dir=['mRun' runs_string];
 cd([globalECoGDir filesep curr_cond filesep sub filesep merge_dir]);
 display(['Select file for ' curr_cond]);
 D=spm_eeg_load;
-elec_num=indchannel(D,elec_name);
+seed_num=indchannel(D,seed_name);
+target_num=indchannel(D,target_name);
 
 %% Extract trials and prepare for kmeans clustering
-trial_ts_cond2=[];
+trial_ts_cond2=[]; seed_ts_cond2=[];
 
 for i=1:size(D,3)
-   trial_ts_cond2=[trial_ts_cond2; D(elec_num,:,i)];     
+   trial_ts_cond2=[trial_ts_cond2; D(target_num,:,i)];  
+   seed_ts_cond2=[seed_ts_cond2; D(seed_num,:,i)];
 end
 
+seed_ts_vert_cond2=seed_ts_cond2';
 trial_ts_vert_cond2=trial_ts_cond2';
 trial_mat_cond2=corrcoef(trial_ts_vert_cond2);
 
@@ -170,6 +181,10 @@ silh_cond2=evalclusters(trial_ts_cond2,'kmeans','silhouette','klist',[2:20]);
       cluster_ts_cond2=trial_ts_vert_cond2(:,find(IDX_cond2==i));
       cluster_ts_mean_cond2(:,i)=mean(cluster_ts_cond2,2);  
       cluster_ts_SE_cond2(:,i)=std(cluster_ts_cond2')/sqrt(size(find(IDX_cond2==i),1));
+      seed_cluster_ts_cond2=[];
+      seed_cluster_ts_cond2=seed_ts_vert_cond2(:,find(IDX_cond2==i));
+      seed_cluster_ts_mean_cond2(:,i)=mean(seed_cluster_ts_cond2,2);  
+      seed_cluster_ts_SE_cond2(:,i)=std(seed_cluster_ts_cond2')/sqrt(size(find(IDX_cond2==i),1));
   end
 
   %% Number of trials classified per cluster
@@ -225,9 +240,26 @@ end
      end
   end
   end
-      
-      
-      
+  cluster_corr_conds
   
-  
-  
+  %% plot a selected pair of clusters for each condition
+  if run_kmeans==1
+  cond1_cluster=input([conditions{1} ' cluster to plot: '])
+  cond2_cluster=input([conditions{2} ' cluster to plot: '])
+         
+ figure1=figure('Position', [100, 100, 1024, 500]);
+    plot(D.time,cluster_ts_mean_cond1(:,cond1_cluster),'LineWidth',2,'Color',color_options(1,:));
+    hold on;
+   plot(D.time,cluster_ts_mean_cond2(:,cond2_cluster),'LineWidth',2,'Color',color_options(2,:));
+ set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+ ylabel('HFB Power');
+ xlim([D.time(1) D.time(end)]);
+  line([D.time(1) D.time(end)],[0 0],'LineWidth',1,'Color','k');
+ hold on;
+    shadedErrorBar(D.time,cluster_ts_mean_cond1(:,cond1_cluster),cluster_ts_SE_cond1(:,cond1_cluster),{'linewidth',2,'Color',color_options(1,:)},0.8);
+    hold on;
+    shadedErrorBar(D.time,cluster_ts_mean_cond2(:,cond2_cluster),cluster_ts_SE_cond2(:,cond2_cluster),{'linewidth',2,'Color',color_options(2,:)},0.8);
+    h=vline(0,'k-');
+    title([conditions{1} ' versus ' conditions{2} ': kmeans clusters']);
+legend(conditions{1},conditions{2},'Location','southeast')  
+  end
