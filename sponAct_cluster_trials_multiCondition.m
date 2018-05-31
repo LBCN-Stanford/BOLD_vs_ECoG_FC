@@ -4,7 +4,7 @@ conditions={'gradCPT'; 'Sleep'};
 %% Defaults
 run_louvain=0; % set to 1 to run Louvain clustering
 run_kmeans=1; % set to 1 to run kmeans clustering
-k=4; % Number of kmeans clusters
+k=3; % Number of kmeans clusters
 k_perm=1000; % Number of kmeans repetitions
 distance_metric='correlation'; % distance metric for kmeans cluster (e.g. sqeuclidean, correlation)
 srate=1000; % sampling rate (Hz)

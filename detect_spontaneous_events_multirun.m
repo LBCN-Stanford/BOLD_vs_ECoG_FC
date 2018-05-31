@@ -10,15 +10,16 @@ elseif condition=='3'
 end
 %% Defaults
 act_prctile=5; % percentile for activation definition
-cluster_size=50; % minimum number of consecutive samples (i.e., msecs) needed for event definition
+cluster_size=40; % minimum number of consecutive samples (i.e., msecs) needed for event definition
 time_gap=500; % minimum number of msec between consecutive events
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
 
 %% Load electrode time series
 sub=input('Patient: ','s');
-electrode=input('Electrode number: ','s');
-electrode=str2num(electrode);
+elec_name=input('Electrode name: ','s');
+% electrode=input('Electrode number: ','s');
+% electrode=str2num(electrode);
 cd([globalECoGDir filesep condition filesep sub]);
 load('runs.txt');
 
@@ -30,8 +31,8 @@ for curr_run=1:length(runs)
     run_num=runs(curr_run);
 cd([globalECoGDir filesep condition filesep sub filesep 'Run' num2str(run_num)]);
 D=spm_eeg_load;
-elec_ts=D(electrode,:);
-elec_name=char(D.chanlabels(electrode));
+elec_num=indchannel(D,elec_name);
+elec_ts=D(elec_num,:);
 %% Detect top act_prctile time points
 act_peaks=find(elec_ts>prctile(elec_ts,100-act_prctile));
 act_peaks_to_plot=NaN(length(elec_ts),1);
@@ -104,3 +105,7 @@ for i=1:length(example_events)
 end
 pause; close;
 end
+
+
+   
+

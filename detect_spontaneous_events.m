@@ -12,16 +12,18 @@ cluster_size=50; % minimum number of consecutive samples (i.e., msecs) needed fo
 time_gap=500; % minimum number of msec between consecutive events
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
+load('cdcol.mat');
 
 %% Load electrode time series
 sub=input('Patient: ','s');
 run_num=input('Run (e.g. 1): ','s');
-electrode=input('Electrode number: ','s');
-electrode=str2num(electrode);
+elec_name=input('Electrode name: ','s');
+%electrode=str2num(electrode);
 cd([globalECoGDir filesep condition filesep sub filesep 'Run' run_num]);
 D=spm_eeg_load;
-elec_ts=D(electrode,:);
-elec_name=char(D.chanlabels(electrode));
+elec_num=indchannel(D,elec_name);
+elec_ts=D(elec_num,:);
+%elec_name=char(D.chanlabels(electrode));
 %% Detect top act_prctile time points
 act_peaks=find(elec_ts>prctile(elec_ts,100-act_prctile));
 act_peaks_to_plot=NaN(length(elec_ts),1);
@@ -64,7 +66,6 @@ isolated_cluster_ind=find(cluster_distances>time_gap);
 isolated_cluster_onsets=cluster_onsets_time(isolated_cluster_ind+1);
 
 n_events=length(isolated_cluster_onsets)
-pause
 % save onsets to events.mat file for epoching
 event_onsets=isolated_cluster_onsets/srate;
 events.categories(1).name=[elec_name ' Activations'];
@@ -94,3 +95,16 @@ for i=1:length(example_events)
 end
 pause; close;
 
+
+% plot example segment with 2 clusters
+isolated_clusters_secs=isolated_cluster_onsets/1000;
+ind2plot=find(diff(isolated_clusters_secs)<2); % less than 2 seconds between 2 clusters
+figure1=figure('Position', [100, 100, 1024, 500]);
+    plot_start=isolated_cluster_onsets(ind2plot)-1000; % start plot at 10 data points before cluster onset
+    plot_end=isolated_cluster_onsets(ind2plot(1))+2000;
+    plot(elec_ts(plot_start:plot_end));
+    hold on;
+    plot(act_peaks_to_plot(plot_start:plot_end),'r');
+%xlabel(['Time (sec)']); ylabel(['Signal']);
+set(gcf,'color','w');
+set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
