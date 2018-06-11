@@ -78,6 +78,7 @@ end
 
 %% Defaults
 Chop=10000; % chop first 10 seconds of each time series
+use_bad=1; % use bad channel labels from HFB (0.1-1 Hz) file
 HFB_spike_exclusion=1; HFB_zthresh=50; % exclude channels with HFB z-score spikes exceeding threshold
 BOLD_smooth=1; % 1=smoothing, 0=no spatial smoothing (for GSR)
 Coords=1; % 1 = .PIAL, 2=brainmask_coords.mat
@@ -643,7 +644,11 @@ end
 
 
 %% Find channels with HFB z-score spikes for exclusion
+if use_bad==1
 bad_indices=HFB_medium.badchannels; 
+else
+    bad_indices=[];
+end
 % use bad indices from HFB 0.1-1Hz file (where bursts were excluded) 
 
 if HFB_spike_exclusion==1
