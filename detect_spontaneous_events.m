@@ -25,6 +25,7 @@ elec_num=indchannel(D,elec_name);
 elec_ts=D(elec_num,:);
 %elec_name=char(D.chanlabels(electrode));
 %% Detect top act_prctile time points
+cutoff=prctile(elec_ts,100-act_prctile);
 act_peaks=find(elec_ts>prctile(elec_ts,100-act_prctile));
 act_peaks_to_plot=NaN(length(elec_ts),1);
 act_peaks_to_plot(act_peaks)=0;
@@ -99,12 +100,40 @@ pause; close;
 % plot example segment with 2 clusters
 isolated_clusters_secs=isolated_cluster_onsets/1000;
 ind2plot=find(diff(isolated_clusters_secs)<2); % less than 2 seconds between 2 clusters
-figure1=figure('Position', [100, 100, 1024, 500]);
-    plot_start=isolated_cluster_onsets(ind2plot)-1000; % start plot at 10 data points before cluster onset
+
+%diff(act_peaks_to_plot);
+elec_peak_ts=elec_ts;
+elec_peak_ts(elec_ts<cutoff)=NaN;
+
+
+figure1=figure('Position', [200, 600, 800, 250]);
+    plot_start=isolated_cluster_onsets(ind2plot(1))-1000; % start plot at 1000 data points before cluster onset
     plot_end=isolated_cluster_onsets(ind2plot(1))+2000;
-    plot(elec_ts(plot_start:plot_end));
+    cluster1_onset=1000;
+    cluster2_onset=cluster1_onset+isolated_cluster_onsets(ind2plot(1)+1)-isolated_cluster_onsets(ind2plot(1))
+    p1=plot(elec_ts(plot_start:plot_end));
+    p1.LineWidth=1; p1.Color=cdcol.grey;
     hold on;
-    plot(act_peaks_to_plot(plot_start:plot_end),'r');
-%xlabel(['Time (sec)']); ylabel(['Signal']);
+    p2=plot(elec_peak_ts(plot_start:plot_end));
+    p2.LineWidth=2; p2.Color=cdcol.russet;
+    xlim([0,length(plot_start:plot_end)]);
+xlabel(['Time (ms)']); ylabel(['HFB Power']);
+h1=vline(cluster1_onset,'k-.');
+h1=vline(cluster2_onset,'k-.');
 set(gcf,'color','w');
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
+
+
+
+ end_ind=end_time*iEEG_sampling;
+ time=(1:end_ind)/iEEG_sampling;
+ FigHandle = figure('Position', [200, 600, 900, 250]);
+title({[elec1 ' vs ' elec2]; ['r = ' num2str(elec_FC)]} ,'Fontsize',12);
+xlabel(['Time (sec)']); ylabel(['Signal']);
+set(gca,'Fontsize',18,'LineWidth',2,'TickDir','out','box','off');
+hold on;
+p=plot(time,elec1_ts_norm(1:end_ind),time,elec2_ts_norm(1:end_ind));
+p(1).LineWidth=2; p(1).Color=cdcol.lightblue;
+p(2).LineWidth=2; p(2).Color=cdcol.russet;
+xlim([0,time(end)]);
+legend([elec1],[elec2]);
