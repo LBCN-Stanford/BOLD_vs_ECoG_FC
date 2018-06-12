@@ -42,7 +42,8 @@ end
 %% Make BOLD correlation matrix
 BOLD_bad=find(BOLD_ts(1,:)==0);
 BOLD_ts(:,BOLD_bad)=NaN;
-
+BOLD_mat=corrcoef(BOLD_ts);
+BOLD_mat=fisherz(BOLD_mat);
 
 %% Load correlation matrix
 globalECoGDir=getECoGSubDir;
@@ -94,7 +95,7 @@ iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanl
     
 %% loop through runs
  for i=1:length(run_list)
-          HFB_slow_corr=[]; HFB_slow_mat=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
+          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
          curr_run=num2str(run_list(i));
 cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
 
@@ -109,32 +110,35 @@ cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
 % load('Gamma_medium_corr.mat');
 % load('SCP_medium_corr.mat');
 HFB_slow_corr=load('HFB_slow_corr.mat');
+%HFB_slow_corr=fisherz(HFB_sl HFB_slow_corr);
 
 % fisher transform
-HFB_slow_mat(:,:,i)=fisherz(HFB_slow_corr);
+HFB_slow_mat(:,:,i)=fisherz(HFB_slow_corr.HFB_slow_corr);
 %HFB_medium_mat=fisherz(HFB_medium_corr);
 % HFB_mat=fisherz(HFB_corr);
 
 % load bad indices (iEEG order)
-curr_bad=load('all_bad_indices.mat');
+load('all_bad_indices.mat');
 
 % Remove bad indices (convert from iEEG to iElvis order)
 % convert bad indices to iElvis
-for i=1:length(all_bad_indices)
-    ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(i));
+for j=1:length(all_bad_indices)
+    ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(j));
     if isempty(ind_iElvis)~=1
-    bad_iElvis(i,:)=ind_iElvis;
+    bad_iElvis(j,:)=ind_iElvis;
     end
 end
-bad_chans=bad_iElvis(find(bad_iElvis>0));
+bad_chans=bad_iElvis(find(bad_iElvis>0))
 %ignoreChans=[elecNames(bad_chans)];
  
- 
-%% change bad chans to NaN in iEEG FC matrices
+ %% change bad chans to NaN in iEEG FC matrices
 HFB_slow_mat(bad_chans,:,i)=NaN; HFB_slow_mat(:,bad_chans,i)=NaN;
 
  end
 
+%% Mean iEEG FC across runs
+HFB_slow_mat_mean=mean(HFB_slow_mat,3);
+ 
 %% change bad chans to NaN in BOLD FC matrix
  %BOLD_mat(bad_chans,:)=NaN; BOLD_mat(:,bad_chans)=NaN;
  
