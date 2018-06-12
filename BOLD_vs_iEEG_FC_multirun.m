@@ -111,10 +111,10 @@ cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
 HFB_slow_corr=load('HFB_slow_corr.mat');
 
 % fisher transform
-HFB_slow_mat(i)=fisherz(HFB_slow_corr);
+HFB_slow_mat(:,:,i)=fisherz(HFB_slow_corr);
 %HFB_medium_mat=fisherz(HFB_medium_corr);
 % HFB_mat=fisherz(HFB_corr);
-pause;
+
 % load bad indices (iEEG order)
 curr_bad=load('all_bad_indices.mat');
 
@@ -131,7 +131,7 @@ bad_chans=bad_iElvis(find(bad_iElvis>0));
  
  
 %% change bad chans to NaN in iEEG FC matrices
-HFB_slow_mat(bad_chans,:)=NaN; HFB_slow_mat(:,bad_chans)=NaN;
+HFB_slow_mat(bad_chans,:,i)=NaN; HFB_slow_mat(:,bad_chans,i)=NaN;
 
  end
 
