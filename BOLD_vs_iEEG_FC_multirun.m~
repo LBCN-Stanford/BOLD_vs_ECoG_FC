@@ -1,19 +1,21 @@
-% must first run iEEG_FC.m
+% must first run iEEG_FC.m and BOLD_vs_ECoG_FC_corr_iElvis (to get bad
+% chans)
 
 Patient=input('Patient: ','s');
 bold_runname=input('BOLD Run (e.g. 2): ','s');
 rest=input('Rest(1) Sleep(0) 7heaven (2)? ','s');
-%ecog_runname=input('ECoG Run (e.g. 2): ','s');
-
-%freq=input('HFB 0.1-1Hz (1) alpha (2) beta1 (3) beta2 (4) Gamma (5) Delta (6) Theta (7) all (8) ','s');
 plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
-
 if plot_all=='0'
     elec_number=input('electrode number (iElvis order): ');
 end
-
 bold_run_num=['run' bold_runname];
-%ecog_run_num=['run' ecog_runname];
+
+%% defaults
+load('cdcol.mat');
+elec_highlight=40; % target electrode to highlight in plot (iElvis number)
+elecHighlightColor=cdcol.russet';
+BOLD_run=['run1'];
+fsDir=getFsurfSubDir();
 
 if rest=='1'
     Rest='Rest';
@@ -22,10 +24,6 @@ elseif rest=='0'
 elseif rest=='2'
     Rest='7heaven';
 end
-
-%% defaults
-BOLD_run=['run1'];
-fsDir=getFsurfSubDir();
 
 %% Load BOLD data and make correlation matrix (iElvis order)
 %Load channel name-number mapping
@@ -42,7 +40,8 @@ end
 %% Make BOLD correlation matrix
 BOLD_bad=find(BOLD_ts(1,:)==0);
 BOLD_ts(:,BOLD_bad)=NaN;
-
+BOLD_mat=corrcoef(BOLD_ts);
+BOLD_mat=fisherz(BOLD_mat);
 
 %% Load correlation matrix
 globalECoGDir=getECoGSubDir;
@@ -94,10 +93,11 @@ iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanl
     
 %% loop through runs
  for i=1:length(run_list)
-     HFB_slow_corr=[]; HFB_slow_mat=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
+          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
          curr_run=num2str(run_list(i));
 cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
-%% Load iEEG correlation matrix (in iElvis order)
+
+% Load iEEG correlation matrix (in iElvis order)
 % load('HFB_corr.mat');
 % load('HFB_medium_corr.mat');
 % load('alpha_medium_corr.mat');
@@ -108,68 +108,96 @@ cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
 % load('Gamma_medium_corr.mat');
 % load('SCP_medium_corr.mat');
 HFB_slow_corr=load('HFB_slow_corr.mat');
+%HFB_slow_corr=fisherz(HFB_sl HFB_slow_corr);
 
-%% fisher transform
-HFB_slow_mat=fisherz(HFB_slow_corr);
+% fisher transform
+HFB_slow_mat(:,:,i)=fisherz(HFB_slow_corr.HFB_slow_corr);
 %HFB_medium_mat=fisherz(HFB_medium_corr);
 % HFB_mat=fisherz(HFB_corr);
 
-%% load bad indices (iEEG order)
-curr_bad=load('all_bad_indices.mat');
+% load bad indices (iEEG order)
+load('all_bad_indices.mat');
 
-
-%% Remove bad indices (convert from iEEG to iElvis order)
+% Remove bad indices (convert from iEEG to iElvis order)
 % convert bad indices to iElvis
-for i=1:length(all_bad_indices)
-    ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(i));
+for j=1:length(all_bad_indices)
+    ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(j));
     if isempty(ind_iElvis)~=1
-    bad_iElvis(i,:)=ind_iElvis;
+    bad_iElvis(j,:)=ind_iElvis;
     end
 end
-bad_chans=bad_iElvis(find(bad_iElvis>0));
+bad_chans=bad_iElvis(find(bad_iElvis>0))
 %ignoreChans=[elecNames(bad_chans)];
  
- 
-%% change bad chans to NaN in BOLD and iEEG FC matrices
-HFB_slow_mat(bad_chans,:)=NaN; HFB_slow_mat(:,bad_chans)=NaN;
-BOLD_mat(bad_chans,:)=NaN; BOLD_mat(:,bad_chans)=NaN;
-end
+ %% change bad chans to NaN in iEEG FC matrices
+HFB_slow_mat(bad_chans,:,i)=NaN; HFB_slow_mat(:,bad_chans,i)=NaN;
 
+ end
+
+%% Mean iEEG FC across runs
+HFB_slow_mat_mean=nanmean(HFB_slow_mat,3);
+ 
+%% change bad chans (based on iEEG) to NaN in BOLD FC matrix
+for i=1:size(HFB_slow_mat_mean,1)
+    curr_corr=HFB_slow_mat_mean(:,i);
+    if sum(~isnan(curr_corr))>0
+       good_bad(i)=1;
+    else 
+        good_bad(i)=0;
+    end
+end
+BOLD_NaN_ind=find(good_bad==0);
+BOLD_mat(:,BOLD_NaN_ind)=NaN;
+BOLD_mat(BOLD_NaN_ind,:)=NaN;
+
+%% stats
 if plot_all=='0'
    coords=1;
    elec=elec_number;
 end
 
-iEEG_elec_vals=HFB_slow_mat(:,elec);
+iEEG_elec_vals=HFB_slow_mat_mean(:,elec);
 BOLD_elec_vals=BOLD_mat(:,elec);
 curr_elecNames=elecNames;
-% remove NaNs + inf
-curr_elecNames([bad_chans; elec])=[];
-to_remove=find(isnan(iEEG_elec_vals)==1);
-iEEG_elec_vals(elec)=[];
+
+% remove FC with self
+curr_elecNames([elec])=[];
 BOLD_elec_vals(elec)=[];
-% curr_elecNames{elec}={};
-% for j=1:length(to_remove)
-% curr_elecNames{to_remove(j)}={};
-% end
-%curr_elecNames=curr_elecNames(~cellfun(@isempty,curr_elecNames));  
+iEEG_elec_vals(elec)=[];
+
+
+% remove FC with NaNs
+curr_elecNames=curr_elecNames(~isnan(iEEG_elec_vals));
+BOLD_scatter=BOLD_elec_vals(~isnan(iEEG_elec_vals));
 iEEG_scatter=iEEG_elec_vals(~isnan(iEEG_elec_vals));
-BOLD_scatter=BOLD_elec_vals(~isnan(BOLD_elec_vals));
 
+[corr_BOLD_vs_iEEG, p_BOLD_vs_iEEG]=corr(BOLD_scatter,iEEG_scatter);
+[rho_BOLD_vs_iEEG, p_rho]=corr(BOLD_scatter,iEEG_scatter,'type','Spearman');
 
+%% plot
+elec_title=elecNames{elec};
+if elec_highlight>0
+   elecHighlight=elecNames{elec_highlight};
+   elecHighlight=strmatch(elecHighlight,curr_elecNames,'exact');
+end
 
-% for i=1:length(coords);
-% 
-%    elec_num=num2str(i);
-%    
-%    
-%            
-% elec_name=char(parcOut(i,1));  
-%    elecColors_HFBslow=HFB_slow_corr(:,i);
-%    
-%    
-% curr_elecNames=elecNames;
-% curr_elecNames([bad_chans; i])=[];
+    figure(1)
+h1=scatter(BOLD_scatter,iEEG_scatter)
+h1.MarkerFaceColor=cdcol.;
+h1.MarkerEdgeColor=[0 0 0]; 
+h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gcf,'color','w');
+title({[elec_title ' FC']; ...
+    ['r = ' num2str(corr_BOLD_vs_iEEG) '; rho = ' num2str(rho_BOLD_vs_iEEG)]},'Fontsize',12);
+xlabel('BOLD <0.1 Hz FC');
+ylabel('HFB <0.1 Hz FC');
+set(gcf,'PaperPositionMode','auto');
+hold on;
+h2=scatter(BOLD_scatter(elecHighlight),iEEG_scatter(elecHighlight),100)
+h2.MarkerFaceColor=elecHighlightColor; 
+h2.MarkerEdgeColor=[0 0 0]; 
+%h2.MarkerEdgeColor=elecHighlightColor;
 
 
     
