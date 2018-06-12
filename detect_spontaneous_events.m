@@ -118,8 +118,8 @@ figure1=figure('Position', [200, 600, 800, 250]);
     p2.LineWidth=2; p2.Color=cdcol.russet;
     xlim([0,length(plot_start:plot_end)]);
 xlabel(['Time (ms)']); ylabel(['HFB Power']);
-h1=vline(cluster1_onset,'k-.');
-h1=vline(cluster2_onset,'k-.');
+h1=vline(cluster1_onset,'k--.');
+h1=vline(cluster2_onset,'k--.');
 set(gcf,'color','w');
 set(gca,'Fontsize',14,'Fontweight','bold','LineWidth',2,'TickDir','out','box','off');
 
