@@ -83,9 +83,9 @@ cd([fsDir '/' Patient '/elec_recon']);
 % Load electrode coordinates
 if Coords==1;
 vox=dlmread([Patient '.PIAL'],' ',2,0);
+brainmask_coords=vox;
 elseif Coords==2;
     load('brainmask_coords.mat');
-    brainmask_coords=brainmask_coords;
     vox=brainmask_coords;
 end
 
@@ -230,63 +230,55 @@ end
 % change 'Chop' variable at beginning of code to change 
 elec_ts=elec_ts(Chop:length(elec_ts),:);
 
-% use bad indices from HFB 0.1-1Hz file (where bursts were excluded) 
-bad_indices=[];
-if use_bad==1
-bad_indices=D.badchannels; 
-else
-    bad_indices=[];
-end
-% Find channels with HFB z-score spikes for exclusion
-elec_z=[];
-if HFB_spike_exclusion==1
-for i=1:length(iElvis_to_iEEG_chanlabel);
-    elec_z=(elec_ts(:,i)-mean(elec_ts(:,i)))/std(elec_ts(:,i));
-    HFB_max=max(elec_z);
-    if HFB_max>HFB_zthresh;
-        display(['Channel ' D.chanlabels{i} ' excluded due to HFB spikes in run ' curr_run]);
-       bad_indices=[bad_indices i];         
-    end   
-end
-end
-
-% Change bad channels, WM channels, and channels with overlapping coordinates to NaN
-for i=1:length(bad_indices)
-    elec_ts(:,bad_indices(i))=NaN;
-end
-
-overlap_elec=find((BOLD_ts_iEEG_space(1,:))==0); % WM and overlapping electrodes
-for i=1:length(overlap_elec)
-    elec_ts(:,overlap_elec(i))=NaN;
-end
-
-more_bad=[];
-% Change any remaining NaNs in BOLD to NaNs in iEEG
-for i=1:length(BOLD_ts_iEEG_space(1,:))
-    if isnan(BOLD_ts_iEEG_space(1,i))==1
-        more_bad=[more_bad i];
-         elec_ts(:,i)=NaN;      
-    end
-end
-all_bad_indices=more_bad;
-save('all_bad_indices','all_bad_indices');
-
 % Transform iEEG & BOLD to iElvis order
 if i==1 % only on first loop iteration for BOLD
 BOLD_iElvis=NaN(size(BOLD_ts,1),length(chanlabels));
-for i=1:length(chanlabels);
-    curr_iEEG_chan=channumbers_iEEG(i);
-    new_ind=iEEG_to_iElvis_chanlabel(i);
+for j=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(j);
+    new_ind=iEEG_to_iElvis_chanlabel(j);
     BOLD_iElvis(:,new_ind)=BOLD_ts_iEEG_space(:,curr_iEEG_chan);
 end
 end
 
 elec_iElvis=NaN(size(elec_ts,1),length(chanlabels));
-for i=1:length(chanlabels);
-    curr_iEEG_chan=channumbers_iEEG(i);
-    new_ind=iEEG_to_iElvis_chanlabel(i);
+for j=1:length(chanlabels);
+    curr_iEEG_chan=channumbers_iEEG(j);
+    new_ind=iEEG_to_iElvis_chanlabel(j);
     elec_iElvis(:,new_ind)=elec_ts(:,curr_iEEG_chan);
 end
+
+% use bad indices from HFB 0.1-1Hz file (where bursts were excluded) 
+bad_indices=[];
+if use_bad==1
+bad_indices=D.badchannels; 
+end
+overlap_elec=find((BOLD_ts_iEEG_space(1,:))==0); % WM and overlapping electrodes
+bad_indices=[bad_indices overlap_elec];
+bad_indices_iElvis=iEEG_to_iElvis_chanlabel(bad_indices);
+bad_chans=chanlabels(bad_indices_iElvis);
+
+%% TRANSFORM BAD INDICES TO IELVIS
+
+
+% Change bad channels, WM channels, and channels with overlapping coordinates to NaN
+
+for j=1:length(bad_indices_iElvis)
+    elec_iElvis(:,bad_indices_iElvis(j))=NaN;
+    BOLD_iElvis(:,bad_indices_iElvis(j))=NaN;
+end
+
+
+% more_bad=[];
+% % Change any remaining NaNs in BOLD to NaNs in iEEG
+% for j=1:length(BOLD_ts_iEEG_space(1,:))
+%     if isnan(BOLD_ts_iEEG_space(1,j))==1
+%         more_bad=[more_bad j];
+%          elec_ts(:,j)=NaN;      
+%     end
+% end
+% all_bad_indices=more_bad;
+
+
 
 % Get vox coordinates (iElvis order) and remove bad indices
 vox=brainmask_coords;
@@ -297,7 +289,7 @@ BOLD_column=[]; iEEG_column=[]; BOLD_allcorr=[]; iEEG_allcorr=[];
 iEEG_allcorr=corrcoef(elec_iElvis); iEEG_column=iEEG_allcorr(:);
 BOLD_allcorr=corrcoef(BOLD_iElvis); BOLD_column=BOLD_allcorr(:);
 
-iEEG_mat=slow_allcorr; iEEG_mat(find(iEEG_mat==1))=NaN; iEEG_mat(find(BOLD_allcorr>0.999))=NaN;
+iEEG_mat=iEEG_allcorr; iEEG_mat(find(iEEG_mat==1))=NaN; iEEG_mat(find(BOLD_allcorr>0.999))=NaN;
 BOLD_mat=BOLD_allcorr; BOLD_mat(find(BOLD_mat>0.999))=NaN;
 
 % remove diagonal and lower triangle
@@ -308,10 +300,10 @@ BOLD_column(find(BOLD_column_ones>0.999))=NaN; BOLD_column(isnan(BOLD_column))=[
 % Calculate distances
 distance_column=[];
 distances=zeros(size(vox,1));
-for i = 1:size(vox,1)
- coord = vox(i,:);
-     for ii = 1:size(vox,1)
-         distances(i,ii)=sqrt((vox(ii,1)-coord(1))^2+(vox(ii,2)-coord(2))^2+(vox(ii,3)-coord(3))^2);
+for j = 1:size(vox,1)
+ coord = vox(j,:);
+     for jj = 1:size(vox,1)
+         distances(j,jj)=sqrt((vox(jj,1)-coord(1))^2+(vox(jj,2)-coord(2))^2+(vox(jj,3)-coord(3))^2);
      end
 end
 distances(find(BOLD_allcorr>0.999))=NaN;
@@ -342,7 +334,21 @@ iEEG_scatter(isnan(distance_scatter))=[];
 BOLD_scatter(isnan(distance_scatter))=[];
 distance_scatter(isnan(distance_scatter))=[];
 end
-display(['Done run ' curr_run]);
+n_elecs=length(iEEG_scatter);
+
+% within-run stats
+[r p]=corr(fisherz(iEEG_scatter),fisherz(BOLD_scatter));
+iEEG_vs_BOLD_r=num2str(r); iEEG_vs_BOLD_p=num2str(p);
+[r p]=corr(fisherz(iEEG_scatter),fisherz(BOLD_scatter),'type','Spearman');
+iEEG_vs_BOLD_Spearman=num2str(r); iEEG_vs_BOLD_Spearman_p=num2str(p);
+
+[r,p]=partialcorr(fisherz(iEEG_scatter),fisherz(BOLD_scatter),distance_scatter);
+iEEG_partial=num2str(r);
+
+% scatter plot
+scatter(BOLD_scatter,iEEG_scatter);
+pause; close;
+display(['Done run ' curr_run '(' num2str(n_elecs) 'channels)']);
 end
 
 pause;
@@ -350,683 +356,10 @@ pause;
 
 
 
-%% Save distance matrix (iElvis order)
-save('distances','distances');
 
 %% Make plots
 mkdir BOLD_ECoG_figs
 cd BOLD_ECoG_figs
-
-%% correlation matrices
-if depth==2
-   
-FigHandle = figure(1);
-set(FigHandle,'Position',[50, 50, 400, 300]);
-imagesc(BOLD_ordered_corr); h=colorbar('vert'); colormap copper
-set(h,'fontsize',16);
-title(['BOLD FC matrix '])
-hold on;
-h1=rectangle('position',[.5 .5 size(DMN_BOLD_corr,1) size(DMN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[DMN_interval+.5 DMN_interval+.5 size(FPN_BOLD_corr,1) size(FPN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[FPN_interval+.5 FPN_interval+.5 size(VAN_BOLD_corr,1) size(VAN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[VAN_interval+.5 VAN_interval+.5 size(SMN_BOLD_corr,1) size(SMN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[SMN_interval+.5 SMN_interval+.5 size(Visual_BOLD_corr,1) size(Visual_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[Visual_interval+.5 Visual_interval+.5 size(DAN_BOLD_corr,1) size(DAN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[DAN_interval+.5 DAN_interval+.5 size(Language_BOLD_corr,1) size(Language_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-set(gcf,'PaperPositionMode','auto');
-print -depsc2 BOLD_FC_mat.eps
-
-FigHandle = figure(2);
-set(FigHandle,'Position',[50, 500, 400, 300]);
-imagesc(medium_ordered_corr,[-0.1 0.4]); h=colorbar('vert'); colormap copper
-set(h,'fontsize',16);
-title(['ECoG HFB (0.1-1 Hz) FC matrix '])
-hold on;
-h1=rectangle('position',[.5 .5 size(DMN_BOLD_corr,1) size(DMN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[DMN_interval+.5 DMN_interval+.5 size(FPN_BOLD_corr,1) size(FPN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[FPN_interval+.5 FPN_interval+.5 size(VAN_BOLD_corr,1) size(VAN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[VAN_interval+.5 VAN_interval+.5 size(SMN_BOLD_corr,1) size(SMN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[SMN_interval+.5 SMN_interval+.5 size(Visual_BOLD_corr,1) size(Visual_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[Visual_interval+.5 Visual_interval+.5 size(DAN_BOLD_corr,1) size(DAN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[DAN_interval+.5 DAN_interval+.5 size(Language_BOLD_corr,1) size(Language_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-set(gcf,'PaperPositionMode','auto');
-print -depsc2 HFB_FC_mat.eps
-
-FigHandle = figure(3);
-set(FigHandle,'Position',[500, 50, 400, 300]);
-imagesc(alpha_ordered_corr,[-0.1 0.4]); h=colorbar('vert'); colormap copper
-set(h,'fontsize',16);
-title(['ECoG alpha (0.1-1 Hz) FC matrix '])
-hold on;
-h1=rectangle('position',[.5 .5 size(DMN_BOLD_corr,1) size(DMN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[DMN_interval+.5 DMN_interval+.5 size(FPN_BOLD_corr,1) size(FPN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[FPN_interval+.5 FPN_interval+.5 size(VAN_BOLD_corr,1) size(VAN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[VAN_interval+.5 VAN_interval+.5 size(SMN_BOLD_corr,1) size(SMN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[SMN_interval+.5 SMN_interval+.5 size(Visual_BOLD_corr,1) size(Visual_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[Visual_interval+.5 Visual_interval+.5 size(DAN_BOLD_corr,1) size(DAN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[DAN_interval+.5 DAN_interval+.5 size(Language_BOLD_corr,1) size(Language_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-set(gcf,'PaperPositionMode','auto');
-print -depsc2 alpha_FC_mat.eps
-
-FigHandle = figure(4);
-set(FigHandle,'Position',[500, 500, 400, 300]);
-imagesc(beta1_ordered_corr,[-0.1 0.4]); h=colorbar('vert'); colormap copper
-set(h,'fontsize',16);
-title(['ECoG beta1 (13-29 Hz) FC matrix '])
-hold on;
-h1=rectangle('position',[.5 .5 size(DMN_BOLD_corr,1) size(DMN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[DMN_interval+.5 DMN_interval+.5 size(FPN_BOLD_corr,1) size(FPN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[FPN_interval+.5 FPN_interval+.5 size(VAN_BOLD_corr,1) size(VAN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[VAN_interval+.5 VAN_interval+.5 size(SMN_BOLD_corr,1) size(SMN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[SMN_interval+.5 SMN_interval+.5 size(Visual_BOLD_corr,1) size(Visual_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[Visual_interval+.5 Visual_interval+.5 size(DAN_BOLD_corr,1) size(DAN_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-h1=rectangle('position',[DAN_interval+.5 DAN_interval+.5 size(Language_BOLD_corr,1) size(Language_BOLD_corr,1)]);
-set(h1,'EdgeColor',edge_color,'linewidth',edge_width);
-set(gcf,'PaperPositionMode','auto');
-print -depsc2 beta1_FC_mat.eps
-pause; close('all');
-end
-
-electrode_pairs=num2str(length(BOLD_column));
-[r p]=corr(fisherz(slow_scatter),fisherz(BOLD_scatter));
-slow_vs_BOLD_r=num2str(r); slow_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(slow_scatter),fisherz(BOLD_scatter),'type','Spearman');
-slow_vs_BOLD_Spearman=num2str(r); slow_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(medium_scatter),fisherz(BOLD_scatter));
-medium_vs_BOLD_r=num2str(r); medium_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(medium_scatter),fisherz(BOLD_scatter),'type','Spearman');
-medium_vs_BOLD_Spearman=num2str(r); medium_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(alpha_scatter),fisherz(BOLD_scatter));
-alpha_vs_BOLD_r=num2str(r); alpha_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(alpha_scatter),fisherz(BOLD_scatter),'type','Spearman');
-alpha_vs_BOLD_Spearman=num2str(r); alpha_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(beta1_scatter),fisherz(BOLD_scatter));
-beta1_vs_BOLD_r=num2str(r); beta1_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(beta1_scatter),fisherz(BOLD_scatter),'type','Spearman');
-beta1_vs_BOLD_Spearman=num2str(r); beta1_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(beta2_scatter),fisherz(BOLD_scatter));
-beta2_vs_BOLD_r=num2str(r); beta2_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(beta2_scatter),fisherz(BOLD_scatter),'type','Spearman');
-beta2_vs_BOLD_Spearman=num2str(r); beta2_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Theta_scatter),fisherz(BOLD_scatter));
-Theta_vs_BOLD_r=num2str(r); Theta_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Theta_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Theta_vs_BOLD_Spearman=num2str(r); Theta_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Delta_scatter),fisherz(BOLD_scatter));
-Delta_vs_BOLD_r=num2str(r); Delta_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Delta_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Delta_vs_BOLD_Spearman=num2str(r); Delta_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Gamma_scatter),fisherz(BOLD_scatter));
-Gamma_vs_BOLD_r=num2str(r); Gamma_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Gamma_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Gamma_vs_BOLD_Spearman=num2str(r); Gamma_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(HFB_scatter),fisherz(BOLD_scatter));
-HFB_vs_BOLD_r=num2str(r); HFB_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(HFB_scatter),fisherz(BOLD_scatter),'type','Spearman');
-HFB_vs_BOLD_Spearman=num2str(r); HFB_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(alpha_medium_scatter),fisherz(BOLD_scatter));
-alpha_medium_vs_BOLD_r=num2str(r); alpha_medium_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(alpha_medium_scatter),fisherz(BOLD_scatter),'type','Spearman');
-alpha_medium_vs_BOLD_Spearman=num2str(r); alpha_medium_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(beta1_medium_scatter),fisherz(BOLD_scatter));
-beta1_medium_vs_BOLD_r=num2str(r); beta1_medium_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(beta1_medium_scatter),fisherz(BOLD_scatter),'type','Spearman');
-beta1_medium_vs_BOLD_Spearman=num2str(r); beta1_medium_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(beta2_medium_scatter),fisherz(BOLD_scatter));
-beta2_medium_vs_BOLD_r=num2str(r); beta2_medium_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(beta2_medium_scatter),fisherz(BOLD_scatter),'type','Spearman');
-beta2_medium_vs_BOLD_Spearman=num2str(r); beta2_medium_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Theta_medium_scatter),fisherz(BOLD_scatter));
-Theta_medium_vs_BOLD_r=num2str(r); Theta_medium_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Theta_medium_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Theta_medium_vs_BOLD_Spearman=num2str(r); Theta_medium_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Delta_medium_scatter),fisherz(BOLD_scatter));
-Delta_medium_vs_BOLD_r=num2str(r); Delta_medium_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Delta_medium_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Delta_medium_vs_BOLD_Spearman=num2str(r); Delta_medium_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Gamma_medium_scatter),fisherz(BOLD_scatter));
-Gamma_medium_vs_BOLD_r=num2str(r); Gamma_medium_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Gamma_medium_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Gamma_medium_vs_BOLD_Spearman=num2str(r); Gamma_medium_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(HFB_fast_scatter),fisherz(BOLD_scatter));
-HFB_fast_vs_BOLD_r=num2str(r); HFB_fast_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(HFB_fast_scatter),fisherz(BOLD_scatter),'type','Spearman');
-HFB_fast_vs_BOLD_Spearman=num2str(r); HFB_fast_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(alpha_fast_scatter),fisherz(BOLD_scatter));
-alpha_fast_vs_BOLD_r=num2str(r); alpha_fast_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(alpha_fast_scatter),fisherz(BOLD_scatter),'type','Spearman');
-alpha_fast_vs_BOLD_Spearman=num2str(r); alpha_fast_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(beta1_fast_scatter),fisherz(BOLD_scatter));
-beta1_fast_vs_BOLD_r=num2str(r); beta1_fast_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(beta1_fast_scatter),fisherz(BOLD_scatter),'type','Spearman');
-beta1_fast_vs_BOLD_Spearman=num2str(r); beta1_fast_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(beta2_fast_scatter),fisherz(BOLD_scatter));
-beta2_fast_vs_BOLD_r=num2str(r); beta2_fast_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(beta2_fast_scatter),fisherz(BOLD_scatter),'type','Spearman');
-beta2_fast_vs_BOLD_Spearman=num2str(r); beta2_fast_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Theta_fast_scatter),fisherz(BOLD_scatter));
-Theta_fast_vs_BOLD_r=num2str(r); Theta_fast_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Theta_fast_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Theta_fast_vs_BOLD_Spearman=num2str(r); Theta_fast_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Delta_fast_scatter),fisherz(BOLD_scatter));
-Delta_fast_vs_BOLD_r=num2str(r); Delta_fast_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Delta_fast_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Delta_fast_vs_BOLD_Spearman=num2str(r); Delta_fast_vs_BOLD_Spearman_p=num2str(p);
-
-[r p]=corr(fisherz(Gamma_fast_scatter),fisherz(BOLD_scatter));
-Gamma_fast_vs_BOLD_r=num2str(r); Gamma_fast_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(Gamma_fast_scatter),fisherz(BOLD_scatter),'type','Spearman');
-Gamma_fast_vs_BOLD_Spearman=num2str(r); Gamma_fast_vs_BOLD_Spearman_p=num2str(p);
-
-
-[r p]=corr(fisherz(SCP_scatter),fisherz(BOLD_scatter));
-SCP_vs_BOLD_r=num2str(r); SCP_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(SCP_scatter),fisherz(BOLD_scatter),'type','Spearman');
-SCP_vs_BOLD_Spearman=num2str(r); SCP_vs_BOLD_Spearman_p=num2str(p);
-
-% control for other frequencies
-[r,p]=partialcorr(fisherz(alpha_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
-alpha_HFB_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),alpha_medium_scatter);
-HFB_alpha_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),beta1_medium_scatter);
-HFB_beta1_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(beta1_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
-beta1_HFB_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),beta2_medium_scatter);
-HFB_beta2_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(beta2_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
-beta2_HFB_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),Theta_medium_scatter);
-HFB_Theta_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Theta_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
-Theta_HFB_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),Delta_medium_scatter);
-HFB_Delta_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Delta_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
-Delta_HFB_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),Gamma_medium_scatter);
-HFB_Gamma_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Gamma_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
-Gamma_HFB_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),Gamma_medium_scatter);
-HFB_Gamma_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Gamma_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
-Gamma_HFB_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),SCP_scatter);
-HFB_SCP_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(SCP_scatter),fisherz(BOLD_scatter),medium_scatter);
-SCP_HFB_medium_partial=num2str(r);
-
-% control for distance
-[r,p]=partialcorr(fisherz(slow_scatter),fisherz(BOLD_scatter),distance_scatter);
-slow_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),distance_scatter);
-medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(alpha_scatter),fisherz(BOLD_scatter),distance_scatter);
-alpha_partial=num2str(r);
-[r,p]=partialcorr(fisherz(beta1_scatter),fisherz(BOLD_scatter),distance_scatter);
-beta1_partial=num2str(r);
-[r,p]=partialcorr(fisherz(beta2_scatter),fisherz(BOLD_scatter),distance_scatter);
-beta2_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Theta_scatter),fisherz(BOLD_scatter),distance_scatter);
-Theta_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Delta_scatter),fisherz(BOLD_scatter),distance_scatter);
-Delta_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Gamma_scatter),fisherz(BOLD_scatter),distance_scatter);
-Gamma_partial=num2str(r);
-[r,p]=partialcorr(fisherz(HFB_scatter),fisherz(BOLD_scatter),distance_scatter);
-HFB_partial=num2str(r);
-[r,p]=partialcorr(fisherz(alpha_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
-alpha_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(beta1_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
-beta1_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(beta2_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
-beta2_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Theta_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
-Theta_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Delta_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
-Delta_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Gamma_medium_scatter),fisherz(BOLD_scatter),distance_scatter);
-Gamma_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(HFB_fast_scatter),fisherz(BOLD_scatter),distance_scatter);
-HFB_fast_partial=num2str(r);
-[r,p]=partialcorr(fisherz(alpha_fast_scatter),fisherz(BOLD_scatter),distance_scatter);
-alpha_fast_partial=num2str(r);
-[r,p]=partialcorr(fisherz(beta1_fast_scatter),fisherz(BOLD_scatter),distance_scatter);
-beta1_fast_partial=num2str(r);
-[r,p]=partialcorr(fisherz(beta2_fast_scatter),fisherz(BOLD_scatter),distance_scatter);
-beta2_fast_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Theta_fast_scatter),fisherz(BOLD_scatter),distance_scatter);
-Theta_fast_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Delta_fast_scatter),fisherz(BOLD_scatter),distance_scatter);
-Delta_fast_partial=num2str(r);
-[r,p]=partialcorr(fisherz(Gamma_fast_scatter),fisherz(BOLD_scatter),distance_scatter);
-Gamma_fast_partial=num2str(r);
-
-[r,p]=partialcorr(fisherz(SCP_scatter),fisherz(BOLD_scatter),distance_scatter);
-SCP_partial=num2str(r);
-
-if depth==2
-[r p]=corr(DMN_medium_scatter,DMN_BOLD_scatter);
-DMN_medium_vs_BOLD_r=num2str(r); DMN_medium_vs_BOLD_p=num2str(p);
-[r p]=corr(DMN_slow_scatter,DMN_BOLD_scatter);
-DMN_slow_vs_BOLD_r=num2str(r); DMN_slow_vs_BOLD_p=num2str(p);
-[r,p]=partialcorr(DMN_slow_scatter,DMN_BOLD_scatter,distance_DMN_scatter);
-DMN_slow_partial=num2str(r);
-[r,p]=partialcorr(DMN_medium_scatter,DMN_BOLD_scatter,distance_DMN_scatter);
-DMN_medium_partial=num2str(r);
-end
-
-[r,p]=corr(fisherz(BOLD_short),fisherz(medium_short));
-medium_vs_BOLD_short=num2str(r);
-[r,p]=corr(fisherz(BOLD_short),fisherz(medium_short),'type','Spearman');
-medium_vs_BOLD_short_Spearman=num2str(r);
-
-[r,p]=corr(fisherz(BOLD_long),fisherz(medium_long));
-medium_vs_BOLD_long=num2str(r);
-[r,p]=corr(fisherz(BOLD_long),fisherz(medium_long),'type','Spearman');
-medium_vs_BOLD_long_Spearman=num2str(r);
-
-[r,p]=corr(fisherz(BOLD_short),fisherz(slow_short));
-slow_vs_BOLD_short=num2str(r);
-[r,p]=corr(fisherz(BOLD_long),fisherz(slow_long));
-slow_vs_BOLD_long=num2str(r);
-
-%% Distance histogram
-figure(1)
-histogram(distance_scatter);
-title(['Euclidean distances among all electrodes']);
-pause; close;
-
-%% Plot correlations with all frequencies
-corr_allfreqs=[str2num(Delta_vs_BOLD_r) str2num(Theta_vs_BOLD_r) str2num(alpha_vs_BOLD_r) str2num(beta1_vs_BOLD_r) str2num(beta2_vs_BOLD_r) str2num(Gamma_vs_BOLD_r) str2num(medium_vs_BOLD_r)]
-
-    plot(1:length(corr_allfreqs),corr_allfreqs','k.--', ...
-        'LineWidth',2,'Color',[.7 .7 .7],'MarkerSize',25,'MarkerEdgeColor',[.5 .5 .5]);
-    ylim([0 0.8]);
-       set(gca,'Xtick',0:1:8)
- set(gca,'XTickLabel',{'','δ', 'θ','α','β1','β2','γ','HFB'})
- set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-   set(gca,'box','off'); 
-set(gcf,'color','w');
-ylabel('BOLD-iEEG (0.1-1 Hz) FC correlation (r)'); 
-
-pause; close;
-
-%% Slow vs medium vs BOLD
-figure(1)
-scatter(fisherz(BOLD_scatter),fisherz(slow_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 0 1]); 
-h=lsline; set(h(1),'color',[0 0 1],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Slow (<0.1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' slow_vs_BOLD_r ' p = ' slow_vs_BOLD_p]; ...
-    ['Spearman ρ = ' slow_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' slow_partial]},'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Slow pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 HFB_slow_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
-    print -depsc2 HFB_slow_vs_BOLD_AROMA.eps
-elseif BOLD_pipeline==3  
-    print -depsc2 HFB_slow_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 HFB_slow_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(2)
-scatter(fisherz(BOLD_scatter),fisherz(medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[1 0 0]); 
-h=lsline; set(h(1),'color',[1 0 0],'LineWidth',3);
-set(gca,'Fontsize',16,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' medium_vs_BOLD_r ' p = ' medium_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' medium_partial]; ...
-    ['Partial (alpha-corrected) r = ' HFB_alpha_medium_partial]} ,'Fontsize',12); 
-xlabel('BOLD pair-wise FC');
-ylabel('Medium pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 HFB_medium_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
-  print -depsc2 HFB_medium_vs_BOLD_AROMA.eps  
-  elseif BOLD_pipeline==3  
-    print -depsc2 HFB_medium_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 HFB_medium_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(1)
-scatter(fisherz(BOLD_scatter),fisherz(HFB_fast_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 0 1]); 
-h=lsline; set(h(1),'color',[0 0 1],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Fast (>1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' HFB_fast_vs_BOLD_r ' p = ' HFB_fast_vs_BOLD_p]; ...
-    ['Spearman ρ = ' HFB_fast_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' HFB_fast_partial]},'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Fast pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 HFB_fast_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
-    print -depsc2 HFB_fast_vs_BOLD_AROMA.eps
-elseif BOLD_pipeline==3  
-    print -depsc2 HFB_fast_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 HFB_fast_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(3)
-scatter(fisherz(BOLD_scatter),fisherz(alpha_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 0 1]); 
-h=lsline; set(h(1),'color',[0 0 1],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) alpha ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' alpha_medium_vs_BOLD_r ' p = ' alpha_medium_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' alpha_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' alpha_medium_partial]; ...
-    ['Partial (HFB-corrected) r = ' alpha_HFB_medium_partial]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium alpha pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 alpha_medium_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
-  print -depsc2 alpha_medium_vs_BOLD_AROMA.eps  
-  elseif BOLD_pipeline==3  
-    print -depsc2 alpha_medium_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 alpha_medium_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(beta1_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) beta1 ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' beta1_medium_vs_BOLD_r ' p = ' beta1_medium_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' beta1_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' beta1_medium_partial]; ...
-    ['Partial (HFB-corrected) r = ' beta1_HFB_medium_partial]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium beta1 pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 beta1_medium_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 beta1_medium_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 beta1_medium_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 beta1_medium_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(beta2_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) beta2 ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' beta2_medium_vs_BOLD_r ' p = ' beta2_medium_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' beta2_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' beta2_medium_partial]; ...
-    ['Partial (HFB-corrected) r = ' beta2_HFB_medium_partial]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium beta2 pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 beta2_medium_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 beta2_medium_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 beta2_medium_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 beta2_medium_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(Theta_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) Theta ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Theta_medium_vs_BOLD_r ' p = ' Theta_medium_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' Theta_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Theta_medium_partial]; ...
-    ['Partial (HFB-corrected) r = ' Theta_HFB_medium_partial]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium Theta pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 Theta_medium_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 Theta_medium_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 Theta_medium_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 Theta_medium_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(Delta_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) Delta ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Delta_medium_vs_BOLD_r ' p = ' Delta_medium_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' Delta_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Delta_medium_partial]; ...
-    ['Partial (HFB-corrected) r = ' Delta_HFB_medium_partial]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium Delta pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 Delta_medium_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 Delta_medium_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 Delta_medium_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 Delta_medium_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(Gamma_medium_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) Gamma ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' Gamma_medium_vs_BOLD_r ' p = ' Gamma_medium_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' Gamma_medium_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' Gamma_medium_partial]; ...
-    ['Partial (HFB-corrected) r = ' Gamma_HFB_medium_partial]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium Gamma pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 Gamma_medium_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 Gamma_medium_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 Gamma_medium_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 Gamma_medium_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(SCP_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) SCP ECoG vs BOLD (< 1Hz) FC']; ['r = ' SCP_vs_BOLD_r ' p = ' SCP_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' SCP_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' SCP_partial]; ...
-    ['Partial (HFB-corrected) r = ' SCP_HFB_medium_partial]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium SCP pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 SCP_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 SCP_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 SCP_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 SCP_vs_BOLD_aCompCor.eps
-end
-pause; close;
-
-figure(1)
-scatter(fisherz(BOLD_long),fisherz(medium_long),'MarkerEdgeColor','k','MarkerFaceColor',[1 0 0]); 
-h=lsline; set(h(1),'color',[1 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Long distance pairs: Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ...
-     ['r = ' medium_vs_BOLD_long]; ['Spearman ρ = ' medium_vs_BOLD_long_Spearman]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 HFB_longdist_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
-   print -depsc2 HFB_longdist_vs_BOLD_AROMA.eps 
-elseif BOLD_pipeline==3  
-    print -depsc2 HFB_longdist_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 HFB_longdist_vs_BOLD_aCompCor.eps
-    end
-close;
-
-figure(2)
-scatter(fisherz(BOLD_short),fisherz(medium_short),'MarkerEdgeColor','k','MarkerFaceColor',[1 0 0]); 
-h=lsline; set(h(1),'color',[1 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Short distance pairs: Medium (0.1-1 Hz) HFB ECoG vs BOLD (0.01-0.1Hz) FC']; ...
-    ['r = ' medium_vs_BOLD_short];['Spearman ρ = ' medium_vs_BOLD_short_Spearman]} ,'Fontsize',12); 
-xlabel('BOLD pair-wise FC');
-ylabel('Medium pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 HFB_shortdist_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
-print -depsc2 HFB_shortdist_vs_BOLD_AROMA.eps
-elseif BOLD_pipeline==3  
-    print -depsc2 HFB_shortdist_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 HFB_shortdist_vs_BOLD_aCompCor.eps
-
-end
-close;
-
-%% unfiltered ECoG plots
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(HFB_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['HFB (unfiltered) ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' HFB_vs_BOLD_r ' p = ' HFB_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' HFB_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' HFB_partial]},'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('HFB pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 HFB_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 HFB_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 HFB_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 HFB_vs_BOLD_aCompCor.eps
-end
-close;
-
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(alpha_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['alpha (unfiltered) ECoG vs BOLD (0.01-0.1Hz) FC']; ['r = ' alpha_vs_BOLD_r ' p = ' alpha_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' alpha_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' alpha_partial]},'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('alpha pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 alpha_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 alpha_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 alpha_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 alpha_vs_BOLD_aCompCor.eps
-end
-close;
-
-if BOLD_pipeline==1
-    mkdir('GSR'); cd('GSR');
-elseif BOLD_pipeline==2
-    mkdir('AROMA'); cd('AROMA');
-    elseif BOLD_pipeline==3
-    mkdir('NoGSR'); cd('NoGSR');
-       elseif BOLD_pipeline==4
-    mkdir('aCompCor'); cd('aCompCor');
-end
- 
-%% Save FC matrices
-HFB_medium_mat=medium_mat;
-save('BOLD_mat','BOLD_mat');
-save('Delta_medium_mat','Delta_medium_mat');
-save('Theta_medium_mat','Theta_medium_mat');
-save('alpha_medium_mat','alpha_medium_mat');
-save('beta1_medium_mat','beta1_medium_mat');
-save('beta2_medium_mat','beta2_medium_mat');
-save('Gamma_medium_mat','Gamma_medium_mat');
-save('HFB_medium_mat','HFB_medium_mat');
-
 
 
 %% Plot ECoG vs BOLD for each seed electrode
