@@ -137,32 +137,43 @@ HFB_slow_mat(bad_chans,:,i)=NaN; HFB_slow_mat(:,bad_chans,i)=NaN;
  end
 
 %% Mean iEEG FC across runs
-HFB_slow_mat_mean=mean(HFB_slow_mat,3);
+HFB_slow_mat_mean=nanmean(HFB_slow_mat,3);
  
-%% change bad chans to NaN in BOLD FC matrix
- %BOLD_mat(bad_chans,:)=NaN; BOLD_mat(:,bad_chans)=NaN;
- 
+%% change bad chans (based on iEEG) to NaN in BOLD FC matrix
+for i=1:size(HFB_slow_mat_mean,1)
+    curr_corr=HFB_slow_mat_mean(:,i);
+    if sum(~isnan(curr_corr))>0
+       good_bad(i)=1;
+    else 
+        good_bad(i)=0;
+    end
+end
+BOLD_NaN_ind=find(good_bad==0);
+BOLD_mat(:,BOLD_NaN_ind)=NaN;
+BOLD_mat(BOLD_NaN_ind,:)=NaN;
+
+%% stats
 if plot_all=='0'
    coords=1;
    elec=elec_number;
 end
 
-iEEG_elec_vals=HFB_slow_mat(:,elec);
+iEEG_elec_vals=HFB_slow_mat_mean(:,elec);
 BOLD_elec_vals=BOLD_mat(:,elec);
 curr_elecNames=elecNames;
-% remove NaNs + inf
-curr_elecNames([bad_chans; elec])=[];
-to_remove=find(isnan(iEEG_elec_vals)==1);
-iEEG_elec_vals(elec)=[];
-BOLD_elec_vals(elec)=[];
-% curr_elecNames{elec}={};
-% for j=1:length(to_remove)
-% curr_elecNames{to_remove(j)}={};
-% end
-%curr_elecNames=curr_elecNames(~cellfun(@isempty,curr_elecNames));  
-iEEG_scatter=iEEG_elec_vals(~isnan(iEEG_elec_vals));
-BOLD_scatter=BOLD_elec_vals(~isnan(BOLD_elec_vals));
 
+% remove FC with self
+curr_elecNames([elec])=[];
+BOLD_elec_vals(elec)=[];
+iEEG_elec_vals(elec)=[];
+
+
+% remove FC with NaNs
+curr_elecNames=curr_elecNames(~isnan(iEEG_elec_vals));
+BOLD_scatter=BOLD_elec_vals(~isnan(iEEG_elec_vals));
+iEEG_scatter=iEEG_elec_vals(~isnan(iEEG_elec_vals));
+
+%% plot
 
 
 % for i=1:length(coords);
