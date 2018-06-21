@@ -30,7 +30,11 @@ for curr_run=1:length(runs)
     cluster_distances=[]; isolated_cluster_ind=[]; isolated_cluster_onsets=[];
     run_num=runs(curr_run);
 cd([globalECoGDir filesep condition filesep sub filesep 'Run' num2str(run_num)]);
-D=spm_eeg_load;
+load('TTL_onsets.mat');
+iEEG_offset=TTL_onsets(1); % to subtract from PTB time
+data_file=dir(['SHFBbtf*']);
+data_file=data_file(2,1).name;
+D=spm_eeg_load(data_file);
 elec_num=indchannel(D,elec_name);
 elec_ts=D(elec_num,:);
 %% Detect top act_prctile time points
@@ -92,6 +96,36 @@ events_file=['events_' elec_name '.mat'];
 epoch_name=['e' elec_name];
 LBCN_epoch_bc(D,events_file,[],'start',[-1500 1500],0,[],[],epoch_name);
 
+% for gradCPT, determine how many events are after mountains (correct or
+% error)
+if condition=='gradCPT'
+    true_mt_ind=[]; false_mt_ind=[];
+    true_spAct_mt=[]; false_spAct_mt=[];
+    load('CO_onsets_ECoG.mat'); load('CE_onsets_ECoG.mat');
+    CO_onset_times=CO_onsets_ECoG-iEEG_offset;
+    CE_onset_times=CE_onsets_ECoG-iEEG_offset;
+    mt_onset_times=[CO_onset_times; CE_onset_times];
+    event_times=D.time(isolated_cluster_onsets)-iEEG_offset;
+    event_times=event_times';
+    for i=1:length(event_times)
+       events_vs_mt=event_times(i)-mt_onset_times;
+       events_vs_mt(find(events_vs_mt<0))=[];
+       if ~isempty(find(events_vs_mt<1)) % find events that are within 1 sec of mountain onsets
+           true_mt_ind=[true_mt_ind; i];
+       else false_mt_ind=[false_mt_ind; i];
+       end
+    end
+    n_true_mt_ind=length(true_mt_ind);
+    n_false_mt_ind=length(false_mt_ind);
+    true_mt_ind_all(curr_run)=n_true_mt_ind;
+    false_mt_ind_all(curr_run)=n_false_mt_ind;
+    % save onset times of TRUE and FALSE events (in iEEG time) within run
+    true_spAct_mt=event_times(true_mt_ind)+iEEG_offset;
+    false_spAct_mt=event_times(false_mt_ind)+iEEG_offset;
+    save([elec_name '_true_spAct'],'true_mt_ind');
+    save([elec_name '_false_spAct'],'false_mt_ind');
+end
+
 % plot 10 random example events
 example_events=randsample(isolated_cluster_onsets,10);
 for i=1:length(example_events)
@@ -103,7 +137,12 @@ for i=1:length(example_events)
     plot(act_peaks_to_plot(plot_start:plot_end),'r');
     hold on;
 end
-pause; close;
+close;
+end
+
+%% get proportion of events that follow mountain onsets 
+if condition=='gradCPT'
+    prc_true=sum(true_mt_ind_all)/(sum(true_mt_ind_all)+sum(false_mt_ind_all))
 end
 
 

@@ -1,4 +1,6 @@
 %% kmeans clustering of trials at target electrode for spontaneous activation events at a seed electrode
+% must first run detect_spont
+
 % condition=input('Rest (1) gradCPT (2): ','s');
 % if condition=='1'
 %     condition='Rest'
@@ -10,7 +12,7 @@
 run_kmeans=1; % set to 1 to run kmeans clustering
 k=3; % Number of kmeans clusters
 k_perm=1000; % Number of kmeans repetitions
-distance_metric='sqeuclidean'; % distance metric for kmeans cluster (e.g. sqeuclid
+distance_metric='correlation'; % distance metric for kmeans cluster (e.g. sqeuclidean, correlation)
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
 sub=input('Patient: ','s');
@@ -40,7 +42,7 @@ silh=evalclusters(trial_ts,'kmeans','silhouette','klist',[2:20]);
 
 %% kmeans clustering
 if run_kmeans==1
-[IDX,C]=kmeans(trial_ts,k,'distance','correlation','display','final','replicate',k_perm,'maxiter',250);
+[IDX,C]=kmeans(trial_ts,k,'distance',distance_metric,'display','final','replicate',k_perm,'maxiter',250);
 end
 
 %% Get Louvain clusters' average time courses

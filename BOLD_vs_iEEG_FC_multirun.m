@@ -14,7 +14,7 @@ bold_run_num=['run' bold_runname];
 load('cdcol.mat');
 elec_highlight=40; % target electrode to highlight in plot (iElvis number)
 elecHighlightColor=cdcol.russet';
-elec_remove=85; % exclude this/these electrode(s) from analysis
+elec_remove=[85]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
 line_color=cdcol.lightblue;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
@@ -128,7 +128,7 @@ for j=1:length(all_bad_indices)
     bad_iElvis(j,:)=ind_iElvis;
     end
 end
-bad_chans=[bad_iElvis(find(bad_iElvis>0)) elec_remove];
+bad_chans=[bad_iElvis(find(bad_iElvis>0)); elec_remove];
 %ignoreChans=[elecNames(bad_chans)];
  
  %% change bad chans to NaN in iEEG FC matrices
@@ -182,6 +182,8 @@ if elec_highlight>0
    elecHighlight=elecNames{elec_highlight};
    elecHighlight=strmatch(elecHighlight,curr_elecNames,'exact');
 end
+x_limit=2; y_limit=.8;
+y_step=.4; x_step=.5;
 
     figure(1)
 h1=scatter(BOLD_scatter,iEEG_scatter,50)
@@ -190,13 +192,18 @@ h1.MarkerEdgeColor=[.2 .2 .2];
 h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
 %h1.MarkerType='o';
 h=lsline; set(h(1),'color',line_color,'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+set(gca,'Fontsize',18,'LineWidth',1,'TickDir','out');
 set(gcf,'color','w');
-title({[elec_title ' FC']; ...
-    ['r = ' num2str(corr_BOLD_vs_iEEG) '; rho = ' num2str(rho_BOLD_vs_iEEG)]},'Fontsize',12);
+%title({[elec_title ' FC']; ...
+%    ['r = ' num2str(corr_BOLD_vs_iEEG) '; rho = ' num2str(rho_BOLD_vs_iEEG)]},'Fontsize',12);
 xlabel('BOLD <0.1 Hz FC');
 ylabel('HFB <0.1 Hz FC');
+xlim([-x_limit x_limit]); ylim([-y_limit y_limit]);
 set(gcf,'PaperPositionMode','auto');
+xticks(-x_limit:x_step:x_limit);
+yticks(-y_limit:y_step:y_limit);
+line([-x_limit x_limit],[0 0],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
+line([0 0],[-y_limit y_limit],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
 hold on;
 h2=scatter(BOLD_scatter(elecHighlight),iEEG_scatter(elecHighlight),100)
 h2.MarkerFaceColor=elecHighlightColor; 

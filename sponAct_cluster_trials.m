@@ -1,10 +1,12 @@
 %% kmeans clustering of trials at target electrode for spontaneous activation events at a seed electrode
-% condition=input('Rest (1) gradCPT (2): ','s');
-% if condition=='1'
-%     condition='Rest'
-% elseif condition=='2'
-%     condition='gradCPT'
-% end
+% must first run detect_spontaneous_events_multirun.m
+
+condition=input('Rest (1) gradCPT (2): ','s');
+if condition=='1'
+    condition='Rest'
+elseif condition=='2'
+    condition='gradCPT'
+end
 
 %% Defaults
 run_kmeans=1; % set to 1 to run kmeans clustering
@@ -14,20 +16,39 @@ distance_metric='correlation'; % distance metric for kmeans cluster (e.g. sqeucl
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
 sub=input('Patient: ','s');
+seed_name=input('Seed electrode name: ','s');
 elec_name=input('Target electrode name: ','s');
 load('cdcol.mat');
 color_options=[cdcol.orange; cdcol.cobaltblue; cdcol.grassgreen; cdcol.russet; cdcol.brown; cdcol.periwinkleblue; cdcol.lightolive; ...
     cdcol.metalicdarkgold; cdcol.purple; cdcol.portraitdarkflesh5; cdcol.lightcadmium; cdcol.darkulamarine; cdcol.pink];
 
-%% Load epoched file
-%cd([globalECoGDir filesep condition filesep sub filesep 'Run' run_num]);
-D=spm_eeg_load;
+%% Loop through runs and create matrix of time series for all trials
+cd([globalECoGDir filesep condition filesep sub]);
+load('runs.txt');
+
+trial_ts=[];
+for i=1:length(runs)
+    curr_run=num2str(runs(i));
+cd([globalECoGDir filesep condition filesep sub filesep 'Run' curr_run]);
+% Load epoched file
+data_file=dir(['e' seed_name '*']);
+data_file=data_file(2,1).name;
+D=spm_eeg_load(data_file);
 elec_num=indchannel(D,elec_name);
 
-%% Extract trials and prepare for kmeans clustering
-trial_ts=[];
-for i=1:size(D,3)
-   trial_ts=[trial_ts; D(elec_num,:,i)];     
+% Extract trials and prepare for kmeans clustering
+trials=[];
+for j=1:size(D,3)
+   trials=[trials; D(elec_num,:,j)];     
+end
+trial_ts=[trial_ts; trials];
+
+% store # trials per run
+run_trials(i)=size(trials,1);
+
+% load spAct event indices (within run) that correspond to mountains (true) or not (false)
+load([seed_name '_true_spAct.mat']);
+load([seed_name '_false_spAct.mat']);
 end
 
 %% clustering based on Louvain algorithm

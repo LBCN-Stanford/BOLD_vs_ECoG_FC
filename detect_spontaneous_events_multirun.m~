@@ -10,7 +10,7 @@ elseif condition=='3'
 end
 %% Defaults
 act_prctile=5; % percentile for activation definition
-cluster_size=50; % minimum number of consecutive samples (i.e., msecs) needed for event definition
+cluster_size=40; % minimum number of consecutive samples (i.e., msecs) needed for event definition
 time_gap=500; % minimum number of msec between consecutive events
 srate=1000; % sampling rate (Hz)
 getECoGSubDir; global globalECoGDir;
@@ -30,7 +30,11 @@ for curr_run=1:length(runs)
     cluster_distances=[]; isolated_cluster_ind=[]; isolated_cluster_onsets=[];
     run_num=runs(curr_run);
 cd([globalECoGDir filesep condition filesep sub filesep 'Run' num2str(run_num)]);
-D=spm_eeg_load;
+load('TTL_onsets.mat');
+iEEG_offset=TTL_onsets(1); % to subtract from PTB time
+data_file=dir(['SHFBbtf*']);
+data_file=data_file(2,1).name;
+D=spm_eeg_load(data_file);
 elec_num=indchannel(D,elec_name);
 elec_ts=D(elec_num,:);
 %% Detect top act_prctile time points
@@ -92,6 +96,19 @@ events_file=['events_' elec_name '.mat'];
 epoch_name=['e' elec_name];
 LBCN_epoch_bc(D,events_file,[],'start',[-1500 1500],0,[],[],epoch_name);
 
+% for gradCPT, determine how many events are after mountains
+if condition=='2'
+    load('CO_onsets_ECoG.mat');
+    CO_onset_times=CO_onsets_ECoG-iEEG_offset;
+    event_times=D.time(isolated_cluster_onsets)-iEEG_offset;
+    event_times=event_times';
+    for i=1:length(event_times)
+       events_vs_CO=event_times(i)-CO_onset_times;
+       events_vs_CO(find
+       find(events_vs_CO
+    end
+end
+
 % plot 10 random example events
 example_events=randsample(isolated_cluster_onsets,10);
 for i=1:length(example_events)
@@ -107,14 +124,5 @@ pause; close;
 end
 
 
-% plot example segment with 2 clusters
-isolated_clusters_secs=isolated_cluster_onsets/1000;
-find(diff(isolated_clusters_secs<4)); % less than 4 seconds between 2 cluster
-figure1=figure('Position', [100, 100, 1024, 500]);
-    plot_start=example_events(2)-1000; % start plot at 10 data points before cluster onset
-    plot_end=example_events(1)+4000;
-    plot(elec_ts(plot_start:plot_end));
-    hold on;
-    plot(act_peaks_to_plot(plot_start:plot_end),'r');
    
 
