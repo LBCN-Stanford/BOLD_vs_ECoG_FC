@@ -26,7 +26,7 @@ color_options=[cdcol.orange; cdcol.cobaltblue; cdcol.grassgreen; cdcol.russet; c
 cd([globalECoGDir filesep condition filesep sub]);
 load('runs.txt');
 
-trial_ts=[];
+trial_ts=[]; all_true={}; all_false={};
 for i=1:length(runs)
     curr_run=num2str(runs(i));
 cd([globalECoGDir filesep condition filesep sub filesep 'Run' curr_run]);
@@ -42,6 +42,7 @@ for j=1:size(D,3)
    trials=[trials; D(elec_num,:,j)];     
 end
 trial_ts=[trial_ts; trials];
+pause;
 
 % store # trials per run
 run_trials(i)=size(trials,1);
@@ -49,6 +50,7 @@ run_trials(i)=size(trials,1);
 % load spAct event indices (within run) that correspond to mountains (true) or not (false)
 load([seed_name '_true_spAct.mat']);
 load([seed_name '_false_spAct.mat']);
+all_true{i}=true_mt_ind; all_false{i}=false_mt_ind;
 end
 
 %% clustering based on Louvain algorithm
@@ -93,6 +95,15 @@ for i=1:max(M)
    nTrials_clusters_louvain(i)=length(find(M==i)); 
 end
  
+%% For gradCPT, compare clusters in terms of alignment with mountain events
+curr_trials=0;
+for i=1:length(runs)
+    run_inds=[curr_trials+1:curr_trials+run_trials(i)];
+    curr_trials=curr_trials+run_trials(i);
+    curr_IDX=IDX(run_inds);
+    curr_true=all_true{i}; curr_false=all_false{i};
+    end
+
   %% plot cluster time courses
   % Louvain
    figure1=figure('Position', [100, 100, 1024, 500]);

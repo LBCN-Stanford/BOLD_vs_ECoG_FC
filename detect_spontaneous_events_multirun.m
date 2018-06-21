@@ -78,10 +78,16 @@ cluster_distances=diff(cluster_onsets_time);
 isolated_cluster_ind=find(cluster_distances>time_gap);
 isolated_cluster_onsets=cluster_onsets_time(isolated_cluster_ind+1);
 
-n_events=length(isolated_cluster_onsets)
+% remove clusters that are <1.5 seconds from run onset
+event_onsets=isolated_cluster_onsets/srate;
+ind_to_delete=find(event_onsets<1.5);
+event_onsets(ind_to_delete)=[];
+isolated_cluster_onsets(ind_to_delete)=[];
+
+n_events=length(event_onsets);
 
 % save onsets to events.mat file for epoching
-event_onsets=isolated_cluster_onsets/srate;
+
 events.categories(1).name=[elec_name ' Activations'];
 events.categories(1).categNum=1;
 events.categories(1).numEvents=length(event_onsets);
