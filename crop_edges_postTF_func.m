@@ -1,4 +1,4 @@
-function crop_edges_postTF(Patient,runname,fname_chop,cropping,both)
+function D=crop_edges_postTF(Patient,runname,fname_chop,cropping,both)
 
 % cropping = number of ms to crop at edges
 % if both = 1, crop from beginning and end

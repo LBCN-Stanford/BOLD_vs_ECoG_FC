@@ -132,13 +132,20 @@ fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
 fname_Gamma=['Gammabtf_aM' fname_spm_pfff];
 
 if Crop_ts=='1'
-crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both);
-crop_edges_postTF_func(Patient,runname,fname_Alpha,cropping,both);
-crop_edges_postTF_func(Patient,runname,fname_Delta,cropping,both);
-crop_edges_postTF_func(Patient,runname,fname_Theta,cropping,both);
-crop_edges_postTF_func(Patient,runname,fname_Beta1,cropping,both);
-crop_edges_postTF_func(Patient,runname,fname_Beta2,cropping,both);
-crop_edges_postTF_func(Patient,runname,fname_Gamma,cropping,both);
+[D]=crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both);
+D.timeOnset=0; D=meeg(D); save(D);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Alpha,cropping,both);
+D.timeOnset=0; D=meeg(D); save(D);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Delta,cropping,both);
+D.timeOnset=0; D=meeg(D); save(D);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Theta,cropping,both);
+D.timeOnset=0; D=meeg(D); save(D);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Beta1,cropping,both);
+D.timeOnset=0; D=meeg(D); save(D);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Beta2,cropping,both);
+D.timeOnset=0; D=meeg(D); save(D);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Gamma,cropping,both);
+D.timeOnset=0; D=meeg(D); save(D);
 end
 
 if Crop_ts=='1'
