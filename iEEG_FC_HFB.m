@@ -40,28 +40,28 @@ cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
 elseif rest=='2'
-    cd([globalECoGDir '/7heaven/' Patient '/Run' runname]);
+    cd([globalECoGDir '/gradCPT/' Patient '/Run' runname]);
 end
 if ~isempty(dir('pHFB*'))
 HFB=spm_eeg_load(['pHFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
-Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
-Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
-Beta2_medium=spm_eeg_load(['bptf_mediumpBeta2' Mfile]);
-Gamma_medium=spm_eeg_load(['bptf_mediumpGamma' Mfile]);
-Theta_medium=spm_eeg_load(['bptf_mediumpTheta' Mfile]);
-Delta_medium=spm_eeg_load(['bptf_mediumpDelta' Mfile]);
+% Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
+% Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
+% Beta2_medium=spm_eeg_load(['bptf_mediumpBeta2' Mfile]);
+% Gamma_medium=spm_eeg_load(['bptf_mediumpGamma' Mfile]);
+% Theta_medium=spm_eeg_load(['bptf_mediumpTheta' Mfile]);
+% Delta_medium=spm_eeg_load(['bptf_mediumpDelta' Mfile]);
 else
 HFB=spm_eeg_load(['HFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
-Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
-Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);    
-Beta2_medium=spm_eeg_load(['bptf_mediumBeta2' Mfile]); 
-Gamma_medium=spm_eeg_load(['bptf_mediumGamma' Mfile]); 
-Theta_medium=spm_eeg_load(['bptf_mediumTheta' Mfile]); 
-Delta_medium=spm_eeg_load(['bptf_mediumDelta' Mfile]); 
+% Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
+% Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);    
+% Beta2_medium=spm_eeg_load(['bptf_mediumBeta2' Mfile]); 
+% Gamma_medium=spm_eeg_load(['bptf_mediumGamma' Mfile]); 
+% Theta_medium=spm_eeg_load(['bptf_mediumTheta' Mfile]); 
+% Delta_medium=spm_eeg_load(['bptf_mediumDelta' Mfile]); 
 end
 
 %% defaults
@@ -104,7 +104,7 @@ cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/Run' runname]);
 elseif rest=='2'
-    cd([globalECoGDir '/7heaven/' Patient '/Run' runname]);
+    cd([globalECoGDir '/gradCPT/' Patient '/Run' runname]);
 end
 
     for i=1:length(chanlabels)
@@ -129,30 +129,30 @@ for HFB_medium_chan=1:size(HFB,1)
     HFB_medium_ts(:,HFB_medium_chan)=HFB_medium(HFB_medium_chan,:)';      
 end
 
-for Alpha_medium_chan=1:size(HFB,1)
-    Alpha_medium_ts(:,Alpha_medium_chan)=Alpha_medium(Alpha_medium_chan,:)';      
-end
-
-for Beta1_medium_chan=1:size(HFB,1)
-    Beta1_medium_ts(:,Beta1_medium_chan)=Beta1_medium(Beta1_medium_chan,:)';      
-end
-
-for Beta2_medium_chan=1:size(HFB,1)
-    Beta2_medium_ts(:,Beta2_medium_chan)=Beta2_medium(Beta2_medium_chan,:)';      
-end
-
-for Gamma_medium_chan=1:size(HFB,1)
-    Gamma_medium_ts(:,Gamma_medium_chan)=Gamma_medium(Gamma_medium_chan,:)';      
-end
-
-for Delta_medium_chan=1:size(HFB,1)
-    Delta_medium_ts(:,Delta_medium_chan)=Delta_medium(Delta_medium_chan,:)';      
-end
-
-for Theta_medium_chan=1:size(HFB,1)
-    Theta_medium_ts(:,Theta_medium_chan)=Theta_medium(Theta_medium_chan,:)';      
-end
-
+% for Alpha_medium_chan=1:size(HFB,1)
+%     Alpha_medium_ts(:,Alpha_medium_chan)=Alpha_medium(Alpha_medium_chan,:)';      
+% end
+% 
+% for Beta1_medium_chan=1:size(HFB,1)
+%     Beta1_medium_ts(:,Beta1_medium_chan)=Beta1_medium(Beta1_medium_chan,:)';      
+% end
+% 
+% for Beta2_medium_chan=1:size(HFB,1)
+%     Beta2_medium_ts(:,Beta2_medium_chan)=Beta2_medium(Beta2_medium_chan,:)';      
+% end
+% 
+% for Gamma_medium_chan=1:size(HFB,1)
+%     Gamma_medium_ts(:,Gamma_medium_chan)=Gamma_medium(Gamma_medium_chan,:)';      
+% end
+% 
+% for Delta_medium_chan=1:size(HFB,1)
+%     Delta_medium_ts(:,Delta_medium_chan)=Delta_medium(Delta_medium_chan,:)';      
+% end
+% 
+% for Theta_medium_chan=1:size(HFB,1)
+%     Theta_medium_ts(:,Theta_medium_chan)=Theta_medium(Theta_medium_chan,:)';      
+% end
+% 
 % for SCP_medium_chan=1:size(HFB,1)
 %     SCP_medium_ts(:,SCP_medium_chan)=SCP(SCP_medium_chan,:)';      
 % end
@@ -162,50 +162,50 @@ end
 %% Transform time series from iEEG to iElvis order
 HFB_iElvis=NaN(size(HFB_ts,1),length(chanlabels));
 HFB_medium_iElvis=NaN(size(HFB_medium_ts,1),length(chanlabels));
-alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
-%SCP_medium_iElvis=NaN(size(SCP_medium_ts,1),length(chanlabels));
+% alpha_medium_iElvis=NaN(size(Alpha_medium_ts,1),length(chanlabels));
+% SCP_medium_iElvis=NaN(size(SCP_medium_ts,1),length(chanlabels));
 HFB_slow_iElvis=NaN(size(HFB_slow_ts,1),length(chanlabels));
-Beta1_medium_iElvis=NaN(size(Beta1_medium_ts,1),length(chanlabels));
-Beta2_medium_iElvis=NaN(size(Beta2_medium_ts,1),length(chanlabels));
-Gamma_medium_iElvis=NaN(size(Gamma_medium_ts,1),length(chanlabels));
-Theta_medium_iElvis=NaN(size(Theta_medium_ts,1),length(chanlabels));
-Delta_medium_iElvis=NaN(size(Delta_medium_ts,1),length(chanlabels));
+% Beta1_medium_iElvis=NaN(size(Beta1_medium_ts,1),length(chanlabels));
+% Beta2_medium_iElvis=NaN(size(Beta2_medium_ts,1),length(chanlabels));
+% Gamma_medium_iElvis=NaN(size(Gamma_medium_ts,1),length(chanlabels));
+% Theta_medium_iElvis=NaN(size(Theta_medium_ts,1),length(chanlabels));
+% Delta_medium_iElvis=NaN(size(Delta_medium_ts,1),length(chanlabels));
 
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
     HFB_iElvis(:,new_ind)=HFB_ts(:,curr_iEEG_chan);
     HFB_medium_iElvis(:,new_ind)=HFB_medium_ts(:,curr_iEEG_chan);
-    alpha_medium_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
-    SCP_medium_iElvis(:,new_ind)=SCP_medium_ts(:,curr_iEEG_chan);
-    HFB_slow_iElvis(:,new_ind)=HFB_slow_ts(:,curr_iEEG_chan);
-    Beta1_medium_iElvis(:,new_ind)=Beta1_medium_ts(:,curr_iEEG_chan);
-    Beta2_medium_iElvis(:,new_ind)=Beta2_medium_ts(:,curr_iEEG_chan);
-    Gamma_medium_iElvis(:,new_ind)=Gamma_medium_ts(:,curr_iEEG_chan);
-    Theta_medium_iElvis(:,new_ind)=Theta_medium_ts(:,curr_iEEG_chan);
-    Delta_medium_iElvis(:,new_ind)=Delta_medium_ts(:,curr_iEEG_chan);
+%     alpha_medium_iElvis(:,new_ind)=Alpha_medium_ts(:,curr_iEEG_chan);
+%     SCP_medium_iElvis(:,new_ind)=SCP_medium_ts(:,curr_iEEG_chan);
+     HFB_slow_iElvis(:,new_ind)=HFB_slow_ts(:,curr_iEEG_chan);
+%     Beta1_medium_iElvis(:,new_ind)=Beta1_medium_ts(:,curr_iEEG_chan);
+%     Beta2_medium_iElvis(:,new_ind)=Beta2_medium_ts(:,curr_iEEG_chan);
+%     Gamma_medium_iElvis(:,new_ind)=Gamma_medium_ts(:,curr_iEEG_chan);
+%     Theta_medium_iElvis(:,new_ind)=Theta_medium_ts(:,curr_iEEG_chan);
+%     Delta_medium_iElvis(:,new_ind)=Delta_medium_ts(:,curr_iEEG_chan);
 end
 
 %% Make FC matrix
 HFB_corr=corrcoef(HFB_iElvis);
 HFB_medium_corr=corrcoef(HFB_medium_iElvis);
-alpha_medium_corr=corrcoef(alpha_medium_iElvis);
-SCP_medium_corr=corrcoef(SCP_medium_iElvis);
+% alpha_medium_corr=corrcoef(alpha_medium_iElvis);
+% SCP_medium_corr=corrcoef(SCP_medium_iElvis);
 HFB_slow_corr=corrcoef(HFB_slow_iElvis);
-Beta1_medium_corr=corrcoef(Beta1_medium_iElvis);
-Beta2_medium_corr=corrcoef(Beta2_medium_iElvis);
-Gamma_medium_corr=corrcoef(Gamma_medium_iElvis);
-Theta_medium_corr=corrcoef(Theta_medium_iElvis);
-Delta_medium_corr=corrcoef(Delta_medium_iElvis);
+% Beta1_medium_corr=corrcoef(Beta1_medium_iElvis);
+% Beta2_medium_corr=corrcoef(Beta2_medium_iElvis);
+% Gamma_medium_corr=corrcoef(Gamma_medium_iElvis);
+% Theta_medium_corr=corrcoef(Theta_medium_iElvis);
+% Delta_medium_corr=corrcoef(Delta_medium_iElvis);
 
 save('HFB_corr','HFB_corr');
 save('HFB_medium_corr','HFB_medium_corr');
-save('alpha_medium_corr','alpha_medium_corr');
-save('Beta1_medium_corr','Beta1_medium_corr');
-save('Beta2_medium_corr','Beta2_medium_corr');
-save('Theta_medium_corr','Theta_medium_corr');
-save('Delta_medium_corr','Delta_medium_corr');
-save('Gamma_medium_corr','Gamma_medium_corr');
-save('SCP_medium_corr','SCP_medium_corr');
+% save('alpha_medium_corr','alpha_medium_corr');
+% save('Beta1_medium_corr','Beta1_medium_corr');
+% save('Beta2_medium_corr','Beta2_medium_corr');
+% save('Theta_medium_corr','Theta_medium_corr');
+% save('Delta_medium_corr','Delta_medium_corr');
+% save('Gamma_medium_corr','Gamma_medium_corr');
+% save('SCP_medium_corr','SCP_medium_corr');
 save('HFB_slow_corr','HFB_slow_corr');
 

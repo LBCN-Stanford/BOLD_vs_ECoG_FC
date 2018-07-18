@@ -3,7 +3,7 @@
 
 Patient=input('Patient: ','s');
 bold_runname=input('BOLD Run (e.g. 2): ','s');
-rest=input('Rest(1) Sleep(0) 7heaven (2)? ','s');
+rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
 plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
 if plot_all=='0'
     elec_number=input('electrode number (iElvis order): ');
@@ -12,9 +12,9 @@ bold_run_num=['run' bold_runname];
 
 %% defaults
 load('cdcol.mat');
-elec_highlight=40; % target electrode to highlight in plot (iElvis number)
+elec_highlight=86; % target electrode to highlight in plot (iElvis number)
 elecHighlightColor=cdcol.russet';
-elec_remove=[85]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
+elec_remove=[41]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
 line_color=cdcol.lightblue;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
@@ -24,7 +24,7 @@ if rest=='1'
 elseif rest=='0'
     Rest='Sleep';
 elseif rest=='2'
-    Rest='7heaven';
+    Rest='gradCPT';
 end
 
 %% Load BOLD data and make correlation matrix (iElvis order)
@@ -52,7 +52,7 @@ cd([globalECoGDir '/Rest/' Patient]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient]);
 elseif rest=='2'
-    cd([globalECoGDir '/7heaven/' Patient]);
+    cd([globalECoGDir '/gradCPT/' Patient]);
 end
 run_list=load('runs.txt');
 

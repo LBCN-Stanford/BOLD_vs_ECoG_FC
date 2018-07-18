@@ -26,6 +26,9 @@ mkdir(['HFB_plots']);
 
 % Load CAR data (no temporal filter)
     filenames=dir('Mfff*');
+        if isempty(filenames)==1
+   filenames=dir('Mpfff*');
+    end
     filename=filenames(2,1).name;
 D_CAR=spm_eeg_load(filename);
 
@@ -48,10 +51,10 @@ for i=1:size(D_CAR,1)
     if ~isempty(find(i==D_HFB.badchannels))
     bad='bad';
     else bad='good';
-        elec_name=D_HFB.chanlabels(i);
-        elec_name=char(elec_name);
     end 
-    
+          elec_name=D_HFB.chanlabels(i);
+        elec_name=char(elec_name);
+        
     FigHandle = figure('Position', [200, 600, 1200, 800]);
    figure(1);
    subplot(2,1,1)
@@ -65,6 +68,7 @@ for i=1:size(D_CAR,1)
    subplot(2,1,2);
    title(['Channel ' elec_name ' HFB (z-scored); max |z|=' num2str(max(abs(HFB_z)))] , 'Fontsize', 12)
    hold on;
+   time_sec=D_HFB.time;
    plot(time_sec,HFB_z);
    xlim([time_sec(1),time_sec(end)])
    ylims=ylim;

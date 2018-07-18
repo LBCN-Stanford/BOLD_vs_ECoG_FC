@@ -61,8 +61,8 @@ elseif rest=='3'
 end
 
 Mfile=dir('btf_aMpfff*');
-SCPfile=dir('SCP_*');
-SCPfile=SCPfile(2,1).name;
+% SCPfile=dir('SCP_*');
+% SCPfile=SCPfile(2,1).name;
 if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
 else
@@ -262,7 +262,7 @@ elseif rest=='3'
     cd([globalECoGDir '/MMR/' Patient '/Run' runname]);
 end
 
-SCP=spm_eeg_load([SCPfile]);
+%SCP=spm_eeg_load([SCPfile]);
 
 if ~isempty(dir('pHFB*'))
 Alpha=spm_eeg_load(['pAlpha' Mfile]);
@@ -296,15 +296,22 @@ Beta2=spm_eeg_load(['Beta2' Mfile]);
 Delta=spm_eeg_load(['Delta' Mfile]);
 Theta=spm_eeg_load(['Theta' Mfile]);
 Gamma=spm_eeg_load(['Gamma' Mfile]);
+HFB_fast=spm_eeg_load(['fastHFB' Mfile]);
 HFB=spm_eeg_load(['HFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumHFB' Mfile]);
-Alpha_medium=spm_eeg_load(['bptf_mediumAlpha' Mfile]);
-Beta1_medium=spm_eeg_load(['bptf_mediumBeta1' Mfile]);    
-Beta2_medium=spm_eeg_load(['bptf_mediumBeta2' Mfile]);
-Delta_medium=spm_eeg_load(['bptf_mediumDelta' Mfile]);
-Theta_medium=spm_eeg_load(['bptf_mediumTheta' Mfile]);
-Gamma_medium=spm_eeg_load(['bptf_mediumGamma' Mfile]);       
+Alpha_medium=spm_eeg_load(['Alpha' Mfile]);
+Beta1_medium=spm_eeg_load(['Beta1' Mfile]);    
+Beta2_medium=spm_eeg_load(['Beta2' Mfile]);
+Delta_medium=spm_eeg_load(['Delta' Mfile]);
+Theta_medium=spm_eeg_load(['Theta' Mfile]);
+Gamma_medium=spm_eeg_load(['Gamma' Mfile]);    
+Alpha_fast=spm_eeg_load(['Alpha' Mfile]);
+Beta1_fast=spm_eeg_load(['Beta1' Mfile]);    
+Beta2_fast=spm_eeg_load(['Beta2' Mfile]);
+Delta_fast=spm_eeg_load(['Delta' Mfile]);
+Theta_fast=spm_eeg_load(['Theta' Mfile]);
+Gamma_fast=spm_eeg_load(['Gamma' Mfile]);     
 end
 
 % Load fMRI electrode time series (ordered according to iElvis)
@@ -487,9 +494,9 @@ for Gamma_fast_chan=1:total_bold;
     Gamma_fast_ts(:,Gamma_fast_chan)=Gamma_fast(Gamma_fast_chan,:)';      
 end
 
-for SCP_medium_chan=1:total_bold;
-    SCP_medium_ts(:,SCP_medium_chan)=SCP(SCP_medium_chan,:)';      
-end
+% for SCP_medium_chan=1:total_bold;
+%     SCP_medium_ts(:,SCP_medium_chan)=SCP(SCP_medium_chan,:)';      
+% end
 
 else
 
@@ -581,9 +588,9 @@ for Gamma_fast_chan=1:size(HFB,1)
     Gamma_fast_ts(:,Gamma_fast_chan)=Gamma_fast(Gamma_fast_chan,:)';      
 end
 
-for SCP_medium_chan=1:size(HFB,1)
-    SCP_medium_ts(:,SCP_medium_chan)=SCP(SCP_medium_chan,:)';      
-end
+% for SCP_medium_chan=1:size(HFB,1)
+%     SCP_medium_ts(:,SCP_medium_chan)=SCP(SCP_medium_chan,:)';      
+% end
 
 end
 
@@ -604,7 +611,7 @@ Beta2_medium_ts=Beta2_medium_ts(Chop:length(Beta2_medium_ts),:);
 Theta_medium_ts=Theta_medium_ts(Chop:length(Theta_medium_ts),:);
 Delta_medium_ts=Delta_medium_ts(Chop:length(Delta_medium_ts),:);
 Gamma_medium_ts=Gamma_medium_ts(Chop:length(Gamma_medium_ts),:);
-SCP_medium_ts=SCP_medium_ts(Chop:length(SCP_medium_ts),:);
+%SCP_medium_ts=SCP_medium_ts(Chop:length(SCP_medium_ts),:);
 HFB_fast_ts=HFB_fast_ts(Chop:length(HFB_fast_ts),:);
 Alpha_fast_ts=Alpha_fast_ts(Chop:length(Alpha_fast_ts),:);
 Beta1_fast_ts=Beta1_fast_ts(Chop:length(Beta1_fast_ts),:);
@@ -687,7 +694,7 @@ for i=1:length(bad_indices)
     Theta_fast_ts(:,bad_indices(i))=NaN;
     Delta_fast_ts(:,bad_indices(i))=NaN;
     Gamma_fast_ts(:,bad_indices(i))=NaN;
-    SCP_medium_ts(:,bad_indices(i))=NaN;
+    %SCP_medium_ts(:,bad_indices(i))=NaN;
     BOLD_ts_iEEG_space(:,bad_indices(i))=NaN;
     if depth==2
     network_iEEG_space(bad_indices(i))=NaN;
@@ -720,7 +727,7 @@ for i=1:length(overlap_elec)
     Theta_fast_ts(:,overlap_elec(i))=NaN;
     Delta_fast_ts(:,overlap_elec(i))=NaN;
     Gamma_fast_ts(:,overlap_elec(i))=NaN;
-    SCP_medium_ts(:,overlap_elec(i))=NaN;
+    %SCP_medium_ts(:,overlap_elec(i))=NaN;
     BOLD_ts_iEEG_space(:,overlap_elec(i))=NaN;
     if depth==2
     network_iEEG_space(overlap_elec(i))=NaN;
@@ -756,7 +763,7 @@ for i=1:length(BOLD_ts_iEEG_space(1,:))
      Theta_fast_ts(:,i)=NaN;
      Delta_fast_ts(:,i)=NaN;
      Gamma_fast_ts(:,i)=NaN;
-     SCP_medium_ts(:,i)=NaN;
+     %SCP_medium_ts(:,i)=NaN;
      if depth==2
      network_iEEG_space(i)=NaN;
      Yeo_network_iEEG_space(i)=NaN;
@@ -902,12 +909,12 @@ for i=1:length(chanlabels);
     Gamma_medium_iElvis(:,new_ind)=Gamma_medium_ts(:,curr_iEEG_chan);
 end
 
-SCP_medium_iElvis=NaN(size(SCP_medium_ts,1),length(chanlabels));
+%SCP_medium_iElvis=NaN(size(SCP_medium_ts,1),length(chanlabels));
 
 for i=1:length(chanlabels);
     curr_iEEG_chan=channumbers_iEEG(i);
     new_ind=iEEG_to_iElvis_chanlabel(i);
-    SCP_medium_iElvis(:,new_ind)=SCP_medium_ts(:,curr_iEEG_chan);
+    %SCP_medium_iElvis(:,new_ind)=SCP_medium_ts(:,curr_iEEG_chan);
 end
 
 HFB_fast_iElvis=NaN(size(HFB_fast_ts,1),length(chanlabels));
@@ -992,7 +999,7 @@ beta2_fast_allcorr=corrcoef(Beta2_fast_iElvis); beta2_fast_column=beta2_fast_all
 Theta_fast_allcorr=corrcoef(Theta_fast_iElvis); Theta_fast_column=Theta_fast_allcorr(:);
 Delta_fast_allcorr=corrcoef(Delta_fast_iElvis); Delta_fast_column=Delta_fast_allcorr(:);
 Gamma_fast_allcorr=corrcoef(Gamma_fast_iElvis); Gamma_fast_column=Gamma_fast_allcorr(:);
-SCP_allcorr=corrcoef(SCP_medium_iElvis); SCP_column=SCP_allcorr(:);
+%SCP_allcorr=corrcoef(SCP_medium_iElvis); SCP_column=SCP_allcorr(:);
 BOLD_allcorr=corrcoef(BOLD_iElvis); BOLD_column=BOLD_allcorr(:);
 
 slow_mat=slow_allcorr; slow_mat(find(slow_mat==1))=NaN; slow_mat(find(BOLD_allcorr>0.999))=NaN;
@@ -1017,7 +1024,7 @@ beta2_medium_mat=beta2_medium_allcorr; beta2_medium_mat(find(beta2_medium_mat==1
 Theta_medium_mat=Theta_medium_allcorr; Theta_medium_mat(find(Theta_medium_mat==1))=NaN; Theta_medium_mat(find(BOLD_allcorr>0.999))=NaN;
 Delta_medium_mat=Delta_medium_allcorr; Delta_medium_mat(find(Delta_medium_mat==1))=NaN; Delta_medium_mat(find(BOLD_allcorr>0.999))=NaN;
 Gamma_medium_mat=Gamma_medium_allcorr; Gamma_medium_mat(find(Gamma_medium_mat==1))=NaN; Gamma_medium_mat(find(BOLD_allcorr>0.999))=NaN;
-SCP_mat=SCP_allcorr; SCP_mat(find(SCP_mat==1))=NaN; SCP_mat(find(BOLD_allcorr>0.999))=NaN;
+%SCP_mat=SCP_allcorr; SCP_mat(find(SCP_mat==1))=NaN; SCP_mat(find(BOLD_allcorr>0.999))=NaN;
 BOLD_mat=BOLD_allcorr; BOLD_mat(find(BOLD_mat>0.999))=NaN;
 
 % remove diagonal and lower triangle
@@ -1046,7 +1053,7 @@ beta2_fast_column(BOLD_column_ones>0.999)=NaN; beta2_fast_column(isnan(beta2_fas
 Theta_fast_column(BOLD_column_ones>0.999)=NaN; Theta_fast_column(isnan(Theta_fast_column))=[];
 Delta_fast_column(BOLD_column_ones>0.999)=NaN; Delta_fast_column(isnan(Delta_fast_column))=[];
 Gamma_fast_column(BOLD_column_ones>0.999)=NaN; Gamma_fast_column(isnan(Gamma_fast_column))=[];
-SCP_column(BOLD_column_ones>0.999)=NaN; SCP_column(isnan(SCP_column))=[];
+%SCP_column(BOLD_column_ones>0.999)=NaN; SCP_column(isnan(SCP_column))=[];
 %BOLD_column(find(BOLD_column==0))=NaN; 
 BOLD_column(find(BOLD_column_ones>0.999))=NaN; BOLD_column(isnan(BOLD_column))=[];
 
@@ -1074,7 +1081,7 @@ Theta_medium_column_longrange=Theta_medium_column; Delta_medium_column_longrange
 HFB_fast_column_longrange=HFB_fast_column;
 alpha_fast_column_longrange=alpha_fast_column; beta1_fast_column_longrange=beta1_fast_column; beta2_fast_column_longrange=beta2_fast_column;
 Theta_fast_column_longrange=Theta_fast_column; Delta_fast_column_longrange=Delta_fast_column; Gamma_fast_column_longrange=Gamma_fast_column;
-SCP_column_longrange=SCP_column;
+%SCP_column_longrange=SCP_column;
 % BOLD_column_longrange(find(distance_column<15))=[];
 % medium_column_longrange(find(distance_column<15))=[];
 % slow_column_longrange(find(distance_column<15))=[];
@@ -1112,7 +1119,7 @@ if depth~=2
    Theta_fast_scatter=Theta_fast_column;
    Delta_fast_scatter=Delta_fast_column;
    Gamma_fast_scatter=Gamma_fast_column;
-   SCP_scatter=SCP_column;
+   %SCP_scatter=SCP_column;
    distance_scatter=distance_column;
 end
 % calculate FC and distance within each network
@@ -1582,7 +1589,7 @@ beta2_fast_scatter(isnan(distance_scatter))=[];
 Theta_fast_scatter(isnan(distance_scatter))=[];
 Delta_fast_scatter(isnan(distance_scatter))=[];
 Gamma_fast_scatter(isnan(distance_scatter))=[];
-SCP_scatter(isnan(SCP_scatter))=[];
+%SCP_scatter(isnan(SCP_scatter))=[];
 BOLD_scatter(isnan(distance_scatter))=[];
 distance_scatter(isnan(distance_scatter))=[];
 end
@@ -1616,7 +1623,7 @@ Theta_fast_long=Theta_fast_scatter(long_dist_ind); Theta_fast_short=Theta_fast_s
 Delta_fast_long=Delta_fast_scatter(long_dist_ind); Delta_fast_short=Delta_fast_scatter(short_dist_ind);
 Gamma_fast_long=Gamma_fast_scatter(long_dist_ind); Gamma_fast_short=Gamma_fast_scatter(short_dist_ind);
 
-SCP_long=SCP_scatter(long_dist_ind); SCP_short=SCP_scatter(short_dist_ind);
+%SCP_long=SCP_scatter(long_dist_ind); SCP_short=SCP_scatter(short_dist_ind);
 
 if depth==2
 [x,y]=find(DMN_BOLD_ordered_corr==1);
@@ -2000,10 +2007,10 @@ Gamma_fast_vs_BOLD_r=num2str(r); Gamma_fast_vs_BOLD_p=num2str(p);
 Gamma_fast_vs_BOLD_Spearman=num2str(r); Gamma_fast_vs_BOLD_Spearman_p=num2str(p);
 
 
-[r p]=corr(fisherz(SCP_scatter),fisherz(BOLD_scatter));
-SCP_vs_BOLD_r=num2str(r); SCP_vs_BOLD_p=num2str(p);
-[r p]=corr(fisherz(SCP_scatter),fisherz(BOLD_scatter),'type','Spearman');
-SCP_vs_BOLD_Spearman=num2str(r); SCP_vs_BOLD_Spearman_p=num2str(p);
+% [r p]=corr(fisherz(SCP_scatter),fisherz(BOLD_scatter));
+% SCP_vs_BOLD_r=num2str(r); SCP_vs_BOLD_p=num2str(p);
+% [r p]=corr(fisherz(SCP_scatter),fisherz(BOLD_scatter),'type','Spearman');
+% SCP_vs_BOLD_Spearman=num2str(r); SCP_vs_BOLD_Spearman_p=num2str(p);
 
 % control for other frequencies
 [r,p]=partialcorr(fisherz(alpha_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
@@ -2034,10 +2041,10 @@ Gamma_HFB_medium_partial=num2str(r);
 HFB_Gamma_medium_partial=num2str(r);
 [r,p]=partialcorr(fisherz(Gamma_medium_scatter),fisherz(BOLD_scatter),medium_scatter);
 Gamma_HFB_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),SCP_scatter);
-HFB_SCP_medium_partial=num2str(r);
-[r,p]=partialcorr(fisherz(SCP_scatter),fisherz(BOLD_scatter),medium_scatter);
-SCP_HFB_medium_partial=num2str(r);
+% [r,p]=partialcorr(fisherz(medium_scatter),fisherz(BOLD_scatter),SCP_scatter);
+% HFB_SCP_medium_partial=num2str(r);
+% [r,p]=partialcorr(fisherz(SCP_scatter),fisherz(BOLD_scatter),medium_scatter);
+% SCP_HFB_medium_partial=num2str(r);
 
 % control for distance
 [r,p]=partialcorr(fisherz(slow_scatter),fisherz(BOLD_scatter),distance_scatter);
@@ -2085,8 +2092,8 @@ Delta_fast_partial=num2str(r);
 [r,p]=partialcorr(fisherz(Gamma_fast_scatter),fisherz(BOLD_scatter),distance_scatter);
 Gamma_fast_partial=num2str(r);
 
-[r,p]=partialcorr(fisherz(SCP_scatter),fisherz(BOLD_scatter),distance_scatter);
-SCP_partial=num2str(r);
+% [r,p]=partialcorr(fisherz(SCP_scatter),fisherz(BOLD_scatter),distance_scatter);
+% SCP_partial=num2str(r);
 
 if depth==2
 [r p]=corr(DMN_medium_scatter,DMN_BOLD_scatter);
@@ -2332,27 +2339,27 @@ elseif BOLD_pipeline==4
 end
 pause; close;
 
-figure(4)
-scatter(fisherz(BOLD_scatter),fisherz(SCP_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
-h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({['Medium (0.1-1 Hz) SCP ECoG vs BOLD (< 1Hz) FC']; ['r = ' SCP_vs_BOLD_r ' p = ' SCP_vs_BOLD_p ]; ...
-    ['Spearman ρ = ' SCP_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' SCP_partial]; ...
-    ['Partial (HFB-corrected) r = ' SCP_HFB_medium_partial]} ,'Fontsize',12);
-xlabel('BOLD pair-wise FC');
-ylabel('Medium SCP pair-wise FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print -depsc2 SCP_vs_BOLD_GSR.eps
-elseif BOLD_pipeline==2
- print -depsc2 SCP_vs_BOLD_AROMA.eps
- elseif BOLD_pipeline==3  
-    print -depsc2 SCP_vs_BOLD_NoGSR.eps
-elseif BOLD_pipeline==4
-    print -depsc2 SCP_vs_BOLD_aCompCor.eps
-end
-pause; close;
+% figure(4)
+% scatter(fisherz(BOLD_scatter),fisherz(SCP_scatter),'MarkerEdgeColor','k','MarkerFaceColor',[0 1 0]); 
+% h=lsline; set(h(1),'color',[0 1 0],'LineWidth',3);
+% set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+% set(gcf,'color','w');
+% title({['Medium (0.1-1 Hz) SCP ECoG vs BOLD (< 1Hz) FC']; ['r = ' SCP_vs_BOLD_r ' p = ' SCP_vs_BOLD_p ]; ...
+%     ['Spearman ρ = ' SCP_vs_BOLD_Spearman]; ['Partial (distance-corrected) r = ' SCP_partial]; ...
+%     ['Partial (HFB-corrected) r = ' SCP_HFB_medium_partial]} ,'Fontsize',12);
+% xlabel('BOLD pair-wise FC');
+% ylabel('Medium SCP pair-wise FC');
+% set(gcf,'PaperPositionMode','auto');
+% if BOLD_pipeline==1
+% print -depsc2 SCP_vs_BOLD_GSR.eps
+% elseif BOLD_pipeline==2
+%  print -depsc2 SCP_vs_BOLD_AROMA.eps
+%  elseif BOLD_pipeline==3  
+%     print -depsc2 SCP_vs_BOLD_NoGSR.eps
+% elseif BOLD_pipeline==4
+%     print -depsc2 SCP_vs_BOLD_aCompCor.eps
+% end
+% pause; close;
 
 figure(1)
 scatter(fisherz(BOLD_long),fisherz(medium_long),'MarkerEdgeColor','k','MarkerFaceColor',[1 0 0]); 
@@ -2494,7 +2501,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Delta=Delta_mat(:,i);
  curr_elec_Gamma=Gamma_mat(:,i);
  
- curr_elec_SCP=SCP_mat(:,i);
+ %curr_elec_SCP=SCP_mat(:,i);
  curr_elec_HFB_slow=slow_mat(:,i);
  curr_elec_distance=distances_nan(:,i);
  curr_elec_BOLD(isnan(curr_elec_BOLD))=[];
@@ -2519,7 +2526,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Theta_fast(isnan(curr_elec_Theta_fast))=[];
  curr_elec_Delta_fast(isnan(curr_elec_Delta_fast))=[];
  curr_elec_Gamma_fast(isnan(curr_elec_Gamma_fast))=[];
- curr_elec_SCP(isnan(curr_elec_SCP))=[];
+ %curr_elec_SCP(isnan(curr_elec_SCP))=[];
  curr_elec_HFB_slow(isnan(curr_elec_HFB_slow))=[];
  curr_elec_distance(isnan(curr_elec_distance))=[];
  
@@ -2545,7 +2552,7 @@ for i=1:length(BOLD_mat);
  curr_elec_Theta_fast=fisherz(curr_elec_Theta_fast);
  curr_elec_Delta_fast=fisherz(curr_elec_Delta_fast);
  curr_elec_Gamma_fast=fisherz(curr_elec_Gamma_fast);
- curr_elec_SCP=fisherz(curr_elec_SCP);
+ %curr_elec_SCP=fisherz(curr_elec_SCP);
  
  curr_elec_HFB_slow=fisherz(curr_elec_HFB_slow);
  elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB);
@@ -2569,7 +2576,7 @@ for i=1:length(BOLD_mat);
  elec_BOLD_Theta_fast_corr=corr(curr_elec_BOLD,curr_elec_Theta_fast);
  elec_BOLD_Delta_fast_corr=corr(curr_elec_BOLD,curr_elec_Delta_fast);
  elec_BOLD_Gamma_fast_corr=corr(curr_elec_BOLD,curr_elec_Gamma_fast);
- elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP);
+ %elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP);
  elec_BOLD_HFB_slow_corr=corr(curr_elec_BOLD,curr_elec_HFB_slow);
  [elec_BOLD_HFB_partialcorr,p_HFB_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance);
  [elec_BOLD_HFB_slow_partialcorr,p_slow_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB_slow,curr_elec_distance);
@@ -2593,7 +2600,7 @@ for i=1:length(BOLD_mat);
  [elec_BOLD_Delta_fast_partialcorr,p_Delta_fast_partial]=partialcorr(curr_elec_BOLD,curr_elec_Delta_fast,curr_elec_distance);
  [elec_BOLD_Gamma_fast_partialcorr,p_Gamma_fast_partial]=partialcorr(curr_elec_BOLD,curr_elec_Gamma_fast,curr_elec_distance);
  [elec_BOLD_HFB_fast_partialcorr,p_HFB_fast_partial]=partialcorr(curr_elec_BOLD,curr_elec_HFB_fast,curr_elec_distance);
- [elec_BOLD_SCP_partialcorr,p_SCP_partial]=partialcorr(curr_elec_BOLD,curr_elec_SCP,curr_elec_distance);
+ %[elec_BOLD_SCP_partialcorr,p_SCP_partial]=partialcorr(curr_elec_BOLD,curr_elec_SCP,curr_elec_distance);
  
  rho_elec_BOLD_HFB_corr=corr(curr_elec_BOLD,curr_elec_HFB,'type','Spearman');
  rho_elec_BOLD_alpha_corr=corr(curr_elec_BOLD,curr_elec_alpha,'type','Spearman');
@@ -2616,7 +2623,7 @@ for i=1:length(BOLD_mat);
  rho_elec_BOLD_Theta_fast_corr=corr(curr_elec_BOLD,curr_elec_Theta_fast,'type','Spearman');
   rho_elec_BOLD_Delta_fast_corr=corr(curr_elec_BOLD,curr_elec_Delta_fast,'type','Spearman');
    rho_elec_BOLD_Gamma_fast_corr=corr(curr_elec_BOLD,curr_elec_Gamma_fast,'type','Spearman');  
-   rho_elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP,'type','Spearman');
+  % rho_elec_BOLD_SCP_corr=corr(curr_elec_BOLD,curr_elec_SCP,'type','Spearman');
  rho_elec_BOLD_HFB_slow_corr=corr(curr_elec_BOLD,curr_elec_HFB_slow,'type','Spearman');
  
  rho_elec_BOLD_HFB_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_HFB,curr_elec_distance,'type','Spearman');
@@ -2643,7 +2650,7 @@ for i=1:length(BOLD_mat);
  rho_elec_BOLD_Theta_fast_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Theta_fast,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Delta_fast_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Delta_fast,curr_elec_distance,'type','Spearman');
  rho_elec_BOLD_Gamma_fast_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_Gamma_fast,curr_elec_distance,'type','Spearman');
- rho_elec_BOLD_SCP_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_SCP,curr_elec_distance,'type','Spearman');
+ %rho_elec_BOLD_SCP_partialcorr=partialcorr(curr_elec_BOLD,curr_elec_SCP,curr_elec_distance,'type','Spearman');
  elec_name=char(parcOut(i,1)); 
  
  if plotting=='1' || plotting=='0'
@@ -2915,36 +2922,36 @@ close;
   end
   
     if plotting=='9' || plotting=='0'
-    figure(3)
-scatter(curr_elec_BOLD,curr_elec_SCP,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
-h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
-set(gcf,'color','w');
-title({[elec_name ': BOLD FC vs SCP (<1Hz) FC']; ...
-    ['r = ' num2str(elec_BOLD_SCP_corr) '; rho = ' num2str(rho_elec_BOLD_SCP_corr)]; ...
-    ['distance-corrected r = ' num2str(elec_BOLD_SCP_partialcorr) '; rho = ' num2str(rho_elec_BOLD_SCP_partialcorr)]},'Fontsize',12);
-xlabel('BOLD FC');
-ylabel('SCP (0.1-1Hz) FC');
-set(gcf,'PaperPositionMode','auto');
-if BOLD_pipeline==1
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_GSR']));
-elseif BOLD_pipeline==2
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_AROMA']));
-elseif BOLD_pipeline==3
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_NoGSR']));
-elseif BOLD_pipeline==4
-    print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_aCompCor']));   
-end
-close;
- if use_elec==1
-     corr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_corr;
- partialcorr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_partialcorr;
- p_BOLD_SCP_allelecs(i,:)=p_SCP_partial;
- else
-       corr_BOLD_SCP_allelecs(i,:)=NaN;
-  partialcorr_BOLD_SCP_allelecs(i,:)=NaN; 
-   p_BOLD_SCP_allelecs(i,:)=NaN;
- end
+%     figure(3)
+% scatter(curr_elec_BOLD,curr_elec_SCP,'MarkerEdgeColor','k','MarkerFaceColor',[0 0 0]); 
+% h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
+% set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+% set(gcf,'color','w');
+% title({[elec_name ': BOLD FC vs SCP (<1Hz) FC']; ...
+%     ['r = ' num2str(elec_BOLD_SCP_corr) '; rho = ' num2str(rho_elec_BOLD_SCP_corr)]; ...
+%     ['distance-corrected r = ' num2str(elec_BOLD_SCP_partialcorr) '; rho = ' num2str(rho_elec_BOLD_SCP_partialcorr)]},'Fontsize',12);
+% xlabel('BOLD FC');
+% ylabel('SCP (0.1-1Hz) FC');
+% set(gcf,'PaperPositionMode','auto');
+% if BOLD_pipeline==1
+% print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_GSR']));
+% elseif BOLD_pipeline==2
+%     print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_AROMA']));
+% elseif BOLD_pipeline==3
+% print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_NoGSR']));
+% elseif BOLD_pipeline==4
+%     print('-opengl','-r300','-dpng',strcat([pwd,filesep,elec_name '_BOLD_SCP_medium_aCompCor']));   
+% end
+% close;
+%  if use_elec==1
+%      corr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_corr;
+%  partialcorr_BOLD_SCP_allelecs(i,:)=elec_BOLD_SCP_partialcorr;
+%  p_BOLD_SCP_allelecs(i,:)=p_SCP_partial;
+%  else
+%        corr_BOLD_SCP_allelecs(i,:)=NaN;
+%   partialcorr_BOLD_SCP_allelecs(i,:)=NaN; 
+%    p_BOLD_SCP_allelecs(i,:)=NaN;
+%  end
     end
   
    if plotting=='a' || plotting=='0'
