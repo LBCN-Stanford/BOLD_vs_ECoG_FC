@@ -1,7 +1,7 @@
 Patient=input('Patient: ','s');
 run_num=input('run (e.g. 1): ','s');
 depth=input('depth (1) or subdural (0) ','s');
-rest=input('Rest(1) or Sleep(0) or 7heaven (2)? ','s');
+rest=input('Rest(1) or Sleep(0) or gradCPT (2)? ','s');
 if depth=='0'
 hemi=input('hemi (R or L): ','s');
 end
@@ -16,7 +16,7 @@ cd([globalECoGDir '/Rest/' Patient '/' runname]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient '/' runname]);
 elseif rest=='2'
-    cd([globalECoGDir '/7heaven/' Patient '/' runname]);
+    cd([globalECoGDir '/gradCPT/' Patient '/' runname]);
 end
 
 mkdir(['HFB_plots']);

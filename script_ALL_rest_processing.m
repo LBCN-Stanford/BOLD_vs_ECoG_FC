@@ -61,7 +61,7 @@ if EDF_convert=='1'
     
     display(['Choose raw EDF-converted .mat data']);
 fname=spm_select;
-if sampling_rate~=1000
+if sampling_rate>1000
 S.D=[fname]; S.method='downsample'; S.fsample_new=1000;
 D=spm_eeg_downsample(S);
 fname_spm=[D.fname];
