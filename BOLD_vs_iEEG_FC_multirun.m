@@ -13,9 +13,9 @@ bold_run_num=['run' bold_runname];
 %% defaults
 load('cdcol.mat');
 elec_highlight=86; % target electrode to highlight in plot (iElvis number)
-elecHighlightColor=cdcol.russet';
+elecHighlightColor=cdcol.lightblue';
 elec_remove=[41]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
-line_color=cdcol.lightblue;
+line_color=cdcol.russet;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
 

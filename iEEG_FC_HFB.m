@@ -7,6 +7,7 @@
 % Needed: manually created channel name-number mapping file (.xls format)
 Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
+chop_sec=input('Seconds to chop from beginning ','s'); chop_sec=str2num(chop_sec);
 hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
 rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
@@ -46,6 +47,8 @@ if ~isempty(dir('pHFB*'))
 HFB=spm_eeg_load(['pHFB' Mfile]);
 HFB_slow=spm_eeg_load(['slowpHFB' Mfile]);
 HFB_medium=spm_eeg_load(['bptf_mediumpHFB' Mfile]);
+
+
 % Alpha_medium=spm_eeg_load(['bptf_mediumpAlpha' Mfile]);
 % Beta1_medium=spm_eeg_load(['bptf_mediumpBeta1' Mfile]);
 % Beta2_medium=spm_eeg_load(['bptf_mediumpBeta2' Mfile]);
@@ -129,6 +132,16 @@ for HFB_medium_chan=1:size(HFB,1)
     HFB_medium_ts(:,HFB_medium_chan)=HFB_medium(HFB_medium_chan,:)';      
 end
 
+%% Chop beginning samples
+iEEG_sampling=HFB_medium.fsample;
+     if chop_sec~=0
+    chop_samples=chop_sec*iEEG_sampling;
+    else
+        chop_samples=1;
+     end
+     HFB_slow_ts=HFB_slow_ts(chop_samples:size(HFB_slow_ts,1),:);
+     HFB_medium_ts=HFB_medium_ts(chop_samples:size(HFB_medium_ts,1),:);
+     HFB_ts=HFB_ts(chop_samples:size(HFB_ts,1),:);
 % for Alpha_medium_chan=1:size(HFB,1)
 %     Alpha_medium_ts(:,Alpha_medium_chan)=Alpha_medium(Alpha_medium_chan,:)';      
 % end
