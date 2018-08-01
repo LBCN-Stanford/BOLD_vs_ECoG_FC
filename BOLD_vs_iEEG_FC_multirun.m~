@@ -3,7 +3,7 @@
 
 Patient=input('Patient: ','s');
 bold_runname=input('BOLD Run (e.g. 2): ','s');
-rest=input('Rest(1) Sleep(0) 7heaven (2)? ','s');
+rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
 plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
 if plot_all=='0'
     elec_number=input('electrode number (iElvis order): ');
@@ -12,8 +12,11 @@ bold_run_num=['run' bold_runname];
 
 %% defaults
 load('cdcol.mat');
-elec_highlight=40; % target electrode to highlight in plot (iElvis number)
-elecHighlightColor=cdcol.russet';
+elec_highlight=86; % target electrode to highlight in plot (iElvis number)
+% for S18_124, LAI7= ; LD LDP7= .
+elecHighlightColor=cdcol.lightblue';
+elec_remove=[41]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
+line_color=cdcol.russet;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
 
@@ -22,7 +25,7 @@ if rest=='1'
 elseif rest=='0'
     Rest='Sleep';
 elseif rest=='2'
-    Rest='7heaven';
+    Rest='gradCPT';
 end
 
 %% Load BOLD data and make correlation matrix (iElvis order)
@@ -50,7 +53,7 @@ cd([globalECoGDir '/Rest/' Patient]);
 elseif rest=='0'
     cd([globalECoGDir '/Sleep/' Patient]);
 elseif rest=='2'
-    cd([globalECoGDir '/7heaven/' Patient]);
+    cd([globalECoGDir '/gradCPT/' Patient]);
 end
 run_list=load('runs.txt');
 
@@ -126,7 +129,7 @@ for j=1:length(all_bad_indices)
     bad_iElvis(j,:)=ind_iElvis;
     end
 end
-bad_chans=bad_iElvis(find(bad_iElvis>0))
+bad_chans=[bad_iElvis(find(bad_iElvis>0)); elec_remove];
 %ignoreChans=[elecNames(bad_chans)];
  
  %% change bad chans to NaN in iEEG FC matrices
@@ -180,23 +183,34 @@ if elec_highlight>0
    elecHighlight=elecNames{elec_highlight};
    elecHighlight=strmatch(elecHighlight,curr_elecNames,'exact');
 end
+x_limit=2; y_limit=.8;
+y_step=.4; x_step=.5;
 
     figure(1)
-h1=scatter(BOLD_scatter,iEEG_scatter)
-h1.MarkerFaceColor=cdcol.;
-h1.MarkerEdgeColor=[0 0 0]; 
-h=lsline; set(h(1),'color',[0 0 0],'LineWidth',3);
-set(gca,'Fontsize',14,'FontWeight','bold','LineWidth',2,'TickDir','out');
+h1=scatter(BOLD_scatter,iEEG_scatter,50)
+h1.MarkerFaceColor=[.2 .2 .2];
+h1.MarkerEdgeColor=[.2 .2 .2];
+h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
+%h1.MarkerType='o';
+h=lsline; set(h(1),'color',line_color,'LineWidth',3);
+set(gca,'Fontsize',18,'LineWidth',1,'TickDir','out');
 set(gcf,'color','w');
-title({[elec_title ' FC']; ...
-    ['r = ' num2str(corr_BOLD_vs_iEEG) '; rho = ' num2str(rho_BOLD_vs_iEEG)]},'Fontsize',12);
+%title({[elec_title ' FC']; ...
+%    ['r = ' num2str(corr_BOLD_vs_iEEG) '; rho = ' num2str(rho_BOLD_vs_iEEG)]},'Fontsize',12);
 xlabel('BOLD <0.1 Hz FC');
 ylabel('HFB <0.1 Hz FC');
+xlim([-x_limit x_limit]); ylim([-y_limit y_limit]);
 set(gcf,'PaperPositionMode','auto');
+xticks(-x_limit:x_step:x_limit);
+yticks(-y_limit:y_step:y_limit);
+line([-x_limit x_limit],[0 0],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
+line([0 0],[-y_limit y_limit],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
 hold on;
 h2=scatter(BOLD_scatter(elecHighlight),iEEG_scatter(elecHighlight),100)
 h2.MarkerFaceColor=elecHighlightColor; 
 h2.MarkerEdgeColor=[0 0 0]; 
+h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
+%h2.MarkerType='o';
 %h2.MarkerEdgeColor=elecHighlightColor;
 
 

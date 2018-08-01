@@ -13,6 +13,7 @@ bold_run_num=['run' bold_runname];
 %% defaults
 load('cdcol.mat');
 elec_highlight=86; % target electrode to highlight in plot (iElvis number)
+% for S18_124, LAI7=40 ; LDP1=86; LDP7=80.
 elecHighlightColor=cdcol.lightblue';
 elec_remove=[41]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
 line_color=cdcol.russet;
