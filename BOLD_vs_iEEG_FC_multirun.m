@@ -11,12 +11,15 @@ end
 bold_run_num=['run' bold_runname];
 
 %% defaults
+globalECoGDir=getECoGSubDir;
 load('cdcol.mat');
-elec_highlight=86; % target electrode to highlight in plot (iElvis number)
+elec_highlight=40; % target electrode to highlight in plot (iElvis number)
+elec_highlight2=86; 
 % for S18_124, LAI7=40 ; LDP1=86; LDP7=80.
-elecHighlightColor=cdcol.lightblue';
-elec_remove=[41]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
-line_color=cdcol.russet;
+elecHighlightColor=cdcol.russet';
+elecHighlightColor2=cdcol.lightblue';
+elec_remove=[77; 78; 79; 81; 82; 83]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
+line_color=cdcol.grassgreen;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
 
@@ -26,6 +29,13 @@ elseif rest=='0'
     Rest='Sleep';
 elseif rest=='2'
     Rest='gradCPT';
+end
+cd([globalECoGDir filesep Rest filesep Patient]);
+
+%% Load WM/out of brain electrode list
+WM_iElvis=dir('WM_iElvis.mat');
+if ~isempty(WM_iElvis)
+    load(WM_iElvis(1,1).name);
 end
 
 %% Load BOLD data and make correlation matrix (iElvis order)
@@ -47,7 +57,6 @@ BOLD_mat=corrcoef(BOLD_ts);
 BOLD_mat=fisherz(BOLD_mat);
 
 %% Load correlation matrix
-globalECoGDir=getECoGSubDir;
 if rest=='1'
 cd([globalECoGDir '/Rest/' Patient]);
 elseif rest=='0'
@@ -183,6 +192,10 @@ if elec_highlight>0
    elecHighlight=elecNames{elec_highlight};
    elecHighlight=strmatch(elecHighlight,curr_elecNames,'exact');
 end
+if elec_highlight2>0
+   elecHighlight2=elecNames{elec_highlight2};
+   elecHighlight2=strmatch(elecHighlight2,curr_elecNames,'exact');
+end
 x_limit=2; y_limit=.8;
 y_step=.4; x_step=.5;
 
@@ -205,11 +218,22 @@ xticks(-x_limit:x_step:x_limit);
 yticks(-y_limit:y_step:y_limit);
 line([-x_limit x_limit],[0 0],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
 line([0 0],[-y_limit y_limit],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
+% show highlighted electrode 1
+if elecHighlight>0
 hold on;
 h2=scatter(BOLD_scatter(elecHighlight),iEEG_scatter(elecHighlight),100)
 h2.MarkerFaceColor=elecHighlightColor; 
 h2.MarkerEdgeColor=[0 0 0]; 
 h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
+end
+% show highlighted electrode 2
+if elecHighlight2>0
+hold on;
+h2=scatter(BOLD_scatter(elecHighlight2),iEEG_scatter(elecHighlight2),100)
+h2.MarkerFaceColor=elecHighlightColor2; 
+h2.MarkerEdgeColor=[0 0 0]; 
+h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
+end
 %h2.MarkerType='o';
 %h2.MarkerEdgeColor=elecHighlightColor;
 
