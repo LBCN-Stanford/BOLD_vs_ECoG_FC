@@ -1,10 +1,12 @@
 % must first run iEEG_FC.m and BOLD_vs_ECoG_FC_corr_iElvis (to get bad
 % chans)
+% to remove WM electrodes, include WM_iElvis.mat list 
 
 Patient=input('Patient: ','s');
 bold_runname=input('BOLD Run (e.g. 2): ','s');
 rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
 plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
+Seed=input('Seed (e.g. daINS) ','s');
 if plot_all=='0'
     elec_number=input('electrode number (iElvis order): ');
 end
@@ -15,13 +17,14 @@ globalECoGDir=getECoGSubDir;
 load('cdcol.mat');
 elec_highlight=40; % target electrode to highlight in plot (iElvis number)
 elec_highlight2=86; 
-% for S18_124, LAI7=40 ; LDP1=86; LDP7=80.
+% for S18_124, LAI7=40 ; LDP1=86; LDP7=80; LDP2=85.
 elecHighlightColor=cdcol.russet';
 elecHighlightColor2=cdcol.lightblue';
-elec_remove=[77; 78; 79; 81; 82; 83]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
+elec_remove=[79; 81]; % vector: exclude this/these electrode(s) from analysis (e.g. neighbours)
 line_color=cdcol.grassgreen;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
+
 
 if rest=='1'
     Rest='Rest';
@@ -36,6 +39,8 @@ cd([globalECoGDir filesep Rest filesep Patient]);
 WM_iElvis=dir('WM_iElvis.mat');
 if ~isempty(WM_iElvis)
     load(WM_iElvis(1,1).name);
+    display('Removing white matter channels from analysis');
+    elec_remove=[elec_remove; WM_iElvis];
 end
 
 %% Load BOLD data and make correlation matrix (iElvis order)
@@ -187,6 +192,9 @@ iEEG_scatter=iEEG_elec_vals(~isnan(iEEG_elec_vals));
 [rho_BOLD_vs_iEEG, p_rho]=corr(BOLD_scatter,iEEG_scatter,'type','Spearman');
 
 %% plot
+cd([globalECoGDir filesep Rest '/' Patient]);
+mkdir('figs'); cd('figs');
+
 elec_title=elecNames{elec};
 if elec_highlight>0
    elecHighlight=elecNames{elec_highlight};
@@ -234,6 +242,7 @@ h2.MarkerFaceColor=elecHighlightColor2;
 h2.MarkerEdgeColor=[0 0 0]; 
 h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
 end
+print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' Rest '_' Seed '.png']); 
 %h2.MarkerType='o';
 %h2.MarkerEdgeColor=elecHighlightColor;
 

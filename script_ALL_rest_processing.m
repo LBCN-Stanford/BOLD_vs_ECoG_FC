@@ -98,7 +98,7 @@ end
 
 %% Plot power spectrum for manual removal of outlier channels
 display(['Run length is ' num2str(run_length) ' mins']);
-LBCN_plot_power_spectrum(fname_spm_pfff);
+LBCN_plot_power_spectrum_gradCPT(fname_spm_pfff);
 
 %% Common average re-referencing
 LBCN_montage(fname_spm_pfff);
