@@ -14,9 +14,9 @@ global globalECoGDir;
 %% Crop data for each freq band
 load([fname_chop]);
 S.D = [fname_chop];
-cropping=(cropping/sampling)*1000; % convert to ms
+cropping=cropping/sampling)*1000; % convert to ms
 if both==1
-last=(D.Nsamples/sampling)*1000-cropping; % convert to ms
+last=(D.Nsamples/sampling)*1000-cropping; % convert to 
 elseif both==0
     last=D.Nsamples;
 end

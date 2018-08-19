@@ -89,8 +89,9 @@ delete([A.fname]); delete([A.fnamedat]); A=[];
 
 %% Chop 2 sec from edges (beginning and end) - to deal with flat line effects
 if Crop_ts=='1'
-cropping=2000; both=1;
-crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both);
+    sampling=D.fsample;
+cropping=2*sampling; both=1;
+crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both,sampling);
 fname_spm_pfff=['pfff' D.fname];
 else
     fname_spm_pfff=['fff' D.fname];
