@@ -137,17 +137,17 @@ if Crop_ts=='1'
     D=spm_eeg_load(fname_HFB);
 [D]=crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
-[D]=crop_edges_postTF_func(Patient,runname,fname_Alpha,cropping,both);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Alpha,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
-[D]=crop_edges_postTF_func(Patient,runname,fname_Delta,cropping,both);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Delta,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
-[D]=crop_edges_postTF_func(Patient,runname,fname_Theta,cropping,both);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Theta,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
-[D]=crop_edges_postTF_func(Patient,runname,fname_Beta1,cropping,both);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Beta1,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
-[D]=crop_edges_postTF_func(Patient,runname,fname_Beta2,cropping,both);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Beta2,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
-[D]=crop_edges_postTF_func(Patient,runname,fname_Gamma,cropping,both);
+[D]=crop_edges_postTF_func(Patient,runname,fname_Gamma,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
 end
 
