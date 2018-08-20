@@ -91,8 +91,9 @@ delete([A.fname]); delete([A.fnamedat]); A=[];
 if Crop_ts=='1'
     sampling=D.fsample;
 cropping=2*sampling; both=1;
-crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both,sampling);
-fname_spm_pfff=['pfff' D.fname];
+[D]=crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both,sampling);
+D.timeOnset=0; D=meeg(D); save(D);
+fname_spm_pfff=[D.fname];
 else
     fname_spm_pfff=['fff' D.fname];
 end
@@ -133,7 +134,8 @@ fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
 fname_Gamma=['Gammabtf_aM' fname_spm_pfff];
 
 if Crop_ts=='1'
-[D]=crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both);
+    D=spm_eeg_load(fname_HFB);
+[D]=crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
 [D]=crop_edges_postTF_func(Patient,runname,fname_Alpha,cropping,both);
 D.timeOnset=0; D=meeg(D); save(D);
@@ -157,14 +159,14 @@ fname_Theta=['pThetabtf_aM' fname_spm_pfff];
 fname_Beta1=['pBeta1btf_aM' fname_spm_pfff];
 fname_Beta2=['pBeta2btf_aM' fname_spm_pfff];
 fname_Gamma=['pGammabtf_aM' fname_spm_pfff];
-else
-  fname_HFB=['HFBbtf_aM' fname_spm_pfff];
-fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
-fname_Delta=['Deltabtf_aM' fname_spm_pfff];
-fname_Theta=['Thetabtf_aM' fname_spm_pfff];
-fname_Beta1=['Beta1btf_aM' fname_spm_pfff];
-fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
-fname_Gamma=['Gammabtf_aM' fname_spm_pfff];  
+% else
+%   fname_HFB=['HFBbtf_aM' fname_spm_pfff];
+% fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
+% fname_Delta=['Deltabtf_aM' fname_spm_pfff];
+% fname_Theta=['Thetabtf_aM' fname_spm_pfff];
+% fname_Beta1=['Beta1btf_aM' fname_spm_pfff];
+% fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
+% fname_Gamma=['Gammabtf_aM' fname_spm_pfff];  
     
 end
 %% Temporal filtering: 0.1-1Hz, <0.1Hz, >1Hz
