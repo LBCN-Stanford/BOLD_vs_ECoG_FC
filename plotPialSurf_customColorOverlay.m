@@ -1,3 +1,4 @@
+
 % plotPialSurf() - Function for plotting Freesurfer surfaces
 %                  with or without colored overlays or electrodes.
 %
@@ -325,7 +326,8 @@
 % Make elecColors and colorbar work for bipolar lines too
 
 function cfgOut=plotPialSurf(fsSub,cfg)
-
+load('cdcol.mat');
+color_plot=cdcol.grassgreen;
 %% Parse parameters
 if ~isfield(cfg, 'elecSize'),       elecSize = 8;          else  elecSize = cfg.elecSize;      end
 if ~isfield(cfg, 'snap2surf'),      snap2surf = 0;         else  snap2surf = cfg.snap2surf;      end
@@ -830,7 +832,8 @@ else
     
     % Make electrodes black if no input given
     if isempty(elecColors)
-        elecColors = zeros(size(RAS_coor));
+        %elecColors = zeros(size(RAS_coor));
+        elecColors=repmat(color_plot,size(RAS_coor,1),1);
     elseif ischar(elecColors) && strcmp(elecColors,'r')
         elecColors = zeros(size(RAS_coor));
         elecColors(:,1) = 1;
