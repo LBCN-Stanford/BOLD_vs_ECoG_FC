@@ -1,6 +1,6 @@
 Patient=input('Patient: ','s');
 runnames=input('Run names (e.g. [1 2 3 4])');
-condition=input('Condition (e.g. gradCPT) ','s')
+condition=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
 hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
 
