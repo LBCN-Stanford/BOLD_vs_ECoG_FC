@@ -5,6 +5,7 @@
 Patient=input('Patient: ','s');
 %bold_runname=input('BOLD Run (e.g. 2): ','s');
 rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
+runnames=input('Run names (e.g. [1 2 3 4])');
 %ecog_runname=input('ECoG Run (e.g. 2): ','s');
 hemi=input('Hemisphere (r or l): ','s');
 iEEG=input('iEEG only (1) or iEEG & BOLD (2) or iEEG & Yeo atlas (3) or iEEG & IndiPar (4): ','s');
@@ -20,30 +21,45 @@ depth=str2num(depth);
 bold_run_num=['run1'];
 
 %% Defaults
-%ecog_run_num=['run' ecog_runname];
-globalECoGDir=getECoGSubDir;
-if rest=='1'
-cd([globalECoGDir '/Rest/' Patient '/Run' ecog_runname]);
-elseif rest=='0'
-    cd([globalECoGDir '/Sleep/' Patient '/Run' ecog_runname]);
-elseif rest=='2'
-    cd([globalECoGDir '/gradCPT/' Patient '/Run' ecog_runname]);
-end
-load('runs.txt');
-
 if rest=='1'
     Rest='Rest';
 elseif rest=='0'
     Rest='Sleep';
 elseif rest=='2'
-    Rest='7heaven';
+    Rest='gradCPT';
 end
-%% Load correlation matrix
-load('HFB_corr.mat');
-load('HFB_medium_corr.mat');
-load('HFB_slow_corr.mat');
+%ecog_run_num=['run' ecog_runname];
+globalECoGDir=getECoGSubDir;
+if rest=='1'
+cd([globalECoGDir '/' Rest '/' Patient]);
+elseif rest=='0'
+    cd([globalECoGDir '/' Rest '/' Patient]);
+elseif rest=='2'
+    cd([globalECoGDir '/' Rest '/' Patient]);
+end
+load('runs.txt');
+
+%% Average correlation matrices across runs 
+for i=1:length(runnames)
+    curr_run=num2str(runnames(i));
+    cd([globalECoGDir '/' Rest '/' Patient filesep 'Run' curr_run]);
+    HFB_corr=load('HFB_corr.mat');
+    HFB_medium_corr=load('HFB_medium_corr.mat');
+    HFB_slow_corr=load('HFB_slow_corr.mat');
+    
+    HFB_mat(:,:,i)=HFB_corr.HFB_corr;
+    HFB_medium_mat(:,:,i)=HFB_medium_corr.HFB_medium_corr;
+    HFB_slow_mat(:,:,i)=HFB_slow_corr.HFB_slow_corr;
+end
+
+%% Mean iEEG FC across runs
+HFB_mat_mean=nanmean(HFB_mat,3);
+HFB_medium_mean=nanmean(HFB_medium_mat,3);
+HFB_slow_mat_mean=nanmean(HFB_slow_mat,3);
+
 if view_bad=='0'
-load('all_bad_indices.mat');
+bad_chans=find(isnan(HFB_medium_mean(1,:))==1)';
+%load('all_bad_indices.mat');
 end
 
 fsDir=getFsurfSubDir();
@@ -108,16 +124,16 @@ iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanl
 
 % convert bad indices to iElvis
 if view_bad=='0'
-for i=1:length(all_bad_indices)
-    ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(i));
-    if isempty(ind_iElvis)~=1
-    bad_iElvis(i,:)=ind_iElvis;
-    end
-end
-bad_chans=bad_iElvis(find(bad_iElvis>0));
+% for i=1:length(all_bad_indices)
+%     ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(i));
+%     if isempty(ind_iElvis)~=1
+%     bad_iElvis(i,:)=ind_iElvis;
+%     end
+% end
+% bad_chans=bad_iElvis(find(bad_iElvis>0));
 ignoreChans=[elecNames(bad_chans)];
 else
-   bad_chans=[]; ignoreChans=[]; 
+    bad_chans=[]; ignoreChans=[]; 
 end
 
 cd electrode_spheres;
@@ -135,29 +151,27 @@ for elec=1:length(coords);
    
    
    if isempty(find(bad_chans==elec))==1 %only plot good chans
-
-       
-           
+                 
 elec_name=char(parcOut(elec,1)); 
-    elecColors_HFB=HFB_corr(:,elec);
+    elecColors_HFB=HFB_mat_mean(:,elec);
     elecColors_HFB(bad_chans)=[];
-   elecColors_HFB_medium=HFB_medium_corr(:,elec);
+   elecColors_HFB_medium=HFB_medium_mean(:,elec);
    elecColors_HFB_medium(bad_chans)=[];  
-   elecColors_alpha_medium=alpha_medium_corr(:,elec);
-   elecColors_alpha_medium(bad_chans)=[];
-   elecColors_Beta1_medium=Beta1_medium_corr(:,elec);
-   elecColors_Beta1_medium(bad_chans)=[];
-   elecColors_Beta2_medium=Beta2_medium_corr(:,elec);
-   elecColors_Beta2_medium(bad_chans)=[];
-   elecColors_Gamma_medium=Gamma_medium_corr(:,elec);
-   elecColors_Gamma_medium(bad_chans)=[];
-   elecColors_Theta_medium=Theta_medium_corr(:,elec);
-   elecColors_Theta_medium(bad_chans)=[];
-   elecColors_Delta_medium=Delta_medium_corr(:,elec);
-   elecColors_Delta_medium(bad_chans)=[];   
-   elecColors_SCP=SCP_medium_corr(:,elec);  
-   elecColors_HFBslow=HFB_slow_corr(:,elec);
-   
+%    elecColors_alpha_medium=alpha_medium_corr(:,elec);
+%    elecColors_alpha_medium(bad_chans)=[];
+%    elecColors_Beta1_medium=Beta1_medium_corr(:,elec);
+%    elecColors_Beta1_medium(bad_chans)=[];
+%    elecColors_Beta2_medium=Beta2_medium_corr(:,elec);
+%    elecColors_Beta2_medium(bad_chans)=[];
+%    elecColors_Gamma_medium=Gamma_medium_corr(:,elec);
+%    elecColors_Gamma_medium(bad_chans)=[];
+%    elecColors_Theta_medium=Theta_medium_corr(:,elec);
+%    elecColors_Theta_medium(bad_chans)=[];
+%    elecColors_Delta_medium=Delta_medium_corr(:,elec);
+%    elecColors_Delta_medium(bad_chans)=[];   
+%    elecColors_SCP=SCP_medium_corr(:,elec);  
+   elecColors_HFBslow=HFB_slow_mat_mean(:,elec);
+    elecColors_HFBslow(bad_chans)=[]; 
    
 curr_elecNames=elecNames;
 curr_elecNames([bad_chans; elec])=[];
@@ -191,7 +205,7 @@ cfg.elecColors(find(cfg.elecColors==1))=[];
 %cfg.elecColorScale=[-0.1 0.4];
 cfg.elecColorScale='minmax';
 cfgOut=plotPialSurf(Patient,cfg);
-print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'HFB_iEEG_FC_',elec_name,'_run' ecog_runname '_' Rest]));
+print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'iEEG',filesep,[rest '_'],'bptf_HFB_iEEG_FC_',elec_name,'_runsMean_' Rest]));
 close;
 end
 if freq=='2' || freq =='8'
