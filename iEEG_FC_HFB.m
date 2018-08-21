@@ -1,16 +1,26 @@
+function iEEG_FC_HFB(Patient,runname,condition,hemi,depth)
+
+% 1. Patient (e.g. 'S17_115')
+% 2. runname (e.g. '1')
+% 3. condition: '0'=Sleep, '1'=Rest, '2'=gradCPT
+% 4. hemi ('rh' or 'lh')
+% 5. depth ('1'=depth, '0'=subdural)
+
 %% iEEG functional connectivity within subject
 
 %==========================================================================
 % Written by Aaron Kucyi, LBCN, Stanford University
 %==========================================================================
 
+rest=condition;
 % Needed: manually created channel name-number mapping file (.xls format)
-Patient=input('Patient name (folder name): ','s');
-runname=input('Run (e.g. 2): ','s');
-chop_sec=input('Seconds to chop from beginning ','s'); chop_sec=str2num(chop_sec);
-hemi=input('hemisphere (lh or rh): ','s');
-depth=input('depth(1) or subdural(0)? ','s');
-rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
+%Patient=input('Patient name (folder name): ','s');
+%runname=input('Run (e.g. 2): ','s');
+chop_sec=21;
+%chop_sec=input('Seconds to chop from beginning ','s'); chop_sec=str2num(chop_sec);
+%hemi=input('hemisphere (lh or rh): ','s');
+%depth=input('depth(1) or subdural(0)? ','s');
+%rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
 depth=str2num(depth);
 % tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 % tdt=str2num(tdt);
@@ -78,6 +88,7 @@ tf_type=1; % 1 = morlet; 2 = hilbert
 PIALVOX=1; % use PIALVOX coordinates
 
 fsDir=getFsurfSubDir();
+
 %Load channel name-number mapping
 cd([fsDir '/' Patient '/elec_recon']);
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
@@ -131,6 +142,12 @@ end
 for HFB_medium_chan=1:size(HFB,1)
     HFB_medium_ts(:,HFB_medium_chan)=HFB_medium(HFB_medium_chan,:)';      
 end
+
+%% Load bad channels (in iEEG order) and change to NaN
+bad_chans=HFB_medium.badchannels;
+HFB_ts(:,bad_chans)=NaN;
+HFB_medium_ts(:,bad_chans)=NaN;
+HFB_slow_ts(:,bad_chans)=NaN;
 
 %% Chop beginning samples
 iEEG_sampling=HFB_medium.fsample;
