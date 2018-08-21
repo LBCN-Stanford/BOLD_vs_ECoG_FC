@@ -100,7 +100,11 @@ end
 
 %% Plot power spectrum for manual removal of outlier channels
 display(['Run length is ' num2str(run_length) ' mins']);
-LBCN_plot_power_spectrum_gradCPT(fname_spm_pfff);
+if sampling_rate==1000
+LBCN_plot_power_spectrum_gradCPT_1000(fname_spm_pfff);
+elseif sampling_rate==500
+    LBCN_plot_power_spectrum_gradCPT(fname_spm_pfff);
+end
 
 %% Common average re-referencing
 LBCN_montage(fname_spm_pfff);
@@ -193,6 +197,8 @@ batch_highpass_fast(fname_Theta);
 batch_highpass_fast(fname_Beta1);
 batch_highpass_fast(fname_Beta2);
 batch_highpass_fast(fname_Gamma);
+
+LBCN_smooth_data(fname_HFB);
 
 %% Label channels with HFB (0.1-1 Hz) spectral bursts as bad
 exclude_spectral_bursts_func(Patient,runname);
