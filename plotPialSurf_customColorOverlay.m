@@ -327,7 +327,7 @@
 
 function cfgOut=plotPialSurf(fsSub,cfg)
 load('cdcol.mat');
-color_plot=cdcol.grassgreen;
+color_plot=cdcol.lightblue;
 %% Parse parameters
 if ~isfield(cfg, 'elecSize'),       elecSize = 8;          else  elecSize = cfg.elecSize;      end
 if ~isfield(cfg, 'snap2surf'),      snap2surf = 0;         else  snap2surf = cfg.snap2surf;      end
@@ -905,7 +905,12 @@ else
            error('cfg.elecNames has multiple entries with the exact same electrode name.');
        end
     end
-    
+                   if universalYes(edgeBlack)
+                            markeredgecolor=[0 0 0];
+                        else
+                            markeredgecolor=elecColors(id,:);
+                   end
+                        
     for j = 1:nRAS
         if ismember(lower(elecNames{j}),lower(onlyShow)),
             if ~isempty(color_elecnames)
@@ -957,7 +962,7 @@ else
                     %shading interp; lighting gouraud; material dull;
                     sph_colors(sph_ct,:)=elecColors(j,:);
                 else
-                    h_elec=plot3(RAS_coor(j,1),RAS_coor(j,2),RAS_coor(j,3),'o','Color',elecColors(j,:),'MarkerFaceColor', elecColors(j,:),'MarkerSize',elecSize);
+                    h_elec=plot3(RAS_coor(j,1),RAS_coor(j,2),RAS_coor(j,3),'o','Color',elecColors(j,:),'MarkerFaceColor', elecColors(j,:),'MarkerSize',elecSize,'MarkerEdgeColor',markeredgecolor,'LineWidth',2);
                     if showLabels,
                         add_name(RAS_coor(j,:),elecNames{j},elecNames,elecSize,elecColors(j,:))
                     end

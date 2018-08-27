@@ -144,7 +144,9 @@ for HFB_medium_chan=1:size(HFB,1)
 end
 
 %% Load bad channels (in iEEG order) and change to NaN
+display(['Run ' runname ' bad channels:']);
 bad_chans=HFB_medium.badchannels;
+HFB_medium.chanlabels(bad_chans)
 HFB_ts(:,bad_chans)=NaN;
 HFB_medium_ts(:,bad_chans)=NaN;
 HFB_slow_ts(:,bad_chans)=NaN;
