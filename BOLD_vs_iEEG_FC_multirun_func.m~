@@ -1,26 +1,31 @@
+function [corr_BOLD_vs_iEEG,cutoff,y_err_neg,y_err_pos]=BOLD_vs_iEEG_FC_multirun_func(Patient,bold_runname,condition,plot_all,Seed,elecs)
+
+%(Patient,elec1,elec2,elec3,neighbour1,neighbour2,chop_sec,signal,elecHighlightColor,elecHighlightColor2,line_color);
 % must first run iEEG_FC.m and BOLD_vs_ECoG_FC_corr_iElvis (to get bad
 % chans)
 % to remove WM electrodes, include WM_iElvis.mat list 
 
-Patient=input('Patient: ','s');
-bold_runname=input('BOLD Run (e.g. 2): ','s');
-rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
-plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
-Seed=input('Seed (e.g. daINS) ','s');
-if plot_all=='0'
-    elec_number=input('electrode number (iElvis order): ');
-end
+%Patient=input('Patient: ','s');
+%bold_runname=input('BOLD Run (e.g. 2): ','s');
+rest=condition;
+%rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
+%plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
+%Seed=input('Seed (e.g. daINS) ','s');
+% if plot_all=='0'
+%     elec_number=input('electrode number (iElvis order): ');
+% end
 bold_run_num=['run' bold_runname];
 
 %% defaults
 globalECoGDir=getECoGSubDir;
 load('cdcol.mat');
-elec_highlight=86; % target electrode to highlight in plot (iElvis number)
-elec_highlight2=80; 
+elec_number=elecs(1);
+elec_highlight=elecs(2); % target electrode to highlight in plot (iElvis number)
+elec_highlight2=elecs(3); 
 % for S18_124, LAI7=40 ; LDP1=86; LDP7=80; LDP2=85.
 elecHighlightColor=cdcol.lightblue';
 elecHighlightColor2=cdcol.grassgreen';
-elec_remove=[39; 41]; % vector: exclude this/these electrode(s) from analysis (e.g. neighbours)
+elec_remove=[elecs(6); elecs(5)]; % vector: exclude this/these electrode(s) from analysis (e.g. neighbours)
 line_color=cdcol.russet;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
@@ -190,6 +195,17 @@ iEEG_scatter=iEEG_elec_vals(~isnan(iEEG_elec_vals));
 
 [corr_BOLD_vs_iEEG, p_BOLD_vs_iEEG]=corr(BOLD_scatter,iEEG_scatter);
 [rho_BOLD_vs_iEEG, p_rho]=corr(BOLD_scatter,iEEG_scatter,'type','Spearman');
+
+% get critical r valuesfor p value of 0.01
+nsamples=10000; % n monte carlo simulations
+alpha=0.01;
+
+BOLD_iEEG=[BOLD_scatter iEEG_scatter];
+for i=1:size(BOLD_iEEG,1)
+    nantest_BOLD_iEEG(i)=sum(isnan(BOLD_iEEG(i,:)));
+end
+n_BOLD_iEEG=length(find(nantest_BOLD_iEEG==0));
+[task_rest_cutoff]=p_from_r(nsamples,n_task_rest,alpha);
 
 %% plot
 cd([globalECoGDir filesep Rest '/' Patient]);
