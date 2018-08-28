@@ -116,7 +116,7 @@ h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
 end
 hold on;
 end
-print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds.png']); 
+print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds'.png']); 
 pause; close;
 
 % x_axis=1:length(conditions);

@@ -1,4 +1,5 @@
-function [corr_BOLD_vs_iEEG,cutoff,y_err_neg,y_err_pos]=BOLD_vs_iEEG_FC_multirun_func(Patient,bold_runname,condition,plot_all,Seed,elecs)
+function [corr_BOLD_vs_iEEG,cutoff,y_err_neg,y_err_pos, ...
+    BOLD_scatter,iEEG_scatter,elecHighlight,elecHighlight2]=BOLD_vs_iEEG_FC_multirun_func(Patient,bold_runname,condition,plot_all,Seed,elecs)
 
 %(Patient,elec1,elec2,elec3,neighbour1,neighbour2,chop_sec,signal,elecHighlightColor,elecHighlightColor2,line_color);
 % must first run iEEG_FC.m and BOLD_vs_ECoG_FC_corr_iElvis (to get bad
@@ -25,7 +26,7 @@ elec_highlight2=elecs(3);
 % for S18_124, LAI7=40 ; LDP1=86; LDP7=80; LDP2=85.
 elecHighlightColor=cdcol.lightblue';
 elecHighlightColor2=cdcol.grassgreen';
-elec_remove=[elecs(4); elecs(5)]; % vector: exclude this/these electrode(s) from analysis (e.g. neighbours)
+elec_remove=[elecs(4:end)]; % vector: exclude this/these electrode(s) from analysis (e.g. neighbours)
 line_color=cdcol.russet;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
@@ -212,7 +213,7 @@ n_BOLD_iEEG=length(find(nantest_BOLD_iEEG==0));
 [r,p,rl_BOLD_iEEG,ru_BOLD_iEEG]=corrcoef(BOLD_scatter,iEEG_scatter);
 rl_BOLD_iEEG=rl_BOLD_iEEG(1,2); ru_BOLD_iEEG=ru_BOLD_iEEG(1,2);
 
-y_axis=[r_BOLD_iEEG];
+y_axis=[corr_BOLD_vs_iEEG];
 ru_all=[ru_BOLD_iEEG];
 rl_all=[rl_BOLD_iEEG];
 y_err_neg=abs(y_axis-rl_all);
@@ -270,6 +271,7 @@ h2.MarkerEdgeColor=[0 0 0];
 h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
 end
 print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' Rest '_' Seed '.png']); 
+close;
 %h2.MarkerType='o';
 %h2.MarkerEdgeColor=elecHighlightColor;
 
