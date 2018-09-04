@@ -50,13 +50,13 @@ if ~isempty(WM_iElvis)
 end
 
 %% Load BOLD data and make correlation matrix (iElvis order)
-%Load channel name-number mapping
+%Load channel name-number mapping (to get # of channels)
 cd([fsDir '/' Patient '/elec_recon']);
-[channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+[channumbers_iEEG1,chanlabels1]=xlsread('channelmap.xls');
 
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
-for i=1:length(chanlabels)
+for i=1:length(chanlabels1)
     elec_num=num2str(i);
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_FSL.txt']);
 end
@@ -78,6 +78,12 @@ BOLD_mat=fisherz(BOLD_mat);
 cd([globalECoGDir filesep rest filesep Patient]);
 run_list=load('runs.txt');
 
+%% loop through runs
+ for i=1:length(run_list)
+          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
+          channumbers_iEEG=[]; chanlabels=[]; iEEG_to_iElvis_chanlabel=[];
+          iElvis_to_iEEG_chanlabel=[];
+         curr_run=num2str(run_list(i));
 %% Load channel name-number mapping (iEEG vs iElvis)
 cd([fsDir '/' Patient '/elec_recon']);
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
@@ -108,17 +114,14 @@ end
 fs_chanlabels=fs_chanlabels(3:end);
 
 % create iEEG to iElvis chanlabel transformation vector
-for i=1:length(chanlabels)
-    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
+for j=1:length(chanlabels)
+    iEEG_to_iElvis_chanlabel(j,:)=strmatch(chanlabels(j),fs_chanlabels(:,1),'exact');    
 end
-    for i=1:length(chanlabels)
-iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
+    for j=1:length(chanlabels)
+iElvis_to_iEEG_chanlabel(j,:)=channumbers_iEEG(strmatch(fs_chanlabels(j,1),chanlabels,'exact'));
     end
     
-%% loop through runs
- for i=1:length(run_list)
-          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
-         curr_run=num2str(run_list(i));
+
 cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
 
 % Load iEEG correlation matrix (in iElvis order)

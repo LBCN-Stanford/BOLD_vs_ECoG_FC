@@ -7,6 +7,7 @@
 % Needed: manually created channel name-number mapping file (.xls format)
 Patient=input('Patient name (folder name): ','s');
 runname=input('Run (e.g. 2): ','s');
+chanmap=input('channelmap.xls (1) or channelmap2.xls (2) ','s');
 %hemi=input('hemisphere (lh or rh): ','s');
 depth=input('depth(1) or subdural(0)? ','s');
 rest=input('Rest(1) Sleep(0) gradCPT (2) MMR (3)? ','s');
@@ -28,7 +29,7 @@ rm_last=1; else rm_last=0; % remove last iEEG chan (e.g. if it is reference)
 end
 
 if depth==0
-PIALVOX=0; % use PIALVOX coordinates
+PIALVOX=1; % use PIALVOX coordinates
 else
     PIALVOX=0;
 end
@@ -95,7 +96,11 @@ fsDir=getFsurfSubDir();
 edge=10;
 %Load channel name-number mapping
 cd([fsDir '/' Patient '/elec_recon']);
+if chanmap=='1'
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+elseif chanmap=='2'
+[channumbers_iEEG,chanlabels]=xlsread('channelmap2.xls');
+end
 
 % Load electrode coordinates
 if Coords==1;

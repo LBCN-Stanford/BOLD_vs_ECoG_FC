@@ -1,24 +1,30 @@
 % must first run iEEG_FC.m and BOLD_vs_ECoG_FC_corr_iElvis (to get bad
 % chans)
+% to remove WM electrodes, include WM_iElvis.mat list 
 
 Patient=input('Patient: ','s');
 bold_runname=input('BOLD Run (e.g. 2): ','s');
 rest=input('Rest(1) Sleep(0) gradCPT (2)? ','s');
 plot_all=input('Plot all electrodes (1) or one seed (0)? ','s');
+Seed=input('Seed (e.g. daINS) ','s');
 if plot_all=='0'
     elec_number=input('electrode number (iElvis order): ');
 end
 bold_run_num=['run' bold_runname];
 
 %% defaults
+globalECoGDir=getECoGSubDir;
 load('cdcol.mat');
 elec_highlight=86; % target electrode to highlight in plot (iElvis number)
-% for S18_124, LAI7= ; LD LDP7= .
+elec_highlight2=80; 
+% for S18_124, LAI7=40 ; LDP1=86; LDP7=80; LDP2=85.
 elecHighlightColor=cdcol.lightblue';
-elec_remove=[41]; % exclude this/these electrode(s) from analysis (e.g. neighbours)
+elecHighlightColor2=cdcol.grassgreen';
+elec_remove=[39; 41]; % vector: exclude this/these electrode(s) from analysis (e.g. neighbours)
 line_color=cdcol.russet;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
+
 
 if rest=='1'
     Rest='Rest';
@@ -27,15 +33,24 @@ elseif rest=='0'
 elseif rest=='2'
     Rest='gradCPT';
 end
+cd([globalECoGDir filesep Rest filesep Patient]);
+
+%% Load WM/out of brain electrode list
+WM_iElvis=dir('WM_iElvis.mat');
+if ~isempty(WM_iElvis)
+    load(WM_iElvis(1,1).name);
+    display('Removing white matter channels from analysis');
+    elec_remove=[elec_remove; WM_iElvis];
+end
 
 %% Load BOLD data and make correlation matrix (iElvis order)
-%Load channel name-number mapping
+%Load channel name-number mapping (to get # of channels)
 cd([fsDir '/' Patient '/elec_recon']);
-[channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+[channumbers_iEEG1,chanlabels1]=xlsread('channelmap.xls');
 
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
-for i=1:length(chanlabels)
+for i=1:length(chanlabels1)
     elec_num=num2str(i);
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_FSL.txt']);
 end
@@ -47,7 +62,6 @@ BOLD_mat=corrcoef(BOLD_ts);
 BOLD_mat=fisherz(BOLD_mat);
 
 %% Load correlation matrix
-globalECoGDir=getECoGSubDir;
 if rest=='1'
 cd([globalECoGDir '/Rest/' Patient]);
 elseif rest=='0'
@@ -55,22 +69,40 @@ elseif rest=='0'
 elseif rest=='2'
     cd([globalECoGDir '/gradCPT/' Patient]);
 end
-run_list=load('runs.txt');
+parcOut=elec2Parc_v2([Patient],'DK',0);
+elecNames = parcOut(:,1);
 
+run_list=load('runs.txt');
+channelmap2_runs=dir('channelmap2*');
+if ~isempty(channelmap2_runs)
+    channelmap2_list=load('channelmap2_runs.txt');
+end
+
+%% loop through runs
+ for i=1:length(run_list)
+          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
+          channumbers_iEEG=[]; chanlabels=[]; iEEG_to_iElvis_chanlabel=[];
+          iElvis_to_iEEG_chanlabel=[];
+         curr_run=num2str(run_list(i));
 %% Load channel name-number mapping (iEEG vs iElvis)
 cd([fsDir '/' Patient '/elec_recon']);
+if isempty(channelmap2_runs)
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+else
+   if ~isempty(find(i==channelmap2_list))
+       [channumbers_iEEG,chanlabels]=xlsread('channelmap2.xls');
+       display
+   else
+       [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+   end
+end
 
 % Load channel names (in freesurfer/elec recon order)
 chan_names=importdata([Patient '.electrodeNames'],' ');
 fs_chanlabels={};
 
-
 cd([fsDir '/' Patient '/elec_recon']);
 coords=dlmread([Patient '.PIALVOX'],' ',2,0);
-
-parcOut=elec2Parc_v2([Patient],'DK',0);
-elecNames = parcOut(:,1);
 
 for chan=3:length(chan_names)
     chan_name=chan_names(chan); chan_name=char(chan_name);
@@ -87,19 +119,14 @@ end
 fs_chanlabels=fs_chanlabels(3:end);
 
 % create iEEG to iElvis chanlabel transformation vector
-for i=1:length(chanlabels)
-    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
+for j=1:length(chanlabels)
+    iEEG_to_iElvis_chanlabel(j,:)=strmatch(chanlabels(j),fs_chanlabels(:,1),'exact');    
 end
-    for i=1:length(chanlabels)
-iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
+    for j=1:length(chanlabels)
+iElvis_to_iEEG_chanlabel(j,:)=channumbers_iEEG(strmatch(fs_chanlabels(j,1),chanlabels,'exact'));
     end
     
-%% loop through runs
- for i=1:length(run_list)
-          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
-         curr_run=num2str(run_list(i));
 cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
-
 % Load iEEG correlation matrix (in iElvis order)
 % load('HFB_corr.mat');
 % load('HFB_medium_corr.mat');
@@ -178,13 +205,20 @@ iEEG_scatter=iEEG_elec_vals(~isnan(iEEG_elec_vals));
 [rho_BOLD_vs_iEEG, p_rho]=corr(BOLD_scatter,iEEG_scatter,'type','Spearman');
 
 %% plot
+cd([globalECoGDir filesep Rest '/' Patient]);
+mkdir('figs'); cd('figs');
+
 elec_title=elecNames{elec};
 if elec_highlight>0
    elecHighlight=elecNames{elec_highlight};
    elecHighlight=strmatch(elecHighlight,curr_elecNames,'exact');
 end
+if elec_highlight2>0
+   elecHighlight2=elecNames{elec_highlight2};
+   elecHighlight2=strmatch(elecHighlight2,curr_elecNames,'exact');
+end
 x_limit=2; y_limit=.8;
-y_step=.4; x_step=.5;
+y_step=.4; x_step=1;
 
     figure(1)
 h1=scatter(BOLD_scatter,iEEG_scatter,50)
@@ -193,7 +227,7 @@ h1.MarkerEdgeColor=[.2 .2 .2];
 h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
 %h1.MarkerType='o';
 h=lsline; set(h(1),'color',line_color,'LineWidth',3);
-set(gca,'Fontsize',18,'LineWidth',1,'TickDir','out');
+set(gca,'Fontsize',22,'LineWidth',1,'TickDir','out');
 set(gcf,'color','w');
 %title({[elec_title ' FC']; ...
 %    ['r = ' num2str(corr_BOLD_vs_iEEG) '; rho = ' num2str(rho_BOLD_vs_iEEG)]},'Fontsize',12);
@@ -205,11 +239,23 @@ xticks(-x_limit:x_step:x_limit);
 yticks(-y_limit:y_step:y_limit);
 line([-x_limit x_limit],[0 0],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
 line([0 0],[-y_limit y_limit],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
+% show highlighted electrode 1
+if elecHighlight>0
 hold on;
 h2=scatter(BOLD_scatter(elecHighlight),iEEG_scatter(elecHighlight),100)
 h2.MarkerFaceColor=elecHighlightColor; 
 h2.MarkerEdgeColor=[0 0 0]; 
 h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
+end
+% show highlighted electrode 2
+if elecHighlight2>0
+hold on;
+h2=scatter(BOLD_scatter(elecHighlight2),iEEG_scatter(elecHighlight2),100)
+h2.MarkerFaceColor=elecHighlightColor2; 
+h2.MarkerEdgeColor=[0 0 0]; 
+h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
+end
+print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' Rest '_' Seed '.png']); 
 %h2.MarkerType='o';
 %h2.MarkerEdgeColor=elecHighlightColor;
 

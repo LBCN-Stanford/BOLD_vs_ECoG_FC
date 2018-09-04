@@ -8,7 +8,8 @@
 Patient=input('Patient: ','s');
 
 depth=input('depth (1) or grid (0)? ','s');
-;% 1 for depth, 0 for surface (use .PIAL coords)
+overlap=input('Remove overlap between ROIs (1) or not (0)? ','s');
+% 1 for depth, 0 for surface (use .PIAL coords)
 % runs=['run1'; 'run2'; 'run3'];
 % [total_runs y]=size(runs);
 % Runs=cellstr(runs);
@@ -82,6 +83,7 @@ end
 
  %% Remove voxels within ROIs that overlap with other ROIs
 cd electrode_spheres;
+if overlap=='1'
 for i=1:length(coords)
      for j=1:length(coords)
         
@@ -101,6 +103,7 @@ for i=1:length(coords)
         display(['Done removing overlap between for electrode ' elec1  ' and ' elec2]);
     end
     end   
+end
 end
 
 %% Add all ROIs into single .nii file

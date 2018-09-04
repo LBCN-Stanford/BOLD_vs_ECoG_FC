@@ -44,13 +44,13 @@ if ~isempty(WM_iElvis)
 end
 
 %% Load BOLD data and make correlation matrix (iElvis order)
-%Load channel name-number mapping
+%Load channel name-number mapping (to get # of channels)
 cd([fsDir '/' Patient '/elec_recon']);
-[channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+[channumbers_iEEG1,chanlabels1]=xlsread('channelmap.xls');
 
 cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
-for i=1:length(chanlabels)
+for i=1:length(chanlabels1)
     elec_num=num2str(i);
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_FSL.txt']);
 end
@@ -69,22 +69,42 @@ elseif rest=='0'
 elseif rest=='2'
     cd([globalECoGDir '/gradCPT/' Patient]);
 end
-run_list=load('runs.txt');
+parcOut=elec2Parc_v2([Patient],'DK',0);
+elecNames = parcOut(:,1);
 
+run_list=load('runs.txt');
+channelmap2_runs=dir('channelmap2*');
+if ~isempty(channelmap2_runs)
+    channelmap2_list=load('channelmap2_runs.txt');
+end
+
+%% loop through runs
+ for i=1:length(run_list)
+          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
+          channumbers_iEEG=[]; chanlabels=[]; iEEG_to_iElvis_chanlabel=[];
+          iElvis_to_iEEG_chanlabel=[];
+         curr_run=num2str(run_list(i));
 %% Load channel name-number mapping (iEEG vs iElvis)
 cd([fsDir '/' Patient '/elec_recon']);
+if isempty(channelmap2_runs)
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+display(['Using channelmap.xls for ' curr_run]);
+else
+   if ~isempty(find(i==channelmap2_list))
+       [channumbers_iEEG,chanlabels]=xlsread('channelmap2.xls');
+       display(['Using channelmap2.xls for ' curr_run]);
+   else
+       [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+       display(['Using channelmap.xls for ' curr_run]);
+   end
+end
 
 % Load channel names (in freesurfer/elec recon order)
 chan_names=importdata([Patient '.electrodeNames'],' ');
 fs_chanlabels={};
 
-
 cd([fsDir '/' Patient '/elec_recon']);
 coords=dlmread([Patient '.PIALVOX'],' ',2,0);
-
-parcOut=elec2Parc_v2([Patient],'DK',0);
-elecNames = parcOut(:,1);
 
 for chan=3:length(chan_names)
     chan_name=chan_names(chan); chan_name=char(chan_name);
@@ -101,19 +121,14 @@ end
 fs_chanlabels=fs_chanlabels(3:end);
 
 % create iEEG to iElvis chanlabel transformation vector
-for i=1:length(chanlabels)
-    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
+for j=1:length(chanlabels)
+    iEEG_to_iElvis_chanlabel(j,:)=strmatch(chanlabels(j),fs_chanlabels(:,1),'exact');    
 end
-    for i=1:length(chanlabels)
-iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
+    for j=1:length(chanlabels)
+iElvis_to_iEEG_chanlabel(j,:)=channumbers_iEEG(strmatch(fs_chanlabels(j,1),chanlabels,'exact'));
     end
     
-%% loop through runs
- for i=1:length(run_list)
-          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
-         curr_run=num2str(run_list(i));
 cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
-
 % Load iEEG correlation matrix (in iElvis order)
 % load('HFB_corr.mat');
 % load('HFB_medium_corr.mat');
