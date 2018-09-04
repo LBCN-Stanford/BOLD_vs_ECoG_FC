@@ -1,5 +1,5 @@
 
-Conditions={'Rest'};
+Conditions={'gradCPT'};
 %Conditions={'gradCPT'; 'Rest'; 'Sleep';};
 Seeds={'SPL'; 'PMC'};
 %% Inputs
