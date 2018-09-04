@@ -69,9 +69,26 @@ for run=1:total_runs;
 for elec=1:length(coords);
     elec_num=num2str(elec);
 
-cmd=['fslmeants -i GSR_' run_num '_FSL -m electrode_spheres/elec' ...
-    elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_FSL.txt'];
+    cmd=['fslmeants -i GSR_' run_num '_FSL -m electrode_spheres/elec' ...
+    elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_GSR.txt'];
 [b,c]=system(cmd);
+
+cmd=['fslmeants -i NoGSR_' run_num '_FSL -m electrode_spheres/elec' ...
+    elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_NoGSR.txt'];
+[b,c]=system(cmd);
+
+cmd=['fslmeants -i AROMA_' run_num '_FSL -m electrode_spheres/elec' ...
+    elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_AROMA.txt'];
+[b,c]=system(cmd);
+
+cmd=['fslmeants -i aCompCor_' run_num '_FSL -m electrode_spheres/elec' ...
+    elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_aCompCor.txt'];
+[b,c]=system(cmd);
+    
+    
+% cmd=['fslmeants -i GSR_' run_num '_FSL -m electrode_spheres/elec' ...
+%     elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_FSL.txt'];
+% [b,c]=system(cmd);
 
 cmd=['fslmeants -i GSR_' run_num '_nosmooth -m electrode_spheres/elec' ...
     elec_num 'FSL_sphere -o electrode_spheres/elec' elec_num run_num '_ts_nosmooth.txt'];

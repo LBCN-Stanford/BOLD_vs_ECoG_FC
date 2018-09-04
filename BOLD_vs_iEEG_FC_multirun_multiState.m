@@ -1,6 +1,6 @@
 
-
-Conditions={'gradCPT'; 'Rest'; 'Sleep';};
+Conditions={'Rest'};
+%Conditions={'gradCPT'; 'Rest'; 'Sleep';};
 Seeds={'SPL'; 'PMC'};
 %% Inputs
 Patient=input('Patient: ','s');
