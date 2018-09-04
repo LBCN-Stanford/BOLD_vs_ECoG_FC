@@ -25,8 +25,23 @@ depth=str2num(depth);
 % tdt=input('TDT data? (1=TDT,0=EDF): ','s');
 % tdt=str2num(tdt);
 
-%% Get file base name
+
 getECoGSubDir; global globalECoGDir;
+if rest=='1'
+cd([globalECoGDir '/Rest/' Patient]);
+elseif rest=='0'
+    cd([globalECoGDir '/Sleep/' Patient]);
+elseif rest=='2'
+    cd([globalECoGDir '/gradCPT/' Patient]);
+end
+
+%% determine channelmap file
+channelmap2_runs=dir('channelmap2*');
+if ~isempty(channelmap2_runs)
+    channelmap2_list=load('channelmap2_runs.txt');
+end
+
+%% Get file base name
 if rest=='1'
 cd([globalECoGDir '/Rest/' Patient '/Run' runname]);
 elseif rest=='0'
@@ -34,6 +49,7 @@ elseif rest=='0'
 elseif rest=='2'
     cd([globalECoGDir '/gradCPT/' Patient '/Run' runname]);
 end
+
 Mfile=dir('btf_aMpfff*');
 if ~isempty(Mfile)
 Mfile=Mfile(2,1).name;
@@ -91,7 +107,22 @@ fsDir=getFsurfSubDir();
 
 %Load channel name-number mapping
 cd([fsDir '/' Patient '/elec_recon']);
+%[channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+runnum=str2num(runname);
+
+if isempty(channelmap2_runs)
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+display(['Using channelmap.xls for run ' runname]);
+else
+   if ~isempty(find(runnum==channelmap2_list))
+       [channumbers_iEEG,chanlabels]=xlsread('channelmap2.xls');
+       display(['Using channelmap2.xls for run ' runname]);
+   else
+       [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+       display(['Using channelmap.xls for run ' runname]);
+   end
+end
+
 
 % Load channel names (in freesurfer/elec recon order)
 chan_names=importdata([Patient '.electrodeNames'],' ');
@@ -121,14 +152,28 @@ elseif rest=='2'
     cd([globalECoGDir '/gradCPT/' Patient '/Run' runname]);
 end
 
-    for i=1:length(chanlabels)
-iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
+iEEG_to_iElvis_chanlabel=[]; iElvis_to_iEEG_chanlabel=[];
+for j=1:length(chanlabels)
+    curr_ind=strmatch(chanlabels(j),fs_chanlabels(:,1),'exact');
+     if ~isempty(curr_ind)
+    iEEG_to_iElvis_chanlabel=[iEEG_to_iElvis_chanlabel; curr_ind]; 
+     end
 end
 
+    for j=1:length(chanlabels)
+        curr_ind=channumbers_iEEG(strmatch(fs_chanlabels(j,1),chanlabels,'exact'));
+        if ~isempty(curr_ind)
+iElvis_to_iEEG_chanlabel=[iElvis_to_iEEG_chanlabel; curr_ind];
+        end
+    end
+%     for i=1:length(chanlabels)
+% iElvis_to_iEEG_chanlabel(i,:)=channumbers_iEEG(strmatch(fs_chanlabels(i,1),chanlabels,'exact'));
+% end
+
 % create iEEG to iElvis chanlabel transformation vector
-for i=1:length(chanlabels)
-    iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
-end
+% for i=1:length(chanlabels)
+%     iEEG_to_iElvis_chanlabel(i,:)=strmatch(chanlabels(i),fs_chanlabels(:,1),'exact');    
+% end
 
 %% Load time series of all channels (in iEEG order) 
 for HFB_chan=1:size(HFB,1)

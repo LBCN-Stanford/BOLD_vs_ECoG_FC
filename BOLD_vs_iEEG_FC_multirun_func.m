@@ -58,7 +58,12 @@ cd([fsDir '/' Patient '/elec_recon/electrode_spheres']);
 
 for i=1:length(chanlabels1)
     elec_num=num2str(i);
+    check_ts=dir(['elec' elec_num BOLD_run '_ts_FSL.txt']);
+    if ~isempty(check_ts)
     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_FSL.txt']);
+    else
+     BOLD_ts(:,i)=load(['elec' elec_num BOLD_run '_ts_GSR.txt']);   
+    end
 end
 
 %% Make BOLD correlation matrix
@@ -180,6 +185,7 @@ for j=1:length(all_bad_indices)
 end
 bad_chans=[bad_iElvis(find(bad_iElvis>0)); elec_remove];
 %ignoreChans=[elecNames(bad_chans)];
+ bad_chans(find(bad_chans==0))=[];
  
  %% change bad chans to NaN in iEEG FC matrices
 HFB_slow_mat(bad_chans,:,i)=NaN; HFB_slow_mat(:,bad_chans,i)=NaN;
@@ -259,6 +265,7 @@ end
 if elec_highlight2>0
    elecHighlight2=elecNames{elec_highlight2};
    elecHighlight2=strmatch(elecHighlight2,curr_elecNames,'exact');
+else elecHighlight2=0;
 end
 x_limit=2; y_limit=.8;
 y_step=.4; x_step=1;
@@ -291,7 +298,7 @@ h2.MarkerEdgeColor=[0 0 0];
 h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
 end
 % show highlighted electrode 2
-if elecHighlight2>0
+if elec_highlight2>0
 hold on;
 h2=scatter(BOLD_scatter(elecHighlight2),iEEG_scatter(elecHighlight2),100)
 h2.MarkerFaceColor=elecHighlightColor2; 

@@ -1,7 +1,7 @@
 
 
-Conditions={'gradCPT'};
-Seeds={'SPL'; 'PMC'; 'daINS'};
+Conditions={'gradCPT'; 'Rest'; 'Sleep';};
+Seeds={'SPL'; 'PMC'};
 %% Inputs
 Patient=input('Patient: ','s');
 
@@ -16,13 +16,15 @@ getECoGSubDir; global globalECoGDir;
 
 
 %% Loop through conditions and seed regions
+ corr_BOLD_vs_iEEG_all={}; 
+ cutoff_all={}; y_err_neg_all={}; y_err_pos_all={};
 for i=1:length(Conditions)
    condition=Conditions{i};
     cd([globalECoGDir filesep  Conditions{i} filesep Patient]); 
     
     BOLD_scatter_all={}; iEEG_scatter_all={};
     elecHighlight_all=[]; elecHighlight2_all=[];
-    corr_BOLD_vs_iEEG_all=[]; cutoff_all=[]; y_err_neg_all=[]; y_err_pos_all=[];
+ 
 for j=1:length(Seeds)
 %% Load seed, target, and neighbour electrode names
 % elec1=seed, elec2=target 1 (to highlight), elec3=target 2,
@@ -59,11 +61,12 @@ BOLD_scatter_all{j}=BOLD_scatter;
 iEEG_scatter_all{j}=iEEG_scatter;
 elecHighlight_all=[elecHighlight_all; elecHighlight];
 elecHighlight2_all=[elecHighlight2_all; elecHighlight2];
+corr_BOLD_vs_iEEG_all{i,j}=corr_BOLD_vs_iEEG;
+cutoff_all{i,j}=cutoff; 
+y_err_neg_all{i,j}=y_err_neg; 
+y_err_pos_all{i,j}=y_err_pos;
 end
-end
-
-
-%% plot
+%% plot all seeds in condition
 cd([globalECoGDir filesep  Conditions{i} filesep Patient]);
 mkdir('figs'); cd('figs');
 x_limit=2; y_limit=.8;
@@ -77,7 +80,7 @@ h1.MarkerFaceColor=[.2 .2 .2];
 h1.MarkerEdgeColor=[.2 .2 .2];
 h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
 %h1.MarkerType='o';
-h=lsline; set(h(1),'color',line_color(:,i),'LineWidth',3);
+h=lsline; set(h(1),'color',line_color(i,:),'LineWidth',3);
 set(gca,'Fontsize',22,'LineWidth',1,'TickDir','out');
 set(gcf,'color','w');
 %title({[elec_title ' FC']; ...
@@ -116,34 +119,65 @@ h1.MarkerFaceAlpha=.5; h1.MarkerEdgeAlpha=.5;
 end
 hold on;
 end
-print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds'.png']); 
+print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds.png']); 
+pause; close;
+end
+
+
+%% plot
+cd([globalECoGDir filesep  'gradCPT' filesep Patient]);
+mkdir('figs'); cd('figs');
+
+corr_BOLD_vs_iEEG_all=cell2mat(corr_BOLD_vs_iEEG_all);
+cutoff_all=cell2mat(cutoff_all);
+y_err_neg_all=cell2mat(y_err_neg_all);
+y_err_pos_all=cell2mat(y_err_pos_all);
+x_axis=1:length(Conditions);
+
+FigHandle = figure('Position', [500, 600, 700, 550]);
+
+for i=1:length(Seeds)
+    y_axis=[corr_BOLD_vs_iEEG_all(:,i)];
+ plot(x_axis,y_axis,'o-', 'LineWidth',1,'Color',line_color(i,:), 'MarkerSize',10, ...
+     'MarkerEdgeColor',line_color(i,:),'MarkerFaceColor',line_color(i,:))
+ legendInfo{i}=[Seeds{i} ' seed'];
+hold on;
+end
+legend(legendInfo)
+
+for i=1:length(Seeds)
+y_axis=[corr_BOLD_vs_iEEG_all(:,i)];
+ plot(x_axis,y_axis,'o-', 'LineWidth',1,'Color',line_color(i,:), 'MarkerSize',10, ...
+     'MarkerEdgeColor',line_color(i,:),'MarkerFaceColor',line_color(i,:))
+errorbar(x_axis,y_axis,y_err_neg_all(:,i),y_err_pos_all(:,i)','Color',line_color(i,:), ...
+    'MarkerSize',10,'MarkerEdgeColor',line_color(i,:),'MarkerFaceColor',line_color(i,:));
+
+    ylim([-.2 .9]);
+    xlim([0.5 3.5]);
+    xticks([1 2 3])
+       set(gca,'XTickLabel',{'Task','Rest','Sleep'})
+       %xtickangle(45)
+       ylabel('Spatial Correlation (r)');
+ set(gca,'Fontsize',21,'LineWidth',1,'TickDir','out');
+    set(gca,'box','off'); 
+set(gcf,'color','w');
+legendInfo{i}=[Seeds{i} ' seed'];
+hold on;
+%errorbar(x_axis,y_axis,y_err_neg_all(i,:)',y_err_pos_all(i,:)','Color',line_color(i,:));
+hold on;
+end
+%legend(legendInfo,'Location','southwest')
+
+plot(x_axis,mean(cutoff_all,2)','s','Color',[.6 .6 .6], 'MarkerSize',8, ...
+    'MarkerEdgeColor',[.6 .6 .6],'MarkerFaceColor',[.6 .6 .6])
+print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds_CIs.png']); 
 pause; close;
 
-% x_axis=1:length(conditions);
-% cutoff_TaskRest=mean(p_TaskRest_all);
-% cutoff_TaskSleep=mean(p_TaskSleep_all);
-% cutoff_RestSleep=mean(p_RestSleep_all);
-% cutoffs=[cutoff_TaskRest cutoff_TaskSleep cutoff_RestSleep];
-% 
-% FigHandle = figure('Position', [500, 600, 500, 600]);
-% for i=1:length(Seeds)
-% y_axis=[r_TaskRest_all(i); r_TaskSleep_all(i); r_RestSleep_all(i)];
-% plot(x_axis,y_axis,'o-', 'LineWidth',1,'Color',line_colors(i,:), 'MarkerSize',10, ...
-%     'MarkerEdgeColor',line_colors(i,:),'MarkerFaceColor',line_colors(i,:))
-%     ylim([0 1]);
-%     xlim([0.5 3.5]);
-%     xticks([1 2 3])
-%        set(gca,'XTickLabel',{'Task-Rest','Task-Sleep','Rest-Sleep'})
-%        %xtickangle(45)
-%        ylabel('Spatial Correlation (r)');
-%  set(gca,'Fontsize',16,'LineWidth',1,'TickDir','out');
-%     set(gca,'box','off'); 
-% set(gcf,'color','w');
-% hold on;
-% errorbar(x_axis,y_axis,y_err_neg_all(:,i),y_err_pos_all(:,i),'Color',line_colors(i,:));
-% hold on;
-% end
-% plot(x_axis,cutoffs,'o-', 'LineWidth',1,'LineStyle','--','Color',[.6 .6 .6], 'MarkerSize',6, ...
-%     'MarkerEdgeColor',[.6 .6 .6],'MarkerFaceColor',[.6 .6 .6])
-% 
+
+%plot(x_axis,mean(cutoff_all)','s','Color',[.6 .6 .6], 'MarkerSize',8, ...
+ %   'MarkerEdgeColor',[.6 .6 .6],'MarkerFaceColor',[.6 .6 .6])
+%legend({'p<0.01'})
+%plot(x_axis,mean(cutoff_all)','s-', 'LineWidth',2,'LineStyle','-','Color',[.6 .6 .6], 'MarkerSize',6, ...
+%    'MarkerEdgeColor',[.6 .6 .6],'MarkerFaceColor',[.6 .6 .6])
+
 % print('-opengl','-r300','-dpng',[Patient '_TaskRestSleep_FC_spatialCorr_' filtering 'allSeeds.png']); 

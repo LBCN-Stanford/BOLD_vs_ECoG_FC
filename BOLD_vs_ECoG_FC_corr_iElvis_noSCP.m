@@ -29,7 +29,7 @@ rm_last=1; else rm_last=0; % remove last iEEG chan (e.g. if it is reference)
 end
 
 if depth==0
-PIALVOX=0; % use PIALVOX coordinates
+PIALVOX=1; % use PIALVOX coordinates
 else
     PIALVOX=0;
 end

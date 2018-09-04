@@ -1,7 +1,7 @@
 
 
 Conditions={'gradCPT'; 'Rest'; 'Sleep';};
-Seeds={'SPL'; 'PMC'; 'daINS'};
+Seeds={'SPL'; 'PMC'};
 %% Inputs
 Patient=input('Patient: ','s');
 
@@ -147,10 +147,11 @@ legend(legendInfo)
 
 for i=1:length(Seeds)
 y_axis=[corr_BOLD_vs_iEEG_all(:,i)];
-errorbar(x_axis,y_axis,y_err_neg_all(i,:)',y_err_pos_all(i,:)','Color',line_color(i,:), ...
-    'MarkerSize',10,'MarkerEdgeColor',line_color(i,:),'MarkerFaceColor',line_color(i,:));
 % plot(x_axis,y_axis,'o-', 'LineWidth',1,'Color',line_color(i,:), 'MarkerSize',10, ...
-%     'MarkerEdgeColor',line_color(i,:),'MarkerFaceColor',line_color(i,:))
+ %    'MarkerEdgeColor',line_color(i,:),'MarkerFaceColor',line_color(i,:))
+errorbar(x_axis,y_axis,y_err_neg_all(:,i),y_err_pos_all(:,i)','Color',line_color(i,:), ...
+    'MarkerSize',10,'MarkerEdgeColor',line_color(i,:),'MarkerFaceColor',line_color(i,:));
+
     ylim([-.2 .9]);
     xlim([0.5 3.5]);
     xticks([1 2 3])
@@ -167,7 +168,7 @@ hold on;
 end
 %legend(legendInfo,'Location','southwest')
 
-plot(x_axis,mean(cutoff_all)','s','Color',[.6 .6 .6], 'MarkerSize',8, ...
+plot(x_axis,mean(cutoff_all,2)','s','Color',[.6 .6 .6], 'MarkerSize',8, ...
     'MarkerEdgeColor',[.6 .6 .6],'MarkerFaceColor',[.6 .6 .6])
 print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds_CIs.png']); 
 pause; close;
