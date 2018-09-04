@@ -130,12 +130,20 @@ for chan=3:length(chan_names)
 end
 fs_chanlabels=fs_chanlabels(3:end);
 
+iElvis_to_iEEG_chanlabel=[]; iEEG_to_iElvis_chanlabel=[];
 % create iEEG to iElvis chanlabel transformation vector
 for j=1:length(chanlabels)
-    iEEG_to_iElvis_chanlabel(j,:)=strmatch(chanlabels(j),fs_chanlabels(:,1),'exact');    
+    curr_ind=strmatch(chanlabels(j),fs_chanlabels(:,1),'exact');
+     if ~isempty(curr_ind)
+    iEEG_to_iElvis_chanlabel=[iEEG_to_iElvis_chanlabel; curr_ind]; 
+     end
 end
+
     for j=1:length(chanlabels)
-iElvis_to_iEEG_chanlabel(j,:)=channumbers_iEEG(strmatch(fs_chanlabels(j,1),chanlabels,'exact'));
+        curr_ind=channumbers_iEEG(strmatch(fs_chanlabels(j,1),chanlabels,'exact'));
+        if ~isempty(curr_ind)
+iElvis_to_iEEG_chanlabel=[iElvis_to_iEEG_chanlabel; curr_ind];
+        end
     end
     
 
