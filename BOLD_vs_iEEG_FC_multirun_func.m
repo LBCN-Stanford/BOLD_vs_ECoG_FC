@@ -78,15 +78,32 @@ BOLD_mat=fisherz(BOLD_mat);
 cd([globalECoGDir filesep rest filesep Patient]);
 run_list=load('runs.txt');
 
+channelmap2_runs=dir('channelmap2*');
+if ~isempty(channelmap2_runs)
+    channelmap2_list=load('channelmap2_runs.txt');
+end
+
 %% loop through runs
  for i=1:length(run_list)
           HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
           channumbers_iEEG=[]; chanlabels=[]; iEEG_to_iElvis_chanlabel=[];
           iElvis_to_iEEG_chanlabel=[];
-         curr_run=num2str(run_list(i));
+         curr_run=num2str(run_list(i));    
+         
 %% Load channel name-number mapping (iEEG vs iElvis)
 cd([fsDir '/' Patient '/elec_recon']);
+if isempty(channelmap2_runs)
 [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+display(['Using channelmap.xls for run ' curr_run]);
+else
+   if ~isempty(find(i==channelmap2_list))
+       [channumbers_iEEG,chanlabels]=xlsread('channelmap2.xls');
+       display(['Using channelmap2.xls for run ' curr_run]);
+   else
+       [channumbers_iEEG,chanlabels]=xlsread('channelmap.xls');
+       display(['Using channelmap.xls for run ' curr_run]);
+   end
+end
 
 % Load channel names (in freesurfer/elec recon order)
 chan_names=importdata([Patient '.electrodeNames'],' ');

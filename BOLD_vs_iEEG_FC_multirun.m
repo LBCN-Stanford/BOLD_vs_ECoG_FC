@@ -15,13 +15,13 @@ bold_run_num=['run' bold_runname];
 %% defaults
 globalECoGDir=getECoGSubDir;
 load('cdcol.mat');
-elec_highlight=86; % target electrode to highlight in plot (iElvis number)
+elec_highlight=40; % target electrode to highlight in plot (iElvis number)
 elec_highlight2=80; 
 % for S18_124, LAI7=40 ; LDP1=86; LDP7=80; LDP2=85.
-elecHighlightColor=cdcol.lightblue';
+elecHighlightColor=cdcol.russet';
 elecHighlightColor2=cdcol.grassgreen';
-elec_remove=[39; 41]; % vector: exclude this/these electrode(s) from analysis (e.g. neighbours)
-line_color=cdcol.russet;
+elec_remove=[85]; % vector: exclude this/these electrode(s) from analysis (e.g. neighbours)
+line_color=cdcol.lightblue;
 BOLD_run=['run1'];
 fsDir=getFsurfSubDir();
 
@@ -153,6 +153,7 @@ load('all_bad_indices.mat');
 % Remove bad indices (convert from iEEG to iElvis order)
 % convert bad indices to iElvis
 for j=1:length(all_bad_indices)
+    ind_iElvis=[];
     ind_iElvis=find(iElvis_to_iEEG_chanlabel==all_bad_indices(j));
     if isempty(ind_iElvis)~=1
     bad_iElvis(j,:)=ind_iElvis;
