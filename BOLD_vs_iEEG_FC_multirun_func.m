@@ -88,6 +88,12 @@ if ~isempty(channelmap2_runs)
     channelmap2_list=load('channelmap2_runs.txt');
 end
 
+cd([fsDir '/' Patient '/elec_recon']);
+coords=dlmread([Patient '.PIALVOX'],' ',2,0);
+
+parcOut=elec2Parc_v2([Patient],'DK',0);
+elecNames = parcOut(:,1);
+
 %% loop through runs
  for i=1:length(run_list)
           HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
@@ -116,10 +122,10 @@ fs_chanlabels={};
 
 
 cd([fsDir '/' Patient '/elec_recon']);
-coords=dlmread([Patient '.PIALVOX'],' ',2,0);
-
-parcOut=elec2Parc_v2([Patient],'DK',0);
-elecNames = parcOut(:,1);
+% coords=dlmread([Patient '.PIALVOX'],' ',2,0);
+% 
+% parcOut=elec2Parc_v2([Patient],'DK',0);
+% elecNames = parcOut(:,1);
 
 for chan=3:length(chan_names)
     chan_name=chan_names(chan); chan_name=char(chan_name);
