@@ -1,7 +1,7 @@
 
 Conditions={'gradCPT'; 'Rest'; 'Sleep'};
 %Conditions={'gradCPT'; 'Rest'; 'Sleep';};
-Seeds={'SPL'; 'PMC'; 'daINS'};
+Seeds={'SPL'; 'PMC'};
 %% Inputs
 Patient=input('Patient: ','s');
 
@@ -75,6 +75,9 @@ if size(BOLD_scatter_all,2)==3 % assuming order: SPL, PMC, daINS
    iEEG_pair2=iEEG_scatter_all{:,1}(elecHighlight2_all(1));
    BOLD_pair3=BOLD_scatter_all{:,2}(elecHighlight2_all(2)); % PMC-daINS
    iEEG_pair3=iEEG_scatter_all{:,2}(elecHighlight2_all(2));
+elseif size(BOLD_scatter_all,2)==2
+    BOLD_pair1=BOLD_scatter_all{:,1}(elecHighlight_all(1)); % SPL-PMC
+   iEEG_pair1=iEEG_scatter_all{:,1}(elecHighlight_all(1));
 end
 
 for k=1:size(BOLD_scatter_all,2)
@@ -82,15 +85,24 @@ for k=1:size(BOLD_scatter_all,2)
     curr_iEEG_scatter=iEEG_scatter_all{:,k};
     %seed_pair1_BOLD(i,:)=curr_BOLD_scatter(elecHighlight_all(i));
     %seed_pair1_iEEG(i,:)=curr_iEEG_scatter(elecHighlight_all(i));
+    if elecHighlight2_all(k)>0
     curr_BOLD_scatter([elecHighlight_all(k) elecHighlight2_all(k)])=[]; % remove seed pair from main list
     curr_iEEG_scatter([elecHighlight_all(k) elecHighlight2_all(k)])=[];
+    else
+    curr_BOLD_scatter([elecHighlight_all(k)])=[]; % remove seed pair from main list
+    curr_iEEG_scatter([elecHighlight_all(k)])=[]; 
+    end
     BOLD_scatter_allSeeds=[BOLD_scatter_allSeeds; curr_BOLD_scatter];
     iEEG_scatter_allSeeds=[iEEG_scatter_allSeeds; curr_iEEG_scatter];
 end
+
 % add seed pairs back to main list of pairs
 if size(BOLD_scatter_all,2)==3 
 BOLD_scatter_allSeeds=[BOLD_scatter_allSeeds; BOLD_pair1; BOLD_pair2; BOLD_pair3];
 iEEG_scatter_allSeeds=[iEEG_scatter_allSeeds; iEEG_pair1; iEEG_pair2; iEEG_pair3];
+elseif size(BOLD_scatter_all,2)==2
+BOLD_scatter_allSeeds=[BOLD_scatter_allSeeds; BOLD_pair1];
+iEEG_scatter_allSeeds=[iEEG_scatter_allSeeds; iEEG_pair1];
 end
 % correlate BOLD vs iEEG (all pairs for all seeds)
 corr_BOLD_vs_iEEG_allSeeds=corr(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
@@ -101,6 +113,8 @@ mkdir('figs'); cd('figs');
 x_limit=2; %y_limit=max(iEEG_scatter_allSeeds)+.05;
 y_limit=1.2;
 y_step=.5; x_step=1;
+
+if size(BOLD_scatter_all,2)==3 % for 3 seeds (SPL, PMC, daINS)
 mixed_colors=[mean([line_color(1,:); line_color(2,:)]); mean([line_color(1,:); line_color(3,:)]); mean([line_color(2,:); line_color(3,:)])];
 BOLD_seedseed_pairs=[BOLD_pair1; BOLD_pair2; BOLD_pair3];
 iEEG_seedseed_pairs=[iEEG_pair1; iEEG_pair2; iEEG_pair3];
@@ -159,6 +173,72 @@ flegend=legend(h2,legendInfo,'Location','northeastoutside')
 flegend.FontSize=12;
 print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds_allTargets_legend.png']); 
 close;
+
+elseif size(BOLD_scatter_all,2)==2
+mixed_colors=[mean([line_color(1,:); line_color(2,:)])];
+BOLD_seedseed_pairs=[BOLD_pair1];
+iEEG_seedseed_pairs=[iEEG_pair1];
+
+FigHandle = figure('Position', [500, 600, 600, 400]);
+h0=scatter(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
+h=lsline; set(h(1),'color','k','LineWidth',2);
+hold on;
+%hfigure=figure('Color','w')
+for k=1:length(Seeds)
+    h1(k)=scatter(BOLD_scatter_all{k},iEEG_scatter_all{k},50)
+    h1(k).MarkerFaceColor=line_color(k,:);
+h1(k).MarkerEdgeColor=line_color(k,:);
+h1(k).MarkerFaceAlpha=.5; h1(k).MarkerEdgeAlpha=.5;
+set(gca,'Fontsize',18,'LineWidth',1,'TickDir','out');
+set(gcf,'color','w');
+title(['r= ' num2str(corr_BOLD_vs_iEEG_allSeeds)]);
+xlabel('BOLD <0.1 Hz FC');
+ylabel('iEEG-HFB <0.1 Hz FC');
+xlim([-x_limit x_limit]); ylim([-y_limit y_limit]);
+xticks(-x_limit:x_step:x_limit);
+yticks(-1:y_step:1);
+legendInfo{k}=[Seeds{k} ' seed'];
+hold on;
+end
+hlegend1=legend(h1,legendInfo,'Location','northeastoutside');
+hlegend1.FontSize=12;
+line([-x_limit x_limit],[0 0],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
+line([0 0],[-y_limit y_limit],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
+
+for k=1:size(BOLD_seedseed_pairs,1)
+    h2=scatter(BOLD_seedseed_pairs(k),iEEG_seedseed_pairs(k),100)   
+    h2.MarkerFaceColor=mixed_colors(k,:);
+h2.MarkerEdgeColor=[0 0 0]; 
+h2.LineWidth=2;
+hold on;
+end
+print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds_allTargets.png']); 
+close;
+
+for k=1:size(BOLD_seedseed_pairs,1)
+    h2(k)=scatter(BOLD_seedseed_pairs(k),iEEG_seedseed_pairs(k),100)   
+    h2(k).MarkerFaceColor=mixed_colors(k,:);
+h2(k).MarkerEdgeColor=[0 0 0]; 
+h2(k).LineWidth=2;
+if k==1
+legendInfo{k}=['SPL-PMC'];
+elseif k==2
+    legendInfo{k}=['SPL-daINS'];
+elseif k==3 
+    legendInfo{k}=['PMC-daINS'];
+end
+hold on;
+end
+flegend=legend(h2,legendInfo,'Location','northeastoutside')
+flegend.FontSize=12;
+print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds_allTargets_legend.png']); 
+close;
+
+
+
+end
+
+
 %% plot all seeds in condition
 x_limit=2; y_limit=.8;
 y_step=.4; x_step=1;
