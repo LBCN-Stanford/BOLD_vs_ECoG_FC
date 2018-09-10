@@ -117,10 +117,10 @@ end
 
 if WM==1
     display(['Electrode ' elec_num ' is WM']);
-    ts=load(['electrode_spheres/elec' elec_num run_num '_ts_FSL.txt']);
+    ts=load(['electrode_spheres/elec' elec_num run_num '_ts_GSR.txt']);
     ts=zeros(length(ts),1);
     cd electrode_spheres;
-    dlmwrite(['elec' elec_num run_num '_ts_FSL.txt'], ts);
+    dlmwrite(['elec' elec_num run_num '_ts_GSR.txt'], ts);
     cd ..
 end
 % end
