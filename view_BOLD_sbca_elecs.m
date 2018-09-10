@@ -31,8 +31,9 @@ if plotOnly=='1'
         run_num=runs;
    for elec=1:length(to_plot);
        elec_num=to_plot(elec);
+       elec_name=char(parcOut(elec_num,1));
 elec_num=num2str(elec_num);
-elec_name=char(parcOut(elec_num,1));
+
     elec_ts=load(['elec' elec_num run_num '_ts_GSR.txt']);
     if elec_ts(1)~=0 % ignore WM electrodes
   
