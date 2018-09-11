@@ -1,5 +1,5 @@
 function [corr_BOLD_vs_iEEG,cutoff,y_err_neg,y_err_pos, ...
-    BOLD_scatter,iEEG_scatter,elecHighlight,elecHighlight2]=BOLD_vs_iEEG_FC_multirun_func(Patient,bold_runname,condition,plot_all,Seed,elecs)
+    BOLD_scatter,iEEG_scatter,elecHighlight,elecHighlight2]=BOLD_vs_iEEG_FC_multirun_func(Patient,bold_runname,condition,plot_all,Seed,elecs,signal)
 
 %(Patient,elec1,elec2,elec3,neighbour1,neighbour2,chop_sec,signal,elecHighlightColor,elecHighlightColor2,line_color);
 % must first run iEEG_FC.m and BOLD_vs_ECoG_FC_corr_iElvis (to get bad
@@ -96,7 +96,7 @@ elecNames = parcOut(:,1);
 
 %% loop through runs
  for i=1:length(run_list)
-          HFB_slow_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
+          HFB_slow_corr=[]; HFB_medium_corr=[]; HFB_corr=[]; curr_bad=[]; all_bad_indices=[]; bad_iElvis=[]; bad_chans=[];
           channumbers_iEEG=[]; chanlabels=[]; iEEG_to_iElvis_chanlabel=[];
           iElvis_to_iEEG_chanlabel=[];
          curr_run=num2str(run_list(i));    
@@ -171,9 +171,13 @@ cd([globalECoGDir filesep Rest '/' Patient '/Run' curr_run]);
 % load('Gamma_medium_corr.mat');
 % load('SCP_medium_corr.mat');
 HFB_slow_corr=load('HFB_slow_corr.mat');
+HFB_medium_corr=load('HFB_medium_corr.mat');
+HFB_corr=load('HFB_corr.mat');
 %HFB_slow_corr=fisherz(HFB_sl HFB_slow_corr);
 
 % fisher transform
+HFB_mat(:,:,i)=fisherz(HFB_corr.HFB_corr);
+HFB_medium_mat(:,:,i)=fisherz(HFB_medium_corr.HFB_medium_corr);
 HFB_slow_mat(:,:,i)=fisherz(HFB_slow_corr.HFB_slow_corr);
 %HFB_medium_mat=fisherz(HFB_medium_corr);
 % HFB_mat=fisherz(HFB_corr);
@@ -195,13 +199,17 @@ bad_chans=[bad_iElvis(find(bad_iElvis>0)); elec_remove];
  
  %% change bad chans to NaN in iEEG FC matrices
 HFB_slow_mat(bad_chans,:,i)=NaN; HFB_slow_mat(:,bad_chans,i)=NaN;
+HFB_mat(bad_chans,:,i)=NaN; HFB_mat(:,bad_chans,i)=NaN;
+HFB_medium_mat(bad_chans,:,i)=NaN; HFB_medium_mat(:,bad_chans,i)=NaN;
 
  end
 
 %% Mean iEEG FC across runs
 HFB_slow_mat_mean=nanmean(HFB_slow_mat,3);
+ HFB_mat_mean=nanmean(HFB_mat,3);
+ HFB_medium_mat_mean=nanmean(HFB_medium_mat,3);
  
-%% change bad chans (based on iEEG) to NaN in BOLD FC matrix
+%% change bad chans (based on iEEG HFB slow file) to NaN in BOLD FC matrix
 for i=1:size(HFB_slow_mat_mean,1)
     curr_corr=HFB_slow_mat_mean(:,i);
     if sum(~isnan(curr_corr))>0
@@ -220,7 +228,14 @@ if plot_all=='0'
    elec=elec_number;
 end
 
+if signal=='3'
 iEEG_elec_vals=HFB_slow_mat_mean(:,elec);
+elseif signal=='2'
+    iEEG_elec_vals=HFB_medium_mat_mean(:,elec);
+elseif signal=='0'
+    iEEG_elec_vals=HFB_mat_mean(:,elec);
+end
+
 BOLD_elec_vals=BOLD_mat(:,elec);
 curr_elecNames=elecNames;
 
