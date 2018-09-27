@@ -54,7 +54,7 @@ cfg.view=[hemi 'omni'];
 cfg.olayUnits='z';
 cfg.pullOut=3;
 cfg.title=[elec_name]
-cfg.onlyShow={elec_name};
+cfg.onlyShow={'test'};
 cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num run_num '_' pipeline '_' Hemi 'H.mgh']
           if inflated=='2'
    cfg.surfType='inflated';

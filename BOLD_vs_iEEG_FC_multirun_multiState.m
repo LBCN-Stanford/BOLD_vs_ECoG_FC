@@ -1,7 +1,8 @@
 
 Conditions={'gradCPT'; 'Rest'; 'Sleep'};
 %Conditions={'gradCPT'; 'Rest'; 'Sleep';};
-Seeds={'SPL'; 'PMC'};
+Seeds={'SPL'; 'PMC'; 'daINS'};
+SeedLabels={'DPC';'PMC'; 'daIC'};
 %% Inputs
 Patient=input('Patient: ','s');
 
@@ -24,6 +25,7 @@ end
 %% Loop through conditions and seed regions
  corr_BOLD_vs_iEEG_all={}; 
  cutoff_all={}; y_err_neg_all={}; y_err_pos_all={};
+ r_allCond=[]; p_allCond=[];
 for i=1:length(Conditions)
    condition=Conditions{i};
     cd([globalECoGDir filesep  Conditions{i} filesep Patient]); 
@@ -114,7 +116,9 @@ iEEG_scatter_allSeeds=[iEEG_scatter_allSeeds; iEEG_pair1];
 end
 % correlate BOLD vs iEEG (all pairs for all seeds)
 nPairs=length(BOLD_scatter_allSeeds);
-corr_BOLD_vs_iEEG_allSeeds=corr(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
+[corr_BOLD_vs_iEEG_allSeeds,p_BOLD_vs_iEEG_allSeeds]=corr(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
+r_allCond(i)=corr_BOLD_vs_iEEG_allSeeds;
+p_allCond(i)=p_BOLD_vs_iEEG_allSeeds;
 
 %% plot all pairs for all seeds in one scatter
 mixed_colors=[cdcol.yellow; cdcol.lightcadmium; cdcol.orange];
@@ -140,6 +144,11 @@ if size(BOLD_scatter_all,2)==3 % for 3 seeds (SPL, PMC, daINS)
 %mixed_colors=[mean([line_color(1,:); line_color(2,:)]); mean([line_color(1,:); line_color(3,:)]); mean([line_color(2,:); line_color(3,:)])];
 BOLD_seedseed_pairs=[BOLD_pair1; BOLD_pair2; BOLD_pair3];
 iEEG_seedseed_pairs=[iEEG_pair1; iEEG_pair2; iEEG_pair3];
+elseif size(BOLD_scatter_all,2)==2
+%mixed_colors=[mean([line_color(1,:); line_color(2,:)])];
+BOLD_seedseed_pairs=[BOLD_pair1];
+iEEG_seedseed_pairs=[iEEG_pair1];
+end
 
 FigHandle = figure('Position', [500, 600, 600, 400]);
 h0=scatter(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
@@ -153,7 +162,7 @@ h1(k).MarkerEdgeColor=line_color(k,:);
 h1(k).MarkerFaceAlpha=.5; h1(k).MarkerEdgeAlpha=.5;
 set(gca,'Fontsize',18,'LineWidth',1,'TickDir','out');
 set(gcf,'color','w');
-title(['r= ' num2str(corr_BOLD_vs_iEEG_allSeeds) '; n=' num2str(nPairs)]);
+%title(['r= ' num2str(corr_BOLD_vs_iEEG_allSeeds) '; n=' num2str(nPairs)]);
 xlabel('BOLD <0.1 Hz FC');
 ylabel('iEEG-HFB <0.1 Hz FC');
 xlim([x_limit_lower x_limit_upper]); ylim([y_limit_lower y_limit_upper]);
@@ -185,11 +194,11 @@ for k=1:size(BOLD_seedseed_pairs,1)
 h2(k).MarkerEdgeColor=[0 0 0]; 
 h2(k).LineWidth=2;
 if k==1
-legendInfo{k}=['SPL-PMC'];
+legendInfo{k}=['DPC-PMC'];
 elseif k==2
-    legendInfo{k}=['SPL-daINS'];
+    legendInfo{k}=['DPC-daIC'];
 elseif k==3 
-    legendInfo{k}=['PMC-daINS'];
+    legendInfo{k}=['PMC-daIC'];
 end
 hold on;
 end
@@ -197,50 +206,46 @@ flegend=legend(h2,legendInfo,'Location','northeastoutside')
 flegend.FontSize=12;
 print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds_allTargets_legend.png']); 
 close;
-
-elseif size(BOLD_scatter_all,2)==2
-%mixed_colors=[mean([line_color(1,:); line_color(2,:)])];
-BOLD_seedseed_pairs=[BOLD_pair1];
-iEEG_seedseed_pairs=[iEEG_pair1];
-
-FigHandle = figure('Position', [500, 600, 600, 400]);
-h0=scatter(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
-h=lsline; set(h(1),'color','k','LineWidth',2);
-hold on;
-%hfigure=figure('Color','w')
-for k=1:length(Seeds)
-    h1(k)=scatter(BOLD_scatter_all{k},iEEG_scatter_all{k},50)
-    h1(k).MarkerFaceColor=line_color(k,:);
-h1(k).MarkerEdgeColor=line_color(k,:);
-h1(k).MarkerFaceAlpha=.5; h1(k).MarkerEdgeAlpha=.5;
-set(gca,'Fontsize',18,'LineWidth',1,'TickDir','out');
-set(gcf,'color','w');
-title(['r= ' num2str(corr_BOLD_vs_iEEG_allSeeds) '; n=' num2str(nPairs)]);
-xlabel('BOLD <0.1 Hz FC');
-ylabel('iEEG-HFB <0.1 Hz FC');
-xlim([x_limit_lower x_limit_upper]); ylim([y_limit_lower y_limit_upper]);
-%xticks(x_limit_lower:x_step:x_limit_upper);
-xticks(x_vector);
-yticks(y_vector);
-%xticks(-x_limit:x_step:x_limit);
-%yticks(-1:y_step:1);
-legendInfo{k}=[Seeds{k} ' seed'];
-hold on;
 end
-hlegend1=legend(h1,legendInfo,'Location','northeastoutside');
-hlegend1.FontSize=12;
-line([x_limit_lower x_limit_upper],[0 0],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
-line([0 0],[y_limit_lower y_limit_upper],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
 
-for k=1:size(BOLD_seedseed_pairs,1)
-    h2=scatter(BOLD_seedseed_pairs(k),iEEG_seedseed_pairs(k),100)   
-    h2.MarkerFaceColor=mixed_colors(k,:);
-h2.MarkerEdgeColor=[0 0 0]; 
-h2.LineWidth=2;
-hold on;
-end
-print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds_allTargets' filtering '.png']); 
-close;
+% FigHandle = figure('Position', [500, 600, 600, 400]);
+% h0=scatter(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
+% h=lsline; set(h(1),'color','k','LineWidth',2);
+% hold on;
+% %hfigure=figure('Color','w')
+% for k=1:length(Seeds)
+%     h1(k)=scatter(BOLD_scatter_all{k},iEEG_scatter_all{k},50)
+%     h1(k).MarkerFaceColor=line_color(k,:);
+% h1(k).MarkerEdgeColor=line_color(k,:);
+% h1(k).MarkerFaceAlpha=.5; h1(k).MarkerEdgeAlpha=.5;
+% set(gca,'Fontsize',18,'LineWidth',1,'TickDir','out');
+% set(gcf,'color','w');
+% title(['r= ' num2str(corr_BOLD_vs_iEEG_allSeeds) '; n=' num2str(nPairs)]);
+% xlabel('BOLD <0.1 Hz FC');
+% ylabel('iEEG-HFB <0.1 Hz FC');
+% xlim([x_limit_lower x_limit_upper]); ylim([y_limit_lower y_limit_upper]);
+% %xticks(x_limit_lower:x_step:x_limit_upper);
+% xticks(x_vector);
+% yticks(y_vector);
+% %xticks(-x_limit:x_step:x_limit);
+% %yticks(-1:y_step:1);
+% legendInfo{k}=[Seeds{k} ' seed'];
+% hold on;
+% end
+% hlegend1=legend(h1,legendInfo,'Location','northeastoutside');
+% hlegend1.FontSize=12;
+% line([x_limit_lower x_limit_upper],[0 0],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
+% line([0 0],[y_limit_lower y_limit_upper],'LineWidth',1,'Color',[.6 .6 .6],'LineStyle','--');
+% 
+% for k=1:size(BOLD_seedseed_pairs,1)
+%     h2=scatter(BOLD_seedseed_pairs(k),iEEG_seedseed_pairs(k),100)   
+%     h2.MarkerFaceColor=mixed_colors(k,:);
+% h2.MarkerEdgeColor=[0 0 0]; 
+% h2.LineWidth=2;
+% hold on;
+% end
+% print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds_allTargets' filtering '.png']); 
+% close;
 
 for k=1:size(BOLD_seedseed_pairs,1)
     h2(k)=scatter(BOLD_seedseed_pairs(k),iEEG_seedseed_pairs(k),100)   
@@ -263,7 +268,6 @@ close;
 
 
 
-end
 
 
 %% plot all seeds in condition
@@ -319,7 +323,6 @@ hold on;
 end
 print('-opengl','-r300','-dpng',[Patient '_BOLDvsIEEG_' condition '_allSeeds.png']); 
 close;
-end
 
 
 %% plot
@@ -338,7 +341,7 @@ for i=1:length(Seeds)
     y_axis=[corr_BOLD_vs_iEEG_all(:,i)];
  plot(x_axis,y_axis,'o-', 'LineWidth',1,'Color',line_color(i,:), 'MarkerSize',10, ...
      'MarkerEdgeColor',line_color(i,:),'MarkerFaceColor',line_color(i,:))
- legendInfo{i}=[Seeds{i} ' seed'];
+ legendInfo{i}=[SeedLabels{i} ' seed'];
 hold on;
 end
 legend(legendInfo)

@@ -327,7 +327,7 @@
 
 function cfgOut=plotPialSurf(fsSub,cfg)
 load('cdcol.mat');
-color_plot=cdcol.lightblue;
+color_plot=cdcol.lilac;
 %% Parse parameters
 if ~isfield(cfg, 'elecSize'),       elecSize = 8;          else  elecSize = cfg.elecSize;      end
 if ~isfield(cfg, 'snap2surf'),      snap2surf = 0;         else  snap2surf = cfg.snap2surf;      end
