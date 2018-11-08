@@ -10,9 +10,11 @@
 Patient=input('Patient: ','s'); sub=Patient;
 rest=input('Rest (1) or Sleep (2)? ','s');
 runname=input('Run (e.g. 2): ','s'); run=runname;
+pause_time=input('Pause time (sec) ');
 TDT=input('TDT (1) or EDF (0): ','s');
 China=input('China (1) or Stanford (0)? ','s');
 Crop_ts=input('Crop time series (1) or not (0)? ','s');
+crop_secs=60;
 % if Crop_ts=='1'
 %     crop_start=input('
 % end
@@ -90,7 +92,7 @@ delete([A.fname]); delete([A.fnamedat]); A=[];
 %% Chop 2 sec from edges (beginning and end) - to deal with flat line effects
 if Crop_ts=='1'
     sampling=D.fsample;
-cropping=2*sampling; both=1;
+cropping=crop_secs*sampling; both=1;
 [D]=crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
 fname_spm_pfff=[D.fname];
@@ -114,6 +116,7 @@ fname_spm_fffM=['M' fname_spm_pfff];
 batch_lowpass_medium(fname_spm_fffM);
 
 %% TF decomposition
+pause(pause_time); % pause before this step for pause_time secs
 batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
 fname_spm_tf=['tf_aM' fname_spm_pfff];
 
