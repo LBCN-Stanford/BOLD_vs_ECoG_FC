@@ -18,7 +18,7 @@ cropping=(cropping/sampling)*1000; % convert to ms
 if both==1
 last=(D.Nsamples/sampling)*1000-cropping; % convert to ms
 elseif both==0
-    last=D.Nsamples;
+    last=D.Nsamples-1;
 end
 S.timewin= [cropping last];
 S.freqwin = [-Inf Inf];
