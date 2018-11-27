@@ -1,13 +1,10 @@
 function [iEEG_to_iElvis_chanlabel, iElvis_to_iEEG_chanlabel, chanlabels, channumbers_iEEG,elecNames] = iEEG_iElvis_transform(Patient,hemi,depth)
 
 %% creates transform between iEEG and iElvis electrode numbers
-% channelmap.xls must be saved into subject's freesurfer elec_recon
-% subfolder
+% 
 
-% inputs: 
-% 1. Patient name, 
-% 2. hemisphere ('L' or 'R' for subdural, enter either one for depth)
-% 3. depth ('1') or subdural ('0')
+% inputs:
+
 % Written by Aaron Kucyi
 
 globalECoGDir=getECoGSubDir;

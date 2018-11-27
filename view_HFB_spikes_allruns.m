@@ -2,6 +2,7 @@ Patient=input('Patient: ','s');
 %run_num=input('run (e.g. 1): ','s');
 %depth=input('depth (1) or subdural (0) ','s');
 rest=input('Rest(1) or Sleep(0) or gradCPT (2)? ','s');
+filter=input('slow or bptf_medium? ','s');
 
 %runname=['Run' run_num];
 globalECoGDir=getECoGSubDir;
@@ -33,9 +34,9 @@ mkdir(['HFB_plots']);
 D_CAR=spm_eeg_load(filename);
 
     % Load HFB data (bptf)
-       filenames=dir('bptf_mediumHFB*');
+       filenames=dir([filter 'HFB*']);
     if isempty(filenames)==1
-   filenames=dir('bptf_mediumpHFB*');
+   filenames=dir([filter 'pHFB*']);
     end
 filename=filenames(2,1).name;
 D_HFB=spm_eeg_load(filename); 
@@ -73,8 +74,9 @@ for i=1:size(D_CAR,1)
    xlim([time_sec(1),time_sec(end)])
    ylims=ylim;
    % vertical line at 21 seconds
+   hold on;
    line([21 21],[ylims(1) ylims(2)],'LineWidth',1,'Color',[.2 .2 .2],'LineStyle','--');
-   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_plots/HFB_' elec_name])); 
+   print('-opengl','-r300','-dpng',strcat([pwd,filesep,'HFB_plots/HFB_' elec_name '_' filter])); 
    close('all');
 end
 end

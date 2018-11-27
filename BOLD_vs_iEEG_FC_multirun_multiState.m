@@ -1,8 +1,8 @@
 
 Conditions={'gradCPT'; 'Rest'; 'Sleep'};
 %Conditions={'gradCPT'; 'Rest'; 'Sleep';};
-Seeds={'SPL'; 'PMC'; 'daINS'};
-SeedLabels={'DPC';'PMC'; 'daIC'};
+Seeds={'SPL'; 'PMC'};
+SeedLabels={'dPPC';'PMC'};
 %% Inputs
 Patient=input('Patient: ','s');
 
@@ -170,7 +170,7 @@ xlim([x_limit_lower x_limit_upper]); ylim([y_limit_lower y_limit_upper]);
 xticks(x_vector);
 yticks(y_vector);
 %yticks(y_limit_lower:y_step:y_limit_upper);
-legendInfo{k}=[Seeds{k} ' targets'];
+legendInfo{k}=[SeedLabels{k} ' targets'];
 hold on;
 end
 hlegend1=legend(h1,legendInfo,'Location','northeastoutside');
@@ -194,11 +194,11 @@ for k=1:size(BOLD_seedseed_pairs,1)
 h2(k).MarkerEdgeColor=[0 0 0]; 
 h2(k).LineWidth=2;
 if k==1
-legendInfo{k}=['DPC-PMC'];
+legendInfo{k}=['dPPC-PMC'];
 elseif k==2
-    legendInfo{k}=['DPC-daIC'];
+    legendInfo{k}=['dPPC-dAIC'];
 elseif k==3 
-    legendInfo{k}=['PMC-daIC'];
+    legendInfo{k}=['dAIC-PMC'];
 end
 hold on;
 end
@@ -253,11 +253,11 @@ for k=1:size(BOLD_seedseed_pairs,1)
 h2(k).MarkerEdgeColor=[0 0 0]; 
 h2(k).LineWidth=2;
 if k==1
-legendInfo{k}=['SPL-PMC'];
+legendInfo{k}=['dPPC-PMC'];
 elseif k==2
-    legendInfo{k}=['SPL-daINS'];
+    legendInfo{k}=['dPPC-dAIC'];
 elseif k==3 
-    legendInfo{k}=['PMC-daINS'];
+    legendInfo{k}=['dAIC-PMC'];
 end
 hold on;
 end

@@ -5,7 +5,7 @@ hemi=input('Hemisphere (r or l): ','s');
 inflated=input('Pial (1) or Inflated (2) surface? ','s');
 gsr=input('GSR (1) AROMA (2) aCompCor (3) ','s'); 
 plotOnly=input('Plot all (0) or custom electrodes (1) ','s');
-to_plot=[111 70]; % iElvis numbers of electrodes
+to_plot=[64 63]; % iElvis numbers of electrodes
 %depth=str2num(depth);
 [total_runs y]=size(runs);
 Runs=cellstr(runs);
@@ -58,8 +58,8 @@ cfg.onlyShow={'test'};
 cfg.pialOverlay=[fsDir '/' Patient '/elec_recon/electrode_spheres/SBCA/elec' elec_num run_num '_' pipeline '_' Hemi 'H.mgh']
           if inflated=='2'
    cfg.surfType='inflated';
-   cfg.olayThresh=3;
-end   
+          end
+   cfg.olayThresh=3;   
 cfgOut=plotPialSurf(Patient,cfg);
 print('-opengl','-r300','-dpng',strcat([pwd,filesep,'SBCA',filesep,'figs',filesep,'BOLD',filesep,[Patient '_'],[elec_name '_BOLD_FC_' pipeline],[ Hemi 'H']]));
 close;  
