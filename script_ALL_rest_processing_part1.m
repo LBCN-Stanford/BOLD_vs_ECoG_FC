@@ -9,7 +9,8 @@
 %% Set patient name and run number
 Patient=input('Patient: ','s'); sub=Patient;
 rest=input('Rest (1) or Sleep (2)? ','s');
-runname=input('Run (e.g. 2): ','s'); run=runname;
+run_list=input('Runs (e.g. [1 2 3 4]: ');
+%runname=input('Run (e.g. 2): ','s'); run=runname;
 %pause_time=input('Pause time (sec) ');
 TDT=input('TDT (1) or EDF (0): ','s');
 China=input('China (1) or Stanford (0)? ','s');
@@ -19,11 +20,8 @@ crop_secs=input('Seconds to crop from beginning and end ');
 %     crop_start=input('
 % end
 %Cropping=input('Crop edges in TF domain by (e.g. 20 for 20 sec): ','s');
-
-    sampling_rate=input('sampling rate (Hz): ','s');
-    sampling_rate=str2num(sampling_rate);   
-
-    EDF_convert=input('EDF already converted (1) or not or TDT (0)? ','s');
+sampling_rate=input('sampling rate (Hz): ','s');  sampling_rate=str2num(sampling_rate);   
+EDF_convert=input('EDF already converted (1) or not or TDT (0)? ','s');
 
 getECoGSubDir; global globalECoGDir;
 cd([globalECoGDir '/Rest/' sub]);
@@ -36,12 +34,14 @@ else
 end
 
 if rest=='1'
-cd([globalECoGDir '/Rest/' sub '/Run' run]);
+pdir=([globalECoGDir '/Rest/' sub]);
 elseif rest=='2'
-   cd([globalECoGDir '/Sleep/' sub '/Run' run]);
+   pdir=([globalECoGDir '/Sleep/' sub]);
 end
-%% Default parameters
-
+%% Loop through runs
+for i=1:length(run_list)
+    curr_run=run_list(i);
+cd([pdir filesep 'Run' num2str(curr_run)])
 %% Convert EDF to SPM .mat
 if TDT=='0';
     if EDF_convert=='0'
@@ -93,7 +93,7 @@ delete([A.fname]); delete([A.fnamedat]); A=[];
 if Crop_ts=='1'
     sampling=D.fsample;
 cropping=crop_secs*sampling; both=1;
-[D]=crop_edges_postTF_func(Patient,runname,fname_spm_fff,cropping,both,sampling);
+[D]=crop_edges_postTF_func(Patient,curr_run,fname_spm_fff,cropping,both,sampling);
 D.timeOnset=0; D=meeg(D); save(D);
 fname_spm_pfff=[D.fname];
 else
@@ -102,7 +102,7 @@ end
 
 %% Plot power spectrum for manual removal of outlier channels
 display(['Run length is ' num2str(run_length) ' mins']);
-if sampling_rate==1000
+if sampling_rate>999
 LBCN_plot_power_spectrum_gradCPT_1000(fname_spm_pfff);
 elseif sampling_rate==500
     LBCN_plot_power_spectrum_gradCPT(fname_spm_pfff);
@@ -112,97 +112,20 @@ end
 LBCN_montage(fname_spm_pfff);
 fname_spm_fffM=['M' fname_spm_pfff];
 
-%% Filter to slow cortical potential range (<1Hz)
-% batch_lowpass_medium(fname_spm_fffM);
-% 
-% %% TF decomposition
-% pause(pause_time); % pause before this step for pause_time secs
-% batch_ArtefactRejection_TF_norescale(fname_spm_fffM);
-% fname_spm_tf=['tf_aM' fname_spm_pfff];
-% 
-% %% LogR transform (normalize)
-% LBCN_baseline_Timeseries(fname_spm_tf,'b','logR')
-% fname_spm_btf=['btf_aM' fname_spm_pfff];
-% 
-% %% Frequency band averaging
-% batch_AverageFreq(fname_spm_btf);
-% 
-% %% Chop 20 sec from beginning
-% %cropping=20000; 
-% both=0;
-% cropping=str2num(Cropping)*sampling_rate;
-% 
-% fname_HFB=['HFBbtf_aM' fname_spm_pfff];
-% fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
-% fname_Delta=['Deltabtf_aM' fname_spm_pfff];
-% fname_Theta=['Thetabtf_aM' fname_spm_pfff];
-% fname_Beta1=['Beta1btf_aM' fname_spm_pfff];
-% fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
-% fname_Gamma=['Gammabtf_aM' fname_spm_pfff];
-% 
-% if Crop_ts=='1'
-%     D=spm_eeg_load(fname_HFB);
-% [D]=crop_edges_postTF_func(Patient,runname,fname_HFB,cropping,both,sampling);
-% D.timeOnset=0; D=meeg(D); save(D);
-% [D]=crop_edges_postTF_func(Patient,runname,fname_Alpha,cropping,both,sampling);
-% D.timeOnset=0; D=meeg(D); save(D);
-% [D]=crop_edges_postTF_func(Patient,runname,fname_Delta,cropping,both,sampling);
-% D.timeOnset=0; D=meeg(D); save(D);
-% [D]=crop_edges_postTF_func(Patient,runname,fname_Theta,cropping,both,sampling);
-% D.timeOnset=0; D=meeg(D); save(D);
-% [D]=crop_edges_postTF_func(Patient,runname,fname_Beta1,cropping,both,sampling);
-% D.timeOnset=0; D=meeg(D); save(D);
-% [D]=crop_edges_postTF_func(Patient,runname,fname_Beta2,cropping,both,sampling);
-% D.timeOnset=0; D=meeg(D); save(D);
-% [D]=crop_edges_postTF_func(Patient,runname,fname_Gamma,cropping,both,sampling);
-% D.timeOnset=0; D=meeg(D); save(D);
-% end
-% 
-% if Crop_ts=='1'
-% fname_HFB=['pHFBbtf_aM' fname_spm_pfff];
-% fname_Alpha=['pAlphabtf_aM' fname_spm_pfff];
-% fname_Delta=['pDeltabtf_aM' fname_spm_pfff];
-% fname_Theta=['pThetabtf_aM' fname_spm_pfff];
-% fname_Beta1=['pBeta1btf_aM' fname_spm_pfff];
-% fname_Beta2=['pBeta2btf_aM' fname_spm_pfff];
-% fname_Gamma=['pGammabtf_aM' fname_spm_pfff];
-% % else
-% %   fname_HFB=['HFBbtf_aM' fname_spm_pfff];
-% % fname_Alpha=['Alphabtf_aM' fname_spm_pfff];
-% % fname_Delta=['Deltabtf_aM' fname_spm_pfff];
-% % fname_Theta=['Thetabtf_aM' fname_spm_pfff];
-% % fname_Beta1=['Beta1btf_aM' fname_spm_pfff];
-% % fname_Beta2=['Beta2btf_aM' fname_spm_pfff];
-% % fname_Gamma=['Gammabtf_aM' fname_spm_pfff];  
-%     
-% end
-% %% Temporal filtering: 0.1-1Hz, <0.1Hz, >1Hz
-% batch_bandpass_medium(fname_HFB);
-% batch_bandpass_medium(fname_Alpha);
-% batch_bandpass_medium(fname_Delta);
-% batch_bandpass_medium(fname_Theta);
-% batch_bandpass_medium(fname_Beta1);
-% batch_bandpass_medium(fname_Beta2);
-% batch_bandpass_medium(fname_Gamma);
-% 
-% batch_lowpass_slow(fname_HFB);
-% batch_lowpass_slow(fname_Alpha);
-% batch_lowpass_slow(fname_Delta);
-% batch_lowpass_slow(fname_Theta);
-% batch_lowpass_slow(fname_Beta1);
-% batch_lowpass_slow(fname_Beta2);
-% batch_lowpass_slow(fname_Gamma);
-% 
-% batch_highpass_fast(fname_HFB);
-% batch_highpass_fast(fname_Alpha);
-% batch_highpass_fast(fname_Delta);
-% batch_highpass_fast(fname_Theta);
-% batch_highpass_fast(fname_Beta1);
-% batch_highpass_fast(fname_Beta2);
-% batch_highpass_fast(fname_Gamma);
-% 
-% LBCN_smooth_data(fname_HFB);
-% 
-% %% Label channels with HFB (0.1-1 Hz) spectral bursts as bad
-% exclude_spectral_bursts_func(Patient,runname);
+%% Delete intermediate files
+  delete_file_mat=[fname_spm_fff];
+    delete_file_dat=strrep(delete_file_mat,'.mat','.dat');
+       delete(char(delete_file_mat));
+   delete(char(delete_file_dat));
+
+     delete_file_mat=[fname_spm_pfff];
+    delete_file_dat=strrep(delete_file_mat,'.mat','.dat');
+       delete(char(delete_file_mat));
+   delete(char(delete_file_dat));
+   
+        delete_file_mat=[fname_spm];
+    delete_file_dat=strrep(delete_file_mat,'.mat','.dat');
+       delete(char(delete_file_mat));
+   delete(char(delete_file_dat));
+end
 
