@@ -7,6 +7,7 @@ ROI=1; % 1=PMC, 2=dPPC, 3=dAIC
 if ROI==1
 subjects={'S18_119'; 'S18_124'; 'S18_127'; 'S18_128'; 'S18_123'};
 sub_labels={'S1'; 'S2'; 'S3'; 'S4'; 'S6'};
+sub_nums=[1;2;3;4;6];
 iElvis_chans={'70'; '86'; '20'; '10'; '100'};
 ROI_name='PMC';
 
@@ -14,6 +15,7 @@ ROI_name='PMC';
 elseif ROI==2
 subjects={'S18_119'; 'S18_124'; 'S18_127'; 'S18_128'; 'S18_123'};
 sub_labels={'S1'; 'S2'; 'S3'; 'S4'; 'S6'};
+sub_nums=[1;2;3;4;6];
 iElvis_chans={'61'; '80'; '14'; '2'; '33'};
 ROI_name='dPPC';
 
@@ -21,13 +23,14 @@ ROI_name='dPPC';
 elseif ROI==3
 subjects={'S18_119'; 'S18_124'; 'S18_127'};
 sub_labels={'S1'; 'S2'; 'S3'};
+sub_nums=[1;2;3];
 iElvis_chans={'119'; '40'; '59'};
 ROI_name='dAIC';
 end
 
 %% Defaults
-%networks={'DMN'; 'DAN';'SN'; 'FPCN'; 'SMN'; 'Vis'; 'Limbic'};
-networks={'DMN';'DAN';'SN'};
+networks={'DMN'; 'DAN';'SN'; 'FPCN'; 'SMN'; 'VIS'; 'Limbic'};
+%networks={'DMN';'DAN';'SN'};
 load('cdcol.mat')
 getECoGSubDir; global globalECoGDir;
 pdir='/media/jplinux/ExtraDrive1/data/freesurfer/subjects';
@@ -53,14 +56,42 @@ for i=1:length(subjects)
     end
 end
 
-%% plot all subjects
-
-for i=1:length(subjects)
-    sub_scores=[];
-    sub_scores=network_scores_subs(i,:);
-    sub_scores=cellfun(@str2double,sub_scores);
+%% mean across subjects
+for i=1:length(networks)
+    network_means(i)=mean(cellfun(@str2double,network_scores_subs(:,i)));
 end
 
+%% plot all subjects and mean
+% set colors
+color_options=[cdcol.portraitdarkflesh5; cdcol.metalicscarlet; cdcol.emeraldgreen; cdcol.olive; ...
+      cdcol.lightcobaltblue; cdcol.brown; cdcol.darkulamarine; cdcol.pink; cdcol.orange; cdcol.cobaltblue; cdcol.grassgreen; cdcol.russet; ];
+
+for i=1:length(sub_nums)
+   sub_colors(i,:)=color_options(sub_nums(i),:); 
+end
+% add black color for mean
+sub_colors=[sub_colors; cdcol.black];
+
+% make plot
+for i=1:length(subjects)
+    sub_scores=[]; sub_color=[];
+    sub_color=sub_colors(i,:);
+
+    sub_scores=network_scores_subs(i,:);
+    sub_scores=cellfun(@str2double,sub_scores);
+   
+    plot(1:size(network_scores_subs,2),sub_scores,'o-', 'LineWidth',1,'Color',sub_color,'MarkerFaceColor', ...
+        sub_color, 'MarkerSize',8,'MarkerEdgeColor',sub_color);
+    xlim([0.5 length(networks)+.5])
+    set(gca,'Xtick',0:1:length(networks))
+     set(gca,'XTickLabel',[' ';networks])
+ set(gca,'Fontsize',16,'FontWeight','Normal','LineWidth',1,'TickDir','out');
+ ylabel('BOLD Connectivity (z)')
+ hold on
+end
+% plot mean in black
+    plot(1:size(network_scores_subs,2),network_means,'o-', 'LineWidth',1,'Color',cdcol.black,'MarkerFaceColor', ...
+        cdcol.black, 'MarkerSize',8,'MarkerEdgeColor',sub_color);
 
 
 
