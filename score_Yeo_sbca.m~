@@ -59,12 +59,6 @@ for i=1:length(subjects)
     sub_scores=[];
     sub_scores=network_scores_subs(i,:);
     sub_scores=cellfun(@str2double,sub_scores);
-    plot(sub_scores);
-    xlim([0.5 4.5])
-    set(gca,'Xtick',0:1:4)
-     set(gca,'XTickLabel',[' ';networks])
- set(gca,'Fontsize',16,'FontWeight','Normal','LineWidth',1,'TickDir','out');
- hold on
 end
 
 
