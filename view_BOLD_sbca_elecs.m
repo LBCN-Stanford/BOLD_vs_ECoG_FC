@@ -1,10 +1,21 @@
-Patient=input('Patient: ','s');
-runs=input('run (e.g. run1): ','s');
-hemi=input('Hemisphere (r or l): ','s');
+function view_BOLD_sbca_elecs(Patient,hemi,inflated,gsr,plotOnly);
+
+%% View BOLD sbca from electrode locations
+% Inputs:
+% 1. Patient
+% 2. hemisphere to plot (r or l)
+% 3. plot pial (1) or inflated (2) surface
+% 4. plot GSR (1) AROMA (2) aCompCor (3)
+% 5. plot all (0) or custom electrodes (1)
+
+%Patient=input('Patient: ','s');
+runs='run1';
+%runs=input('run (e.g. run1): ','s');
+%hemi=input('Hemisphere (r or l): ','s');
 %depth=input('depth(1) or subdural(0)? ','s');
-inflated=input('Pial (1) or Inflated (2) surface? ','s');
-gsr=input('GSR (1) AROMA (2) aCompCor (3) ','s'); 
-plotOnly=input('Plot all (0) or custom electrodes (1) ','s');
+%inflated=input('Pial (1) or Inflated (2) surface? ','s');
+%gsr=input('GSR (1) AROMA (2) aCompCor (3) ','s'); 
+%plotOnly=input('Plot all (0) or custom electrodes (1) ','s');
 to_plot=[64 63]; % iElvis numbers of electrodes
 %depth=str2num(depth);
 [total_runs y]=size(runs);

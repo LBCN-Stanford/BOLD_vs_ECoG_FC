@@ -250,8 +250,8 @@ curr_elecNames=curr_elecNames(~isnan(iEEG_elec_vals));
 BOLD_scatter=BOLD_elec_vals(~isnan(iEEG_elec_vals));
 iEEG_scatter=iEEG_elec_vals(~isnan(iEEG_elec_vals));
 
-[corr_BOLD_vs_iEEG, p_BOLD_vs_iEEG]=corr(BOLD_scatter,iEEG_scatter);
-[rho_BOLD_vs_iEEG, p_rho]=corr(BOLD_scatter,iEEG_scatter,'type','Spearman');
+[corr_BOLD_vs_iEEG, p_BOLD_vs_iEEG]=corr_exactp(BOLD_scatter,iEEG_scatter);
+[rho_BOLD_vs_iEEG, p_rho]=corr_exactp(BOLD_scatter,iEEG_scatter,'type','Spearman');
 
 % get critical r valuesfor p value of 0.01
 nsamples=10000; % n monte carlo simulations

@@ -1,11 +1,14 @@
+function seed_based_BOLD_FC(Patient,depth)
+
 %% Seed-based FC for each electrode location (after extracting electrode ROI time series)
 %==========================================================================
 % Written by Aaron Kucyi, LBCN, Stanford University
 %==========================================================================
-Patient=input('Patient: ','s');
-runs=input('run (e.g. run1): ','s');
-depth=input('depth(1) or subdural(0)? ','s');
-depth=str2num(depth);
+%Patient=input('Patient: ','s');
+runs='run1';
+%runs=input('run (e.g. run1): ','s');
+%depth=input('depth(1) or subdural(0)? ','s');
+%depth=str2num(depth);
 
 [total_runs y]=size(runs);
 Runs=cellstr(runs);

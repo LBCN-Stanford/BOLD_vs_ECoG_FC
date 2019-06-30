@@ -1,25 +1,25 @@
 function mk_electrode_sphere_ROIs(Patient,depth,overlap);
 
 %% Create sphere ROIs around electrode coordinates
-% Inputs:
-% 1. Patient
-% 2. depth (1) or subdural (0)
-% 3. Remove overlap between ROIs (1) or not (0)
+% In
+% 1.
+% 2. 
+% 3. 
 
 %==========================================================================
 % Written by Aaron Kucyi, LBCN, Stanford University
 %==========================================================================
 
 % Needed: manually created channel name-number mapping file (.xls format)
-%Patient=input('Patient: ','s');
+Patient=input('Patient: ','s');
 
-%depth=input('depth (1) or grid (0)? ','s');
-%overlap=input('Remove overlap between ROIs (1) or not (0)? ','s');
+depth=input('depth (1) or grid (0)? ','s');
+overlap=input('Remove overlap between ROIs (1) or not (0)? ','s');
 % 1 for depth, 0 for surface (use .PIAL coords)
 % runs=['run1'; 'run2'; 'run3'];
 % [total_runs y]=size(runs);
 % Runs=cellstr(runs);
-%depth=str2num(depth);
+depth=str2num(depth);
 
 globalECoGDir=getECoGSubDir;
 fsDir=getFsurfSubDir();

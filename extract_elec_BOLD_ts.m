@@ -1,3 +1,5 @@
+function extract_elec_BOLD_ts(Patient);
+
 %% Extract time series from electrode ROIs (created with mk_electrode_sphere_ROIs.m)
 %==========================================================================
 % Written by Aaron Kucyi, LBCN, Stanford University
@@ -7,8 +9,9 @@
 % Load FSL functions into MATLAB
 setenv('FSLDIR','/usr/share/fsl');
 setenv('FSLOUTPUTTYPE','NIFTI_GZ');
-Patient=input('Patient: ','s');
-runs=input('run (e.g. run1): ','s');
+%Patient=input('Patient: ','s');
+runs='run1';
+%runs=input('run (e.g. run1): ','s');
 [total_runs y]=size(runs);
 Runs=cellstr(runs);
 

@@ -14,7 +14,7 @@ pause_time=input('Pause time (sec) ');
 TDT=input('TDT (1) or EDF (0): ','s');
 China=input('China (1) or Stanford (0)? ','s');
 Crop_ts=input('Crop time series (1) or not (0)? ','s');
-crop_secs=60;
+crop_secs=120;
 % if Crop_ts=='1'
 %     crop_start=input('
 % end

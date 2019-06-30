@@ -1,5 +1,5 @@
 
-Conditions={'gradCPT'; 'Rest'; 'Sleep'};
+Conditions={'Rest'};
 %Conditions={'gradCPT'; 'Rest'; 'Sleep';};
 Seeds={'SPL'; 'PMC'};
 SeedLabels={'dPPC';'PMC'};
@@ -116,7 +116,7 @@ iEEG_scatter_allSeeds=[iEEG_scatter_allSeeds; iEEG_pair1];
 end
 % correlate BOLD vs iEEG (all pairs for all seeds)
 nPairs=length(BOLD_scatter_allSeeds);
-[corr_BOLD_vs_iEEG_allSeeds,p_BOLD_vs_iEEG_allSeeds]=corr(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
+[corr_BOLD_vs_iEEG_allSeeds,p_BOLD_vs_iEEG_allSeeds]=corr_exactp(BOLD_scatter_allSeeds,iEEG_scatter_allSeeds);
 r_allCond(i)=corr_BOLD_vs_iEEG_allSeeds;
 p_allCond(i)=p_BOLD_vs_iEEG_allSeeds;
 

@@ -1,4 +1,6 @@
-fsSub=input('Patient: ','s');
+function [brainmask_coords]=get_depth_coords(fsSub);
+
+%fsSub=input('Patient: ','s');
 cfg=[];
 %Load channel name-number mapping
 cd(['/media/jplinux/ExtraDrive1/data/freesurfer/subjects/' fsSub '/elec_recon']);
