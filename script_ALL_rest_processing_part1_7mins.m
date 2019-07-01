@@ -1,0 +1,136 @@
+% Does rest preprocessing up to re-referencing
+% run set_badchans.m first
+
+%==========================================================================
+% Written by Aaron Kucyi, LBCN, Stanford University
+%==========================================================================
+
+
+%% Set patient name and run number
+Patient=input('Patient: ','s'); sub=Patient;
+rest=input('Rest (1) or Sleep (2)? ','s');
+run_list=input('Runs (e.g. [1 2 3 4]: ');
+%runname=input('Run (e.g. 2): ','s'); run=runname;
+%pause_time=input('Pause time (sec) ');
+TDT='0';
+%TDT=input('TDT (1) or EDF (0): ','s');
+China=input('China (1) or Stanford (0)? ','s');
+Crop_ts='1';
+target_duration=390; % crop to this duration (secs)
+%Crop_ts=input('Crop time series (1) or not (0)? ','s');
+%crop_secs=input('Seconds to crop from beginning and end ');
+% if Crop_ts=='1'
+%     crop_start=input('
+% end
+%Cropping=input('Crop edges in TF domain by (e.g. 20 for 20 sec): ','s');
+sampling_rate=input('sampling rate (Hz): ','s');  sampling_rate=str2num(sampling_rate);   
+EDF_convert=input('EDF already converted (1) or not or TDT (0)? ','s');
+
+getECoGSubDir; global globalECoGDir;
+cd([globalECoGDir '/Rest/' sub]);
+
+%% Load bad channel list (or set none if no list)
+if exist('bad_chans.mat','file')>0
+load('bad_chans.mat');
+else 
+    bad_chans=[];
+end
+
+if rest=='1'
+pdir=([globalECoGDir '/Rest/' sub]);
+elseif rest=='2'
+   pdir=([globalECoGDir '/Sleep/' sub]);
+end
+%% Loop through runs
+for i=1:length(run_list)
+    curr_run=run_list(i);
+cd([pdir filesep 'Run' num2str(curr_run)])
+%% Convert EDF to SPM .mat
+if TDT=='0';
+    if EDF_convert=='0'
+display(['Choose raw EDF data']);
+fname=spm_select;
+[D,DC]=LBCN_convert_NKnew(fname);
+    end
+end
+if TDT=='1'
+    [D]=Convert_TDTiEEG_to_SPMfa(sampling_rate,[],1); % downsample to 1000 Hz  (or keep sampling rate if raw is <1000) 
+end
+if EDF_convert=='0'
+fname_spm = fullfile(D.path,D.fname);
+run_length=(D.nsamples/D.fsample)/60;
+end
+
+% if pre-converted from EDF: downsample pre-converted EDF to 1000 Hz
+if EDF_convert=='1'
+    
+    display(['Choose raw EDF-converted .mat data']);
+fname=spm_select;
+if sampling_rate>1000
+S.D=[fname]; S.method='downsample'; S.fsample_new=1000;
+D=spm_eeg_downsample(S);
+fname_spm=[D.fname];
+run_length=(D.nsamples/D.fsample)/60;
+else
+    
+D=spm_eeg_load(fname);
+    fname_spm=[fname];
+    run_length=(D.nsamples/D.fsample)/60;
+end
+end
+
+%% Filter iEEG data and detect bad channels
+if China=='0'
+LBCN_filter_badchans(fname_spm,[],bad_chans,1,[]);
+elseif China=='1'
+LBCN_filter_badchans_China(fname_spm,[],bad_chans,1,[]); 
+end
+fname_spm_fff=['fff' D.fname];
+
+A=spm_eeg_load(['f' D.fname]);
+delete([A.fname]); delete([A.fnamedat]);
+A=spm_eeg_load(['ff' D.fname]);
+delete([A.fname]); delete([A.fnamedat]); A=[];
+
+%% Chop run to 6.5 mins
+if Crop_ts=='1'
+    sampling=D.fsample;
+    curr_duration=D.nsamples/D.fsample;
+    cropping=((curr_duration-target_duration)/2)*sampling;
+    both=1;
+    [D]=crop_edges_postTF_func(Patient,curr_run,fname_spm_fff,cropping,both,sampling);
+    D.timeOnset=0; D=meeg(D); save(D);
+    fname_spm_pfff=[D.fname];
+else
+    fname_spm_pfff=['fff' D.fname];
+end
+
+%% Plot power spectrum for manual removal of outlier channels
+display(['Run length is ' num2str(run_length) ' mins']);
+if sampling_rate>999
+LBCN_plot_power_spectrum_gradCPT_1000(fname_spm_pfff);
+elseif sampling_rate==500
+    LBCN_plot_power_spectrum_gradCPT(fname_spm_pfff);
+end
+
+%% Common average re-referencing
+LBCN_montage(fname_spm_pfff);
+fname_spm_fffM=['M' fname_spm_pfff];
+
+%% Delete intermediate files
+  delete_file_mat=[fname_spm_fff];
+    delete_file_dat=strrep(delete_file_mat,'.mat','.dat');
+       delete(char(delete_file_mat));
+   delete(char(delete_file_dat));
+
+     delete_file_mat=[fname_spm_pfff];
+    delete_file_dat=strrep(delete_file_mat,'.mat','.dat');
+       delete(char(delete_file_mat));
+   delete(char(delete_file_dat));
+   
+        delete_file_mat=[fname_spm];
+    delete_file_dat=strrep(delete_file_mat,'.mat','.dat');
+       delete(char(delete_file_mat));
+   delete(char(delete_file_dat));
+end
+

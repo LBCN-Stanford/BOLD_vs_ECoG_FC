@@ -12,17 +12,18 @@ Patient=input('Patient: ','s'); sub=Patient;
 run_list=input('Runs (e.g. [1 2 3 4]: ');
 pause_time=input('pause before start (secs): ');
 rest=input('Rest (1) or Sleep (2)? ','s');
+Crop_ts='2'; % don't crop
 %runname=input('Run (e.g. 2): ','s'); run=runname;
 %pause_time=input('Pause time (sec) ');
 %TDT=input('TDT (1) or EDF (0): ','s');
 %China=input('China (1) or Stanford (0)? ','s');
-Crop_ts='2';
+%Crop_ts='2';
 %Crop_ts=input('Crop time series (1) or not (0)? ','s');
 %crop_secs=60;
 % if Crop_ts=='1'
 %     crop_start=input('
 % end
-Cropping=input('Crop edges in TF domain by (e.g. 20 for 20 sec): ','s');
+%Cropping=input('Crop edges in TF domain by (e.g. 20 for 20 sec): ','s');
 %sampling_rate=input('sampling rate (Hz): ','s'); sampling_rate=str2num(sampling_rate);   
 %EDF_convert='1';
 %EDF_convert=input('EDF already converted (1) or not or TDT (0)? ','s');
@@ -125,7 +126,7 @@ batch_Avg_HFB(fname_spm_btf);
 D=spm_eeg_load(fname_spm_fffM);
 sampling_rate=D.fsample;
 both=0;
-cropping=str2num(Cropping)*sampling_rate;
+%cropping=str2num(Cropping)*sampling_rate;
 
 fname_HFB=['HFBbtf_a' fname_spm_fffM];
 
@@ -152,9 +153,9 @@ batch_bandpass_medium(fname_HFB);
 
 batch_lowpass_slow(fname_HFB);
 
-LBCN_smooth_data(fname_HFB);
+%LBCN_smooth_data(fname_HFB);
 
-LBCN_smooth_data_500ms(fname_HFB,500);
+%LBCN_smooth_data_500ms(fname_HFB,500);
 
 %% Label channels with HFB (0.1-1 Hz) spectral bursts as bad
 %exclude_spectral_bursts_func(Patient,runname);
