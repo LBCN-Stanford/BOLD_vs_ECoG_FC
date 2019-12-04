@@ -8,7 +8,7 @@
 
 %% Set patient name and run number
 Patient=input('Patient: ','s'); sub=Patient;
-rest=input('Rest (1) or Sleep (2) or Naturalistic (3)? ','s');
+rest=input('Rest (1) or Sleep (2)? ','s');
 run_list=input('Runs (e.g. [1 2 3 4]: ');
 %runname=input('Run (e.g. 2): ','s'); run=runname;
 %pause_time=input('Pause time (sec) ');
@@ -25,13 +25,11 @@ EDF_convert=input('EDF already converted (1) or not or TDT (0)? ','s');
 
 getECoGSubDir; global globalECoGDir;
 if rest=='1'
-pdir=([globalECoGDir '/Rest/' sub]);
+cd([globalECoGDir '/Rest/' sub]);
 elseif rest=='2'
-   pdir=([globalECoGDir '/Sleep/' sub]);
-elseif rest=='3'
-   pdir=([globalECoGDir '/Naturalistic/' sub]);
+   cd([globalECoGDir '/Sleep/' sub]);
 end
-cd([pdir]);
+
 
 %% Load bad channel list (or set none if no list)
 if exist('bad_chans.mat','file')>0
@@ -40,6 +38,11 @@ else
     bad_chans=[];
 end
 
+if rest=='1'
+pdir=([globalECoGDir '/Rest/' sub]);
+elseif rest=='2'
+   pdir=([globalECoGDir '/Sleep/' sub]);
+end
 %% Loop through runs
 for i=1:length(run_list)
     curr_run=run_list(i);

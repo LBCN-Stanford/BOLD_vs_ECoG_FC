@@ -175,4 +175,9 @@ batch_lowpass_slow(fname_HFB);
     delete_file_dat=strrep(delete_file_mat,'.mat','.dat');
        delete(char(delete_file_mat));
    delete(char(delete_file_dat));
+   
 end
+
+%% Remove "EEG" from electrode names
+types=[{'bptf_'};{'slow'};{'HFB'}];
+rename_EEG_elecs(sub,types);
